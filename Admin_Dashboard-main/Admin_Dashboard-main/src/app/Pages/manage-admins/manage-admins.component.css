@@ -1,0 +1,254 @@
+/* Topbar */
+.topbar {
+  width: 95%;
+  height: 80px;
+  margin: 30px auto 0;
+  background-color: #B6B09F;
+  color: #232526;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 28px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2),
+              0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-left img {
+  width: 90px;
+  display: block;
+}
+
+.topbar-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #232526;
+  margin: 0;
+  text-shadow: 0 1px 8px #cccccc44;
+}
+
+.topbar-links {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.topbar-links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.topbar-links a:hover {
+  background-color: #ddd;
+}
+
+/* Manage Admins button top-right fixed */
+
+
+
+/* Buttons */
+button {
+   width: 100%;
+  background-color: #9F998A;
+  color: white;
+  padding: 12px 0;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+button:disabled {
+  background-color: #9F998A;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: #88846E;
+}
+
+/* Cancel button style */
+button.cancel-btn {
+  background-color: #ccc;
+  color: #000;
+  border: 1px solid #888;
+}
+
+/* Admin list */
+.admin-list {
+  margin-top: 40px;
+  width: 100%;
+}
+
+.admin-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  transition: 0.3s ease;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 95%;
+  margin-top: 30px;
+
+}
+
+.admin-info {
+  text-align: center;
+  color: #333;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;     /* Make all children same height */
+  width: 75%;
+  gap: 10px;
+  height: 100%;              /* Optional: spacing between columns */
+}
+
+.admin-info > * {
+
+  width: 20%;
+  display: flex;            /* Center inner content */
+  align-items: center;      /* Vertical centering */
+  justify-content: center;  /* Horizontal centering */
+  height: 100%;
+  }
+.admin-info>p{
+  background-color: rgba(3, 3, 3, 0.1);
+   padding: 10px;
+  box-sizing: border-box;   /* Includes padding in width/height */
+  border-radius: 10px;
+
+
+}
+
+
+.admin-info>div{
+  position: relative;
+ }
+
+.admin-info >div>div:first-child {
+   background-color: rgba(3, 3, 3, 0.1);
+   height: 100%;
+   width: 100%;
+   padding: 10px;
+  box-sizing: border-box;   /* Includes padding in width/height */
+  border-radius: 10px;
+   transition:  0.5s  ease, visibility 0.3s ease;
+   overflow: hidden; /* Hide content while shrinking */
+     transition-delay: 0.3s;
+
+ }
+
+.admin-info >div:hover>div:first-child {
+  translate:-100% ;
+  visibility: hidden;
+
+
+ }
+
+
+
+.admin-info > div > div:nth-child(2) {
+  opacity: 0;
+  transform: translateX(100%);
+  width: 240px;
+  height: 130px;
+  position: absolute;
+  top: -40px;
+  left: 0px;
+  background-color: rgba(3, 3, 3, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 0 10px #333;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  pointer-events: none; /* prevent interaction when hidden */
+  transition: transform 0.5s ease, opacity 0.3s ease ;
+  transition-delay: 0.3s;
+}
+
+.admin-info > div:hover > div:nth-child(2) {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto; /* re-enable interaction on hover */
+}
+
+.admin-info>div>div:nth-child(2)>ul{
+ list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+ }
+ .admin-info>div>div>ul>li{
+  margin:10px;
+ background-color:rgba(3, 3, 3, 0.2);
+ border-radius: 10px;
+ padding: 5px;
+ border-radius: 10;
+
+ }
+
+
+
+.admin-info p {
+  margin: 0;                /* Remove default <p> spacing */
+}
+
+.admin-actions {
+    display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 15%;
+  justify-content: space-between;
+
+
+}
+.icon-btn{
+  margin-left: 15px;
+}
+
+
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border: 1px solid red;
+  background-color: #fff6f6;
+}
+.data-names{
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+  justify-content: space-between;
+  width:71%;
+  margin-left: 20px;
+  height: 50px;
+}
+.data-names div{
+  background-color: rgba(3, 3, 3, 0.2);
+  width:20%;
+  border-radius: 10px;
+  height: 40px;
+  display: flex;
+  justify-content: center; /* Horizontal center */
+  align-items: center;
+
+
+}

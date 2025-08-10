@@ -1,0 +1,226 @@
+/* Topbar */
+.topbar {
+  width: 95%;
+  height: 80px;
+  margin: 30px auto 0;
+  background-color: #B6B09F;
+  color: #232526;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 28px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2), 
+              0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-left img {
+  width: 90px;
+  display: block;
+}
+
+.topbar-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #232526;
+  margin: 0;
+  text-shadow: 0 1px 8px #cccccc44;
+}
+
+.topbar-links {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.topbar-links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.topbar-links a:hover {
+  background-color: #ddd;
+}
+
+/* Manage Admins button top-right fixed */
+.top-right-button {
+  position: absolute;
+  left: 80%;
+  top:20%;
+ 
+  z-index: 1000;
+}
+
+.top-right-button button {
+  padding: 10px 20px;
+  background-color: #9F998A;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.top-right-button button:hover {
+  background-color: #88846E;
+}
+
+/* Add Admin container */
+.add-admin-container {
+  background-color: #F7F6F2;
+  padding: 40px 30px;
+  max-width: 500px;
+  margin: 100px auto 40px; /* leave space from top (100px) to avoid overlap with fixed button */
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  font-family: 'Segoe UI', sans-serif;
+  transition: transform 0.3s ease;
+}
+
+.add-admin-container:hover {
+  transform: translateY(-3px);
+}
+
+.add-admin-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.add-admin-container label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 600;
+  color: #555;
+}
+
+.add-admin-container input,
+.add-admin-container select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.add-admin-container input:focus,
+.add-admin-container select:focus {
+  border-color: #9F998A;
+  outline: none;
+}
+
+.error {
+  color: #c0392b;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.error small {
+  color: #d93025;
+  font-size: 13px;
+}
+
+/* Buttons */
+button {
+  margin-top: 30px;
+  width: 100%;
+  background-color: #9F998A;
+  color: white;
+  padding: 12px 0;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+button:disabled {
+  background-color: #9F998A;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: #88846E;
+}
+
+/* Cancel button style */
+button.cancel-btn {
+  background-color: #ccc;
+  color: #000;
+  border: 1px solid #888;
+}
+
+/* Admin list */
+.admin-list {
+  margin-top: 40px;
+}
+
+.admin-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  transition: 0.3s ease;
+}
+
+.admin-info {
+  text-align: center;
+  color: #333;
+}
+
+.admin-actions {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  margin: 0 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.icon-btn:hover {
+  transform: scale(1.2);
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border: 1px solid red;
+  background-color: #fff6f6;
+}
+top-container {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 90hv;
+  
+ 
+ 
+ }

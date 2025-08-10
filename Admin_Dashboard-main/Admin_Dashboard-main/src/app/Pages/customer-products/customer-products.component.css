@@ -1,0 +1,570 @@
+/* Product layout */
+.product-layout {
+  display: flex;
+  height: 970px;
+  flex-direction: row;
+  justify-content: space-between;
+}
+/* Full-page background video */
+.video-background {
+  position: fixed; /* stays fixed behind everything */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* covers entire background */
+  z-index: -1; /* stays behind content */
+  opacity: 0.15; /* high transparency */
+  pointer-events: none; /* so clicks go through */
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow-y: auto; /* only one scrollbar */
+}
+
+.home-wrapper {
+  min-height: 100%; /* allow content to grow */
+  overflow: visible; /* don't force inner scrollbar */
+}
+
+.product-section {
+  height: auto; /* don't lock it to viewport height */
+  overflow: visible;
+}
+
+
+/* Optional dark overlay to improve text readability */
+.overlay-content {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.2); /* light dark overlay */
+  z-index: -1; /* behind content but above video */
+}
+
+/* FILTER SIDEBAR - Modern Glassmorphism */
+.filter-bar {
+  flex: 1 1 280px;
+  padding: 20px;
+  background: rgba(163, 109, 109, 0.6);
+  backdrop-filter: blur(12px);
+  border-radius: 14px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.filter-bar h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #232526;
+}
+
+/* Dropdowns & range sliders */
+.filter-bar input[type="range"],
+.filter-bar select {
+  width: 100%;
+  margin-top: 6px;
+  border-radius: 8px;
+  padding: 4px;
+  outline: none;
+}
+
+/* Range slider customization */
+.filter-bar input[type="range"] {
+  width: 100%;
+  background: transparent;
+}
+.filter-bar input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: linear-gradient(90deg, #a79f88, #b6b09f);
+  border-radius: 3px;
+}
+/* Home Wrapper - relative to position absolute children */
+.home-wrapper {
+  position: relative;
+  height: auto;
+ 
+  overflow: visible;
+}
+
+/* Background video full screen */
+#background-video,
+.video-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+}
+/* Overlay content container */
+.overlay-content {
+  position: relative;
+  z-index: 1;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+} 
+.filter-bar input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  background: hsl(200, 4%, 14%);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+  margin-top: -5px;
+}
+
+/* TOGGLE SWITCH for checkboxes */
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: #232526;
+}
+.switch input {
+  display: none;
+}
+.switch .slider {
+  position: relative;
+  width: 42px;
+  height: 22px;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+.switch .slider:before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+.switch input:checked + .slider {
+  background-color: #a79f88;
+}
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* MAIN PRODUCT CONTAINER */
+.product-container {
+  flex: 3 1 0;
+  padding: 20px;
+}
+
+/* Search bar with glow effect */
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.search-bar {
+  height: 48px;
+  padding: 0 16px;
+  font-size: 1rem;
+  width: 1500px auto;
+  max-width: 1500px;
+  border-radius: 50px;
+  border: 1px solid #ccc; /* same in both states */
+  outline: none;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.search-bar:focus {
+  border: 1px solid #a79f88; /* same thickness as normal */
+  box-shadow: 0 0 8px rgba(167, 159, 136, 0.5);
+}
+
+/* PRODUCT GRID */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* PRODUCT CARD with hover effect */
+.product-card {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+.product-image {
+  max-width: 100%;
+  height: 180px;
+  object-fit: contain;
+  margin-bottom: 10px;
+  transition: transform 0.2s ease;
+}
+.product-image:hover {
+  transform: scale(1.05);
+}
+
+/* PRODUCT TEXT */
+.product-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+.product-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 8px;
+}
+.product-price {
+  font-size: 1.2rem;
+  color: #232526;
+  font-weight: bold;
+}
+
+
+.product-layout {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.filter-bar {
+  flex: 1 1 300px;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+}
+
+.product-container {
+  flex: 3 1 0;
+  padding: 20px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.product-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.product-name {
+  font-size: 1.2em;
+  margin: 10px 0;
+}
+
+.product-description {
+  font-size: 1em;
+  color: #555;
+}
+
+.product-price {
+  font-size: 1.4em;
+  color: #2c3e50;
+}
+
+.topbar {
+  width: 95%;
+  height: 80px;
+   margin: 30px auto 0; /* pushes it down 30px */
+  background-color: #B6B09F;
+  color: #232526;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 28px;
+  border-radius: 14px;
+
+
+  /* Brighter and stronger shadow for dark background */
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2),
+              0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+
+.topbar h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #232526;
+      text-shadow: 0 1px 8px #cccccc44;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Space between logo and heading */
+}
+
+
+.topbar-left img {
+  width: 90px;
+  display: block;
+}
+
+
+.topbar-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #232526;
+  margin: 0;
+  text-shadow: 0 1px 8px #cccccc44;
+}
+
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+/* Right side: links */
+.topbar-links {
+  margin-left: auto;
+  display: flex;
+  align-items: right;
+  gap: 20px;
+}
+
+
+.topbar-links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+
+.topbar-links a:hover {
+  background-color: #ddd;
+}
+
+
+/* Layout */
+.product-section {
+  display: flex;
+  height: auto; 
+  overflow-y: auto;
+  padding: 20px;
+  gap: 20px;
+}
+
+
+/* Filter bar */
+.filter-bar {
+  width: 220px;
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  font-size: 0.9rem;
+}
+
+
+.filter-bar h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+
+.filter-bar label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+
+.filter-bar input[type="range"],
+.filter-bar select {
+  width: 100%;
+  margin-top: 5px;
+}
+
+
+/* Main product container */
+.product-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* Search bar */
+.search-bar {
+  padding: 8px 12px;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+
+/* Product grid */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+  gap: 20px;
+}
+
+
+/* Product card */
+.product-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.05);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+
+.product-image {
+  max-width: 100%;
+  height: 160px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+
+.product-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+
+.product-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+
+.price-wrapper {
+  margin-bottom: 10px;
+}
+
+
+.product-price {
+  font-size: 1.2rem;
+   color: #232526;
+
+
+  font-weight: bold;
+}
+
+
+/* Quantity input */
+.product-card label {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+
+/* Buttons */
+.add-btn, .edit-btn {
+  cursor: pointer;
+  padding: 8px 14px;
+  margin-top: 5px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+
+.add-btn {
+     background-color: #A79F88; /* slightly darker than topbar */
+  color: #232526;  
+}
+
+
+.add-btn:hover {
+background-color: #A79F88; /* slightly darker than topbar */
+}
+
+
+.edit-btn {
+background-color: #A79F88; /* slightly darker than topbar */
+  color: #232526;  
+  margin-top: 8px;
+}
+
+
+.edit-btn:hover {
+background-color: #A79F88; /* slightly darker than topbar */
+}
+
+
+/* Details list */
+.product-card ul {
+  text-align: left;
+  margin: 10px 0 0 0;
+  padding-left: 0;
+  list-style: none;
+  color: #444;
+  font-size: 0.9rem;
+}
+.product-image.clickable {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+
+.product-image.clickable:hover {
+  transform: scale(1.05);
+}
+
+
+
+

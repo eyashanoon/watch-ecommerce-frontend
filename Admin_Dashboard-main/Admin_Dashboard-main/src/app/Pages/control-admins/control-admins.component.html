@@ -1,0 +1,167 @@
+<!-- Top Navigation Bar -->
+<div class="topbar">
+  <div class="topbar-left">
+    <img src="/assets/logo.png" alt="Logo" />
+    <h1>| La Royale Watches Store</h1>
+  </div>
+  <div class="topbar-links">
+    <a href="#">Profile</a>
+    <a href="#" (click)="goToHomePage(); $event.preventDefault()">Home</a>
+    <a href="#">Sign Out</a>
+    <a href="tel:+970599999999">+970599999999</a>
+  </div>
+</div>
+
+
+
+<div class="top-container">
+<!-- Manage Admins Button fixed at top right -->
+<div class="top-right-button">
+  <button (click)="goToManagePage()">Manage Existing Admins?</button>
+</div>
+
+<!-- Admin Control Panel -->
+<div class="add-admin-container" #adminFormSection>
+  <h2>{{ editIndex !== null ? 'Edit Admin' : 'Add New Admin' }}</h2>
+
+  <form (ngSubmit)="onSubmit()" #adminForm="ngForm" novalidate>
+    
+    <!-- Regular fields if not password-only mode -->
+    <ng-container *ngIf="!modifyPasswordOnly">
+      <label for="username">Username</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        [(ngModel)]="admin.username"
+        required
+        minlength="3"
+        #username="ngModel"
+      />
+      <div class="error" *ngIf="username.invalid && (username.dirty || username.touched)">
+        <small *ngIf="username.errors?.['required']">Username is required.</small>
+        <small *ngIf="username.errors?.['minlength']">Minimum 3 characters.</small>
+      </div>
+
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        [(ngModel)]="admin.email"
+        required
+        pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+        #email="ngModel"
+      />
+      <div class="error" *ngIf="isEmailDuplicate(admin.email, editIndex ?? undefined)">
+        <small>This email is already used by another admin.</small>
+      </div>
+      <div class="error" *ngIf="email.invalid && (email.dirty || email.touched)">
+        <small *ngIf="email.errors?.['required']">Email is required.</small>
+        <small *ngIf="email.errors?.['pattern']">Invalid email format.</small>
+      </div>
+
+      <label for="phone">Phone Number</label>
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        [(ngModel)]="admin.phone"
+        pattern="^\d{10}$"
+        (keypress)="allowOnlyNumbers($event)"
+        #phone="ngModel"
+      />
+      <div class="error" *ngIf="phone.invalid && (phone.dirty || phone.touched)">
+        <small *ngIf="phone.errors?.['pattern']">Phone number must be exactly 10 digits.</small>
+      </div>
+
+      <label for="roles">Roles</label>
+      <select
+        id="roles"
+        name="roles"
+        multiple
+        [(ngModel)]="admin.roles"
+        required
+        #roles="ngModel"
+      >
+        <option value="CONTROLADMINS">Super Admin</option>
+        <option value="CONTROLPRODUCTS">Products Admin</option>
+        <option value="CONTROLORDERSADMIN">Orders Admin</option>
+        <option value="CONTROLCUSTOMERS">Customers Admin</option>
+      </select>
+      <div class="error" *ngIf="roles.invalid && (roles.dirty || roles.touched)">
+        <small *ngIf="roles.errors?.['required']">At least one role is required.</small>
+      </div>
+    </ng-container>
+
+    <!-- Modify Password Button (only when editing) -->
+    <div *ngIf="editIndex !== null" class="modify-password-btn">
+      <button type="button" (click)="togglePasswordOnly()">
+        {{ modifyPasswordOnly ? 'Cancel Password Modification' : 'Modify Password Only' }}
+      </button>
+    </div>
+
+    <!-- Password fields (shown always on add or modifyPasswordOnly) -->
+    <ng-container *ngIf="editIndex === null || modifyPasswordOnly">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="admin.password"
+        [required]="editIndex === null || modifyPasswordOnly"
+        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),./?{}[\]\\\-_=+<>]).{6,}$"
+        #password="ngModel"
+      />
+      <div class="error" *ngIf="password.invalid && (password.dirty || password.touched)">
+        <small *ngIf="password.errors?.['required']">Password is required.</small>
+        <small *ngIf="password.errors?.['pattern']">
+          Must be at least 6 characters and include a capital letter, a small letter, a number, and a symbol.
+        </small>
+      </div>
+
+      <label for="confirmPassword">Confirm Password</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        name="confirmPassword"
+        [(ngModel)]="admin.confirmPassword"
+        [required]="editIndex === null || modifyPasswordOnly"
+        #confirmPassword="ngModel"
+      />
+      <div class="error" *ngIf="confirmPassword.dirty || confirmPassword.touched">
+        <small *ngIf="confirmPassword.errors?.['required']">Confirm Password is required.</small>
+        <small *ngIf="admin.password && admin.confirmPassword && !passwordsMatch()">
+          Passwords do not match.
+        </small>
+      </div>
+    </ng-container>
+
+    <!-- Form buttons -->
+    <div class="form-buttons">
+      <button
+        type="submit"
+        *ngIf="editIndex === null"
+        [disabled]="adminForm.invalid || !passwordsMatch()"
+      >
+        Add Admin
+      </button>
+
+      <button
+        type="submit"
+        *ngIf="editIndex !== null"
+        [disabled]="
+          adminForm.invalid ||
+          ((admin.password || admin.confirmPassword) && !passwordsMatch())
+        "
+      >
+        Update Admin
+      </button>
+
+      <button type="button" class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+    </div>
+  </form>
+</div>
+
+   
+</div>

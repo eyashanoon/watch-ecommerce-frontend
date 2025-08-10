@@ -1,0 +1,69 @@
+import { Routes } from '@angular/router';
+import { AdminDashboardComponent } from './Pages/AdminDashBoard/admin-dashboard.component';
+import { ProductsComponent } from './Pages/products/products.component';
+import { OrdersComponent } from './Pages/orders/orders.component';
+import { HomeComponent } from './Pages/home/home.component';
+import { CustomerProductsComponent } from './Pages/customer-products/customer-products.component';
+import { AddProductComponent  }    from './Pages/add-product/add-product.component';
+import { EditProductComponent } from './Pages/edit-product/edit-product.component';
+
+
+export const routes: Routes = [
+  { path: 'admin', component: AdminDashboardComponent },
+{
+  path: 'edit-product/:name',
+  component: EditProductComponent
+}
+,
+  { path: 'product', component: ProductsComponent },
+  { path: '', component: HomeComponent },
+  { path: 'orders', component: OrdersComponent },
+  { path: 'customer', component: CustomerProductsComponent },
+  { path: 'report', loadComponent: () => import('./Pages/report/report.component').then(m => m.ReportComponent) },
+{path: 'control-admins',loadComponent: () => import('./Pages/control-admins/control-admins.component').then(m => m.ControlAdminsComponent)},
+{
+  path: 'sign-in',
+  loadComponent: () => import('./Pages/sign-in/sign-in.component').then(m => m.SignInComponent)
+},
+{
+  path: 'customer-dash-board',
+  loadComponent: () => import('./Pages/customer-dash-board/customer-dash-board.component').then(m => m.CustomerDashBoardComponent)
+},
+{
+  path: 'sign-up',
+  loadComponent: () => import('./Pages/sign-up/sign-up.component').then(m => m.SignUpComponent)
+},
+  // { path: '**', redirectTo: 'admin' }      HomeComponen // <-- comment this out
+{
+  path: 'home',
+  loadComponent: () => import('./Pages/home/home.component').then(m => m. HomeComponent)
+},
+{
+  path: 'product/:name',
+  loadComponent: () => import('./Pages/product_details/product-details.component').then(m => m.ProductDetailsComponent)
+},
+{ path: 'add-product', component: AddProductComponent },
+{
+  path: 'customer-product',
+  loadComponent: () =>
+    import('./Pages/customer-products/customer-products.component').then(m => m.CustomerProductsComponent)
+},
+
+{
+  path: 'customer-profile',
+  loadComponent: () => import('./Pages/customer-profile/customer-profile.component').then(m => m.CustomerProfileComponent)
+},
+
+{
+  path: 'admin-product/:name',
+  loadComponent: () =>
+    import('./Pages/ProductsDetails/productsDetails.component').then(m => m.ProductsDetailsComponent)
+},
+{
+  path: 'admin/manage',
+  loadComponent: () =>
+    import('./Pages/manage-admins/manage-admins.component').then(m => m.ManageAdminsComponent)
+}
+
+];
+

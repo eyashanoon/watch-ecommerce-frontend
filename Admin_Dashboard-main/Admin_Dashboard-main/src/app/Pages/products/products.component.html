@@ -1,0 +1,188 @@
+<!-- Top Navigation Bar -->
+<div class="topbar">
+  <div class="topbar-left">
+    <img src="assets/logo.png" alt="Logo" style="width: 80px; height: auto;" />
+    <h1>| La Royale Watches Store</h1>
+  </div>
+  <div class="topbar-links">
+    <a href="#">Profile</a>
+    <a href="#" (click)="goToHomePage(); $event.preventDefault()">Home</a>
+    <a href="#" (click)="goToHomePage(); $event.preventDefault()">Sign Out</a>
+    <a href="tel:+970599999999">+970599999999</a>
+  </div>
+</div>
+
+<!-- Floating Add Button -->
+<button class="floating-add-button" (click)="goToAddProductPage()" title="Add New Product">➕</button>
+
+<!-- Product Section -->
+<div class="product-container">
+  <h2 class="title">Our Collection</h2>
+
+  <!-- Search Bar -->
+  <div class="search-wrapper">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Search watches..." [(ngModel)]="searchText" class="search-bar-with-icon" />
+  </div>
+
+  <div class="product-section">
+    <!-- Filter Sidebar -->
+    <div class="filter-bar">
+      <h3>Filter Watches</h3>
+
+      <label>
+        <span>Price Range</span>
+        <input type="range" min="0" max="1500" [(ngModel)]="filters.maxPrice" />
+        <small>Max: ${{ filters.maxPrice }}</small>
+      </label>
+
+      <label>
+        <span>Quantity Range</span>
+        <input type="range" min="0" max="100" [(ngModel)]="filters.maxQuantity" />
+        <small>Max: {{ filters.maxQuantity }}</small>
+      </label>
+
+      <label>
+        <span>Weight Range</span>
+        <input type="range" min="0" max="60" [(ngModel)]="filters.maxWeight" />
+        <small>Max: {{ filters.maxWeight }}</small>
+      </label>
+
+      <label>
+        <span>Size Range</span>
+        <input type="range" min="0" max="45" [(ngModel)]="filters.maxSize" />
+        <small>Max: {{ filters.maxSize }}</small>
+      </label>
+
+      <label class="checkbox-label">
+        <span>Waterproof</span>
+        <input type="checkbox" [(ngModel)]="filters.waterProof" />
+      </label>
+
+      <label class="checkbox-label">
+        <span>Has Date</span>
+        <input type="checkbox" [(ngModel)]="filters.includesDate" />
+      </label>
+
+      <label class="checkbox-label">
+        <span>All Numbers</span>
+        <input type="checkbox" [(ngModel)]="filters.hasFullNumerals" />
+      </label>
+
+      <label class="checkbox-label">
+        <span>No Tick Sound</span>
+        <input type="checkbox" [(ngModel)]="filters.hasTickingSound" />
+      </label>
+
+      <!-- Dropdowns -->
+      <div class="filter-section">
+        <label>
+          <span>Display Type</span>
+          <select [(ngModel)]="filters.displayType">
+            <option value="">Any</option>
+            <option *ngFor="let t of displayTypes" [value]="t">{{ t }}</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <label>
+          <span>Numbering Type</span>
+          <select [(ngModel)]="filters.numberingType">
+            <option value="">Any</option>
+            <option *ngFor="let n of numberingTypes" [value]="n">{{ n }}</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <label>
+          <span>Brand Type</span>
+          <select [(ngModel)]="filters.brand">
+            <option value="">Any</option>
+            <option *ngFor="let b of availableBrands" [value]="b">{{ b }}</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <label>
+          <span>Band Color</span>
+          <select [(ngModel)]="filters.bandColor">
+            <option value="">Any</option>
+            <option *ngFor="let c of bandColors" [value]="c">{{ c }}</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <label>
+          <span>Hands Color</span>
+          <select [(ngModel)]="filters.handsColor">
+            <option value="">Any</option>
+            <option *ngFor="let c of handsColors" [value]="c">{{ c }}</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <label>
+          <span>Background Color</span>
+          <select [(ngModel)]="filters.backgroundColor">
+            <option value="">Any</option>
+            <option *ngFor="let c of backgroundColors" [value]="c">{{ c }}</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <label>
+          <span>Band Material</span>
+          <select [(ngModel)]="filters.bandMaterial">
+            <option value="">Any</option>
+            <option *ngFor="let m of bandMaterials" [value]="m">{{ m }}</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <label>
+          <span>Case Material</span>
+          <select [(ngModel)]="filters.caseMaterial">
+            <option value="">Any</option>
+            <option *ngFor="let m of caseMaterials" [value]="m">{{ m }}</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <label>
+          <span>Shape</span>
+          <select [(ngModel)]="filters.shape">
+            <option value="">Any</option>
+            <option *ngFor="let m of shapes" [value]="m">{{ m }}</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+      <div class="product-card" *ngFor="let product of filteredProducts; let i = index">
+        <div class="image-wrapper" (mouseenter)="startCarousel(product)" (mouseleave)="stopCarousel(product)">
+          <img
+            [src]="product.images[product.currentImageIndex || 0]"
+            alt="{{ product.name }}"
+            class="clickable"
+            (click)="goToProductDetails(product)"
+          />
+          <button class="carousel-arrow left" (click)="prevImage(product, $event)">&#10094;</button>
+          <button class="carousel-arrow right" (click)="nextImage(product, $event)">&#10095;</button>
+        </div>
+
+        <h3 class="product-name">{{ product.name }}</h3>
+        <p class="product-price">{{ product.price | currency }}</p>
+      </div>
+    </div>
+  </div>
+</div>

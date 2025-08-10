@@ -1,0 +1,71 @@
+<div class="topbar">
+  <div class="topbar-left">
+    <img src="assets/logo.png" alt="Logo" />
+    <h1>| La Royale Watches Store</h1>
+  </div>
+  <div class="topbar-links">
+    <a href="/customer-product">Products</a>
+  </div>
+</div>
+
+<!-- Guard the entire product details block -->
+<div class="product-detail-wrapper" *ngIf="product">
+  <h2>{{ product.name }}</h2>
+
+  <img
+    [src]="product.image"
+    alt="{{ product.name }}"
+    class="product-detail-image"
+  />
+
+  <p>{{ product.description }}</p>
+
+  <ul>
+    <li><strong>Price:</strong> ${{ product.price }}</li>
+    <li><strong>Brand:</strong> {{ product.brand }}</li>
+    <li><strong>Waterproof:</strong> {{ product.waterProof || false }}</li>
+    <li><strong>Includes Date:</strong> {{ product.includesDate || false }}</li>
+    <li><strong>Numbering Type:</strong> {{ product.numberingType }}</li>
+    <li><strong>Has Full Numerals:</strong> {{ product.hasFullNumerals || false }}</li>
+    <li><strong>Ticking Sound:</strong> {{ product.hasTickingSound || false }}</li>
+    <li><strong>Size:</strong> {{ product.size }}</li>
+    <li><strong>Weight:</strong> {{ product.wieght }} grams</li>
+    <li><strong>Band Color:</strong> {{ product.bandColor }}</li>
+    <li><strong>Hands Color:</strong> {{ product.handsColor }}</li>
+    <li><strong>Background Color:</strong> {{ product.backgroundColor }}</li>
+    <li><strong>Band Material:</strong> {{ product.bandMaterial }}</li>
+    <li><strong>Case Material:</strong> {{ product.caseMaterial }}</li>
+    <li><strong>Display Type:</strong> {{ product.displayType }}</li>
+    <li><strong>Shape:</strong> {{ product.shape }}</li>
+    <li><strong>Changeable Band:</strong> {{ product.changeableBand ? true : false }}</li>
+  </ul>
+
+  <div class="action-buttons">
+    <div class="cart-side">
+      <label>
+        Quantity:
+        <input
+          type="number"
+          min="1"
+          [max]="product.quantity"
+          [(ngModel)]="product.selectedQty"
+        />
+      </label>
+
+      <span class="divider">|</span>
+
+      <button class="add-btn" (click)="addToCart(product)">
+        <span class="cart-icon">🛒</span> Add to Cart
+      </button>
+    </div>
+
+    <div class="wishlist-side">
+      <button class="edit-btn" (click)="toggleWishlist(product)">
+        <span class="heart-icon" [class.active]="isInWishlist(product)">
+          {{ isInWishlist(product) ? '❤️' : '♡' }}
+        </span>
+        Wishlist
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+<div class="home-wrapper" #homeWrapper>
+  <video
+    #backgroundVideo
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="auto"
+    class="video-background"
+  >
+    <source src="/assets/background.mp4" type="video/mp4" />
+  </video>
+
+  <div class="overlay-content">
+    <!-- Top Navigation Bar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <img src="/assets/logo.png" alt="Logo" />
+        <h1>| La Royale Watches Store</h1>
+      </div>
+
+      <div class="topbar-links">
+        <a href="#" (click)="scrollToAbout($event)">About</a>
+        <a href="#" (click)="goToSignInPage(); $event.preventDefault()">Sign In</a>
+        <a href="#" (click)="goToSignUpPage(); $event.preventDefault()">Sign Up</a>
+        <a href="tel:+970599999999">+970599999999</a>
+      </div>
+    </div>
+
+    <!-- Center Content fixed at bottom, hides on scroll -->
+    <div
+      class="center-content"
+      [class.hidden]="!showCenterContent"
+    >
+      <div class="welcome-text">Welcome to La Royale Watches Store</div>
+      <button (click)="goToProductPage()">Explore Products</button>
+    </div>
+
+    <div id="about" class="about-section">
+  <h2>About La Royale</h2>
+  <div id="typewriter-container"></div>
+</div>
+
+
+    <!-- Scroll Up Arrow Button -->
+    <button
+      id="scroll-to-top"
+      aria-label="Scroll to top"
+      title="Back to top"
+      (click)="scrollToTop()"
+      [class.show]="showScrollTop"
+    >
+      ⬆ 
+    </button>
+  </div> <!-- close overlay-content -->
+</div>

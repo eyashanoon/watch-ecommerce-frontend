@@ -1,0 +1,443 @@
+/* Make topbar fixed at top, full width */
+.topbar {
+  position: fixed;
+    top: 20px; /* Pushes it 20px from the top of the screen */
+  left: 0;
+  right: 0;
+  height: 80px;
+  background-color: #B6B09F;
+  color: #232526;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2),
+              0 4px 8px rgba(255, 255, 255, 0.1);
+  z-index: 1000; /* on top */
+}
+
+/* Push container down below topbar */
+.container {
+  height: calc(100vh - 80px); /* full viewport height minus topbar */
+  margin-top: 80px; /* optional - safer for scroll */
+  display: flex;
+  overflow: hidden;
+}
+
+/* Optional: style inside topbar same as before */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-left img {
+  width: 90px;
+  display: block;
+}
+
+.topbar-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #232526;
+  margin: 0;
+  text-shadow: 0 1px 8px #cccccc44;
+}
+
+.topbar-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.topbar-links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.topbar-links a:hover {
+  background-color: #ddd;
+}
+
+.left-panel {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.left-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  bottom: 50px;
+  left: 30px;
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.right-panel {
+  flex: 1;
+ background-color: #F9F8F4;
+  color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.form-container h2 {
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.form-container p {
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+input[type="email"],
+input[type="text"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 12px;
+  background: #B6B09F;
+  border: none;
+  border-radius: 6px;
+  color: rgb(0, 0, 0);
+  margin-bottom: 15px;
+  font-size: 15px;
+}
+
+input::placeholder {
+  color: white; /* white placeholder text */
+  opacity: 1; /* make sure opacity is 100% for some browsers */
+}
+
+
+select option {
+  color: black;
+}
+
+.sign-in-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #B6B09F;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+.register-flair {
+  font-weight: 700;
+  color: #302d17;
+  cursor: pointer;
+  margin-left: 5px;
+  position: relative;
+  display: inline-block;
+  transition: transform 0.2s ease, color 0.3s ease;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.register-flair::before {
+  content:  '';
+  font-size: 14px;
+}
+
+.register-flair:hover {
+  color: #020203;
+  transform: scale(1.05);
+  text-shadow: 0 0 5px #473e0b;
+}
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Top bar stays at the top */
+.topbar {
+  flex-shrink: 0;
+  height: 80px;
+  margin: 0;
+  width: 100%;
+  background-color: #B6B09F;
+  color: #232526;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2),
+              0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+/* Make container fill the remaining space */
+.container {
+  flex-grow: 1;
+  display: flex;
+  height: calc(100vh - 80px); /* subtract topbar height */
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.85; transform: scale(1.02); }
+  100% { opacity: 1; }
+}
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #ff5252;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  z-index: 9999;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.sign-in-button:hover {
+  background: #635b41;
+}
+.user-type-toggle {
+    margin-bottom: 20px; /* adds space below user type toggle */
+
+  margin-top: 20px;
+  text-align: left;
+  font-weight: bold;
+  color: #444;
+}
+
+.fancy-toggle {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.fancy-toggle button {
+  padding: 10px 18px;
+  border-radius: 30px;
+  border: none;
+  background: linear-gradient(145deg, #2d2d2d, #3c3c3c);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  backdrop-filter: blur(6px);
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.fancy-toggle button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(0, 255, 255, 0.15), transparent 60%);
+  transform: rotate(25deg);
+  animation: shimmer 2.5s infinite;
+}
+
+.fancy-toggle button.active {
+  background: linear-gradient(145deg, #00bcd4, #008ba3);
+  color: white;
+  box-shadow: 0 0 15px #00bcd4;
+  transform: scale(1.05);
+}
+
+@keyframes shimmer {
+  0% {
+    transform: rotate(25deg) translate(-100%, -100%);
+  }
+  100% {
+    transform: rotate(25deg) translate(100%, 100%);
+  }
+}
+.left-panel {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.5), rgba(255,255,255,0.9)); /* subtle white fade */
+}
+
+.video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6; /* semi-transparent video */
+  z-index: 0;
+}
+
+.overlay {
+  position: relative; /* stay above video */
+  z-index: 1;
+  bottom: 50px;
+  left: 30px;
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Ensure text inside overlay is readable */
+.overlay h2 {
+  margin: 0;
+}
+/* Container fills full viewport and uses flexbox for two panels */
+.container {
+  display: flex;
+  height: 100vh; /* full viewport height */
+  width: 100vw;  /* full viewport width */
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+/* Left panel takes half width and full height */
+.left-panel {
+  flex: 1; /* 50% width because container has 2 children */
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.5), rgba(255,255,255,0.9));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Video fills the entire left panel */
+.video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* cover entire container */
+  opacity: 0.6; /* semi-transparent */
+  z-index: 0;
+}
+
+/* Overlay text above video */
+.overlay {
+  position: relative;
+  z-index: 1;
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  padding-left: 30px;
+  padding-bottom: 50px;
+  align-self: flex-end;
+  text-align: left;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Right panel styles */
+.right-panel {
+  flex: 1; /* 50% width */
+  background-color: #F9F8F4;
+  color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* Form container sizing */
+.form-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Headings */
+.form-container h2 {
+  margin-bottom: 10px;
+  font-size: 28px;
+  color: #000000;
+}
+
+.form-container p {
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: #000000;
+}
+
+/* Inputs */
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  background: #B6B09F;
+  border: none;
+  border-radius: 6px;
+  color: rgb(0, 0, 0);
+  margin-bottom: 15px;
+  font-size: 15px;
+}
+
+input::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+/* Submit button */
+.sign-in-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #B6B09F;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.sign-in-button:hover {
+  background: #635b41;
+}
+
+/* User type toggle and fancy buttons omitted for brevity */
+/* Include your existing styles for those */
+
+.register-flair {
+  font-size: 24px;       /* Bigger font */
+  font-weight: 600;      /* Optional: bold */
+  display: block;        /* Allows margin below */
+  margin-bottom: 20px;   /* Adds space under it */
+  color: #333;           /* Optional: darker text */
+}

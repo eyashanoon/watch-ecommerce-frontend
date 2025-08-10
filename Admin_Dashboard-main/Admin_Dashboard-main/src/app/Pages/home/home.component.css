@@ -1,0 +1,210 @@
+/* Home Wrapper - relative to position absolute children */
+.home-wrapper {
+  position: relative;
+  height: auto;
+  padding-top: 110px; /* space for fixed topbar */
+  overflow: visible;
+}
+
+/* Background video full screen */
+#background-video,
+.video-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Overlay content container */
+.overlay-content {
+  position: relative;
+  z-index: 1;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.topbar {
+  position: fixed;
+  top: 20px;  /* moves the topbar 20px down from top */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  height: 80px;
+  background-color: #B6B09F;
+  color: #232526;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 28px;
+  border-radius: 14px;
+  box-shadow:
+    0 10px 25px rgba(255, 255, 255, 0.2),
+    0 4px 8px rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-left img {
+  width: 90px;
+  display: block;
+}
+
+.topbar-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #232526;
+  margin: 0;
+  text-shadow: 0 1px 8px #cccccc44;
+}
+
+.topbar-links {
+  margin-left: auto;
+  display: flex;
+  gap: 20px;
+}
+
+.topbar-links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.topbar-links a:hover {
+  background-color: #ddd;
+}
+
+/* Center Content fixed at bottom, hides on scroll */
+.center-content {
+  color: #fff;
+  font-size: 48px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 30vh;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.center-content.hidden {
+  display: none;
+}
+
+.center-content button {
+  padding: 12px 24px;
+  font-size: 18px;
+  background-color: #b6b09f;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #232526;
+  transition: background-color 0.3s ease;
+}
+
+.center-content button:hover {
+  background-color: #9d9786;
+}
+
+/* About Section */
+.about-section {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  margin-top: 100vh;
+  padding: 60px 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+  color: white;
+}
+
+.about-section h2 {
+  font-size: 2.8rem;
+  margin-bottom: 25px;
+  font-weight: 800;
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, 0.9),
+    0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Remove old CSS animation on paragraphs here */
+/* Styling for dynamically typed paragraphs inside #typewriter-container */
+#typewriter-container p {
+  font-size: 1.2rem;
+  line-height: 1.9;
+  max-width: 600px;
+  margin: 0 auto 12px auto;
+  font-weight: 500;
+  text-shadow:
+    0 0 5px rgba(255, 255, 255, 0.7),
+    0 1px 3px rgba(0, 0, 0, 0.5);
+  color: white;
+  position: relative;
+}
+
+/* Blinking caret for typed lines */
+#typewriter-container p::after {
+  content: '|';
+  position: absolute;
+  right: -10px;
+  animation: blink-caret 1s step-end infinite;
+  color: white;
+}
+
+@keyframes blink-caret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Scroll Up Arrow Button */
+#scroll-to-top {
+  position: absolute; /* position relative to .overlay-content */
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(100vh - 70px); /* ~70px above about section */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(128, 128, 128, 0.4);
+  color: white;
+  font-size: 35px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  z-index: 2000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+#scroll-to-top.show {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#scroll-to-top:hover {
+  background-color: rgba(128, 128, 128, 0.6);
+  transform: translateX(-50%) scale(1.1);
+}

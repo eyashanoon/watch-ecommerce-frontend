@@ -1,0 +1,43 @@
+/* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files */
+body {
+  background-color: #F9F8F4;
+  font-family: 'Segoe UI', sans-serif;
+}
+/* Apply to any scrollable element (like a div or body) */
+.scrollable-element {
+  overflow: auto;
+
+  /* Firefox scrollbar */
+  scrollbar-width: thin;  /* "auto" or "thin" */
+  scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
+}
+
+/* Webkit-based browsers (Chrome, Safari, Edge) */
+
+/* The entire scrollbar */
+.scrollable-element::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Remove the up/down or left/right buttons */
+.scrollable-element::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* Track (the empty area) */
+.scrollable-element::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* The draggable scrolling handle */
+.scrollable-element::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+}
+
+/* On hover */
+.scrollable-element::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}

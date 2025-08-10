@@ -1,0 +1,70 @@
+<!-- TOPBAR (fixed at top) -->
+<div class="topbar">
+  <div class="topbar-left">
+    <img src="assets/logo.png" alt="Logo" style="height: 40px; margin-right: 10px;" />
+    <h1>| La Royale Admin Dashboard</h1>
+  </div>
+  <div class="topbar-links">
+    <a href="#" (click)="goToHomePage(); $event.preventDefault()">Home</a>
+    <a href="tel:+970599999999">+970599999999</a>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Left Video Panel -->
+  <div class="left-panel">
+    <video
+      #backgroundVideo
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+      class="video-background"
+    >
+      <source src="assets/background.mp4" type="video/mp4" />
+    </video>
+    <div class="overlay">
+
+    </div>
+  </div>
+
+  <!-- Right Form Panel -->
+  <div class="right-panel">
+    <div class="form-container">
+      <h2>Sign in to your account</h2>
+      <p>
+        <span (click)="goToSignUpPage()" class="register-flair">    Don't have an account? Register now ✨ →</span>
+
+      </p>
+
+      <!-- Toast Message -->
+      <div class="toast" *ngIf="showToast">
+        {{ toastMessage }}
+      </div>
+
+      <!-- Sign-in Form -->
+      <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
+        <!-- username Input -->
+        <input
+          type="text"
+          placeholder="username"
+          formControlName="username"
+        />
+
+        <!-- Password Input -->
+        <input
+          type="password"
+          placeholder="Password"
+          formControlName="password"
+        />
+
+        <!-- Fancy User Type Selector -->
+        
+
+        <!-- Submit Button -->
+        <button class="sign-in-button" type="submit">Sign In</button>
+      </form>
+    </div>
+  </div>
+</div>
