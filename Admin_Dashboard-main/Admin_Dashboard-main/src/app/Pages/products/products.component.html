@@ -167,22 +167,25 @@
     </div>
 
     <!-- Product Grid -->
-    <div class="product-grid">
-      <div class="product-card" *ngFor="let product of filteredProducts; let i = index">
-        <div class="image-wrapper" (mouseenter)="startCarousel(product)" (mouseleave)="stopCarousel(product)">
-          <img
-            [src]="product.images[product.currentImageIndex || 0]"
-            alt="{{ product.name }}"
-            class="clickable"
-            (click)="goToProductDetails(product)"
-          />
-          <button class="carousel-arrow left" (click)="prevImage(product, $event)">&#10094;</button>
-          <button class="carousel-arrow right" (click)="nextImage(product, $event)">&#10095;</button>
-        </div>
-
-        <h3 class="product-name">{{ product.name }}</h3>
-        <p class="product-price">{{ product.price | currency }}</p>
+<div class="product-grid">
+  <div class="product-wrapper" *ngFor="let product of productsWithImages">
+    <div class="product-card">
+      <div class="image-wrapper">
+        <img
+          [src]="product.images[product.currentImageIndex]"
+          alt="{{ product.name }}"
+          class="clickable"
+          (click)="goToProductDetails(product)"
+        />
+        <button class="carousel-arrow left" (click)="prevImage(product, $event)">&#10094;</button>
+        <button class="carousel-arrow right" (click)="nextImage(product, $event)">&#10095;</button>
       </div>
+
+      <h3 class="product-name">{{ product.name }}</h3>
+      <p class="product-price">{{ product.price | currency }}</p>
     </div>
+  </div>
+</div>
+
   </div>
 </div>

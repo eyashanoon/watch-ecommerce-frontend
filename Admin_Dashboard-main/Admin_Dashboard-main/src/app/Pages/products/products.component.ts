@@ -3,12 +3,15 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { ProductService} from '../../Service/product1.service';
+import { ProductService1} from '../../Service/product1.service';
+import { ProductService} from '../../Service/product.service';
+
 import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import {ImageService } from '../../Service/image.service';
 import {Image } from '../../models/Image.model';
-import {product } from '../../models/product.model';
+import {Product } from '../../models/product.model';
+import {forkJoin, map, switchMap } from 'rxjs';
 
 
 @Component({
@@ -20,6 +23,10 @@ import {product } from '../../models/product.model';
 })
 export class ProductsComponent implements OnInit {
   product: any[] = [];
+
+  productMap = new Map<number, { product: Product, images: Image[] }>();
+
+
   searchText: string = '';
   originalProduct: any = null;
   showAddForm = false;
@@ -73,7 +80,7 @@ export class ProductsComponent implements OnInit {
 
   shapes = ['round', 'square', 'rectangular', 'oval'];
 
-   constructor(private router: Router, private productService: ProductService, imageService:ImageService) {}
+   constructor(private router: Router, private productService: ProductService,private productService1: ProductService1,private imageService:ImageService) {}
 
 ngOnInit(): void {
   this.loadProducts();
@@ -86,18 +93,50 @@ ngOnInit(): void {
 }
 
 loadProducts() {
-this.productService.getAllProducts().subscribe(data => {
-  this.product = data;
-});
-  this.product.forEach(product => {
-    if (!product.images) {
-      product.images = product.image ? [product.image] : [];
-    }
-    if (product.currentImageIndex === undefined || product.currentImageIndex === null) {
-      product.currentImageIndex = 0;
-    }
-  });
+    this.productService1.getAllProducts().pipe(
+      switchMap(products => {
+        const requests = products.map(product =>
+          this.imageService.getAllImagesByProductID(product.id).pipe(
+            map(images => ({
+              product,
+              images
+            }))
+          )
+        );
+        return forkJoin(requests);
+      })
+    ).subscribe(results => {
+      results.forEach(({ product, images }) => {
+        this.productMap.set(product.id, { product, images });
+      });
+    });
 }
+get productsWithImages() {
+  return Array.from(this.productMap.values()).map(item => ({
+    ...item.product,
+    images: item.images.map(img => 'data:image/jpeg;base64,' + img.data),
+    currentImageIndex: 0 // start showing the first image
+  }));
+}
+
+prevImage(product: any, event?: MouseEvent) {
+  if (event) event.stopPropagation();
+  if (product.currentImageIndex > 0) {
+    product.currentImageIndex--;
+  } else {
+    product.currentImageIndex = product.images.length - 1;
+  }
+}
+
+nextImage(product: any, event?: MouseEvent) {
+  if (event) event.stopPropagation();
+  if (product.currentImageIndex < product.images.length - 1) {
+    product.currentImageIndex++;
+  } else {
+    product.currentImageIndex = 0;
+  }
+}
+
 
   get filteredProducts() {
     const search = this.searchText.toLowerCase();
@@ -217,14 +256,14 @@ this.productService.getAllProducts().subscribe(data => {
     const encoded = encodeURIComponent(productName);
     this.router.navigate(['/edit-product', encoded]);
   }
-
+/*
   startCarousel(product: any) {
     if (product.carouselInterval) return;
 
     product.carouselInterval = setInterval(() => {
       this.nextImage(product, new Event('click'));
     }, 3000);
-  }
+  }*/
 
   stopCarousel(product: any) {
     if (product.carouselInterval) {
@@ -232,6 +271,7 @@ this.productService.getAllProducts().subscribe(data => {
       product.carouselInterval = null;
     }
   }
+/*
 
 nextImage(product: any, event: Event) {
   event.stopPropagation();
@@ -254,7 +294,7 @@ prevImage(product: any, event: Event) {
   // Force detection
   this.product = [...this.product];
 }
-
+*/
 
 
   // New method called by arrow buttons that do nothing
@@ -267,6 +307,9 @@ goToProductDetails(product: any): void {
     state: { product }
   });
 }
+
+
+
 
 
 
