@@ -1,26 +1,52 @@
+<!-- Background video -->
+<video #videoRef autoplay loop playsinline muted class="background-video">
+  <source src="/assets/ad.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+<!-- Dark overlay -->
+<div class="overlay"></div>
+
+<!-- Top Navigation Bar -->
+<div class="topbar">
+  <div class="topbar-left">
+    <img src="/assets/logo.png" alt="Logo" />
+    <h1>| La Royale Customer Dashboard</h1>
+  </div>
+  <div class="topbar-links">
+    <a href="#" (click)="goToDashBoard(); $event.preventDefault()">Home</a>
+    <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
+  </div>
+</div>
+
+<div style="height: 100px;"></div> <!-- spacer -->
+
 <div class="profile-container">
   <h2>Your Profile</h2>
 
+  <!-- Loading -->
+  <p *ngIf="loading">Loading profile...</p>
+
+  <!-- Error -->
+  <p *ngIf="errorMsg" class="error-msg">{{ errorMsg }}</p>
+
   <!-- View Mode -->
-  <div *ngIf="user && !editMode">
-    <p><strong>Full Name:</strong> {{ user.fullName }}</p>
+  <div *ngIf="user && !editMode && !loading">
+    <p><strong>Full Name:</strong> {{ user.username }}</p>
     <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Phone Number:</strong> {{ user.phoneNumber }}</p>
-
-
-    <!-- Confirm Password NOT shown in view mode -->
-
-    <p><strong>Role:</strong> {{ user.role }}</p>
+    <p><strong>Phone Number:</strong> {{ user.phone }}</p>
+    <!-- Password NOT shown in view mode -->
+    <p><strong>Role:</strong> {{ user.roles }}</p>
 
     <button (click)="enterEditMode()">✏️ Edit</button>
     <button (click)="deleteAccount()">🗑️ Delete Account</button>
   </div>
 
   <!-- Edit Mode -->
-  <div *ngIf="user && editMode">
+  <div *ngIf="user && editMode && !loading">
     <label>
       <strong>Full Name:</strong>
-      <input [(ngModel)]="editableUser.fullName" />
+      <input [(ngModel)]="editableUser.username" />
     </label>
     <br />
 
@@ -32,54 +58,81 @@
 
     <label>
       <strong>Phone Number:</strong>
-      <input [(ngModel)]="editableUser.phoneNumber" />
+      <input [(ngModel)]="editableUser.phone" />
     </label>
     <br />
 
-    <!-- Password label with edit icon -->
-    <label class="password-wrapper" style="display: flex; align-items: center; gap: 8px;">
-      <strong>Password:</strong>
-      <input
-        [type]="showPassword ? 'text' : 'password'"
-        [(ngModel)]="editableUser.password"
-        style="flex: 1;"
-      />
-      <span class="eye-icon" [class.visible]="showPassword" (click)="showPassword = !showPassword" style="cursor: pointer;">
-        👁️‍🗨️
-        <span class="slash" *ngIf="showPassword"></span>
-      </span>
-
-      <!-- Edit password button/icon -->
+    <!-- Change Password button, shown only if NOT editing password -->
+    <div *ngIf="!editingPassword" style="margin-bottom: 10px;">
       <button
         type="button"
-        (click)="editingPassword = true; editableUser.confirmPassword = ''"
-        title="Edit Password"
-        style="margin-left: 8px; cursor: pointer; background: none; border: none; font-size: 1.2em;"
+        class="change-password-btn"
+        (click)="editingPassword = true"
       >
-        ✏️
+        Change Password
       </button>
-    </label>
-    <br />
+    </div>
 
-    <!-- Confirm Password appears only after clicking the edit icon -->
+    <!-- Password inputs, shown only when editingPassword = true -->
     <div *ngIf="editingPassword">
-      <label class="password-wrapper">
+      <label
+        class="password-wrapper"
+        style="display: flex; align-items: center; gap: 8px;"
+      >
+        <strong>Password:</strong>
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          [(ngModel)]="editableUser.password"
+          style="flex: 1;"
+        />
+        <span
+          class="eye-icon"
+          [class.visible]="showPassword"
+          (click)="showPassword = !showPassword"
+          style="cursor: pointer;"
+          title="Toggle Password Visibility"
+        >
+          👁️‍🗨️
+          <span class="slash" *ngIf="showPassword"></span>
+        </span>
+      </label>
+      <br />
+
+      <label
+        class="password-wrapper"
+        style="display: flex; align-items: center; gap: 8px;"
+      >
         <strong>Confirm Password:</strong>
         <input
           [type]="showConfirmPassword ? 'text' : 'password'"
           [(ngModel)]="editableUser.confirmPassword"
+          style="flex: 1;"
         />
-        <span class="eye-icon" [class.visible]="showConfirmPassword" (click)="showConfirmPassword = !showConfirmPassword" style="cursor: pointer;">
+        <span
+          class="eye-icon"
+          [class.visible]="showConfirmPassword"
+          (click)="showConfirmPassword = !showConfirmPassword"
+          style="cursor: pointer;"
+          title="Toggle Confirm Password Visibility"
+        >
           👁️‍🗨️
           <span class="slash" *ngIf="showConfirmPassword"></span>
         </span>
       </label>
       <br />
+
+      <button
+        type="button"
+        class="cancel-password-btn"
+        (click)="cancelPasswordEdit()"
+      >
+        Cancel Password Change
+      </button>
     </div>
 
     <label>
       <strong>Role:</strong>
-      <input [value]="editableUser.role" disabled />
+      <input [value]="editableUser.roles" disabled />
     </label>
     <br />
 
@@ -88,7 +141,7 @@
   </div>
 
   <!-- Fallback -->
-  <div *ngIf="!user">
+  <div *ngIf="!user && !loading && !errorMsg">
     <p>No user information available.</p>
   </div>
 </div>

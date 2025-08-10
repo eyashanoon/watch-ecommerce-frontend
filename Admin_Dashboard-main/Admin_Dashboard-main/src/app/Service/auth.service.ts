@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {environment} from "../../app/environments/environment"
+import { environment } from "../../app/environments/environment";
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = environment.apiBaseUrl+'/api/auth';
+  private apiUrl = environment.apiBaseUrl + '/api/auth';
   private roles: string[] = [];
 
   constructor(private http: HttpClient) {}
@@ -16,10 +17,13 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/login`, { username, password });
   }
 
-  saveToken(token: string): void {
-    localStorage.setItem('authToken', token);
-    this.decodeAndStoreRoles(token);
-  }
+saveToken(token: string, roles: string[], id: number): void {
+  localStorage.setItem('authToken', token);
+  localStorage.setItem('roles', JSON.stringify(roles));  // store array as JSON string
+  localStorage.setItem('id', id.toString());             // convert number to string
+}
+
+
 
   private decodeAndStoreRoles(token: string): void {
     try {
@@ -63,4 +67,54 @@ export class AuthService {
     const userRoles = this.getUserRoles();
     return rolesToCheck.some(role => userRoles.includes(role));
   }
+
+  // --- New method: extract email from JWT token ---
+  getEmailFromToken(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.email || payload.sub || null;
+    } catch {
+      return null;
+    }
+  }
+
+  // --- New method: get user profile by email ---
+  getUserById(id: number): Observable<any> {
+    return this.http.get(`${environment.apiBaseUrl}/api/admins/${id}`,{
+      headers:this.getAuthHeaders()
+    });
+  }
+
+  updateUserProfile(id:number,userData: any): Observable<any> {
+    return this.http.put(`${environment.apiBaseUrl}/api/admins/${id}`, userData,{
+      headers:this.getAuthHeaders()
+      
+    });
+  }
+  
+  updateUserProfilePassword(id:number,userData: any): Observable<any> {
+    return this.http.put(`${environment.apiBaseUrl}/api/admins/changePassword/${id}`, userData,{
+      headers:this.getAuthHeaders()
+      
+    });
+  }
+
+
+  deleteUserProfile( id:number): Observable<any> {
+    return this.http.delete(`${environment.apiBaseUrl}/api/admins/${id}`,{
+      headers:this.getAuthHeaders()
+    });
+  }
+
+
+    private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken');
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    });
+  }
+
 }

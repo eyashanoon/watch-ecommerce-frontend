@@ -3,13 +3,9 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { ProductService} from '../../Service/product1.service';
+import { ProductService, Product } from '../../Service/product.service';
 import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import {ImageService } from '../../Service/image.service';
-import {Image } from '../../models/Image.model';
-import {product } from '../../models/product.model';
-
 
 @Component({
   selector: 'app-products',
@@ -24,7 +20,7 @@ export class ProductsComponent implements OnInit {
   originalProduct: any = null;
   showAddForm = false;
   sidebarVisible = false;
-
+ 
   filters = {
     maxPrice: 1000,
     maxQuantity: 100,
@@ -73,7 +69,7 @@ export class ProductsComponent implements OnInit {
 
   shapes = ['round', 'square', 'rectangular', 'oval'];
 
-   constructor(private router: Router, private productService: ProductService, imageService:ImageService) {}
+  constructor(private router: Router, private productService: ProductService) {}
 
 ngOnInit(): void {
   this.loadProducts();
@@ -86,13 +82,14 @@ ngOnInit(): void {
 }
 
 loadProducts() {
-this.productService.getAllProducts().subscribe(data => {
-  this.product = data;
-});
+  this.product = this.productService.getProducts();
+
   this.product.forEach(product => {
     if (!product.images) {
       product.images = product.image ? [product.image] : [];
     }
+         console.log(product.currentImageIndex);
+
     if (product.currentImageIndex === undefined || product.currentImageIndex === null) {
       product.currentImageIndex = 0;
     }
@@ -130,11 +127,6 @@ this.productService.getAllProducts().subscribe(data => {
       );
     });
   }
-
-
-
-
-
 
   toggleDetails(product: any) {
     product.showDetails = !product.showDetails;
@@ -233,29 +225,22 @@ this.productService.getAllProducts().subscribe(data => {
     }
   }
 
+prevImage(product: any, event: Event) {
+  event.stopPropagation(); // prevent click from opening details
+  if (product.images && product.images.length > 0) {
+    product.currentImageIndex =
+      (product.currentImageIndex - 1 + product.images.length) % product.images.length;
+  }
+}
+
 nextImage(product: any, event: Event) {
   event.stopPropagation();
-
-  if (!product.images || product.images.length === 0) return;
-
-  product.currentImageIndex = (product.currentImageIndex + 1) % product.images.length;
-
-  // Force detection by reassigning reference
-  this.product = [...this.product];
+  if (product.images && product.images.length > 0) {
+    product.currentImageIndex =
+      (product.currentImageIndex + 1) % product.images.length;
+      console.log(product.currentImageIndex)
+  }
 }
-
-prevImage(product: any, event: Event) {
-  event.stopPropagation();
-
-  if (!product.images || product.images.length === 0) return;
-
-  product.currentImageIndex = (product.currentImageIndex - 1 + product.images.length) % product.images.length;
-
-  // Force detection
-  this.product = [...this.product];
-}
-
-
 
   // New method called by arrow buttons that do nothing
   doNothing(event: Event) {

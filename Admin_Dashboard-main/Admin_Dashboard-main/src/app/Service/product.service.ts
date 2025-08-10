@@ -4,7 +4,7 @@ export interface Product {
   name: string;
   price: number;
   quantity: number;
-  images: string[]; // Changed from single image to array
+  images: string[]; // Multiple images supported
   description: string;
   brand: string;
   waterProof: boolean;
@@ -24,6 +24,7 @@ export interface Product {
   changeableBand: boolean;
   editMode: boolean;
   showDetails: boolean;
+  currentImageIndex?: number; // For carousel tracking
   selectedQty?: number;
 }
 
@@ -34,9 +35,40 @@ export class ProductService {
   private localStorageKey = 'products';
 
   constructor() {
+    // Fix old data before adding defaults
+    this.migrateOldData();
     this.initializeProducts();
   }
 
+  /** 🔹 One-time migration to fix old single-image products */
+  private migrateOldData() {
+    const data = localStorage.getItem(this.localStorageKey);
+    if (!data) return;
+
+    let products: Product[] = JSON.parse(data);
+    let updated = false;
+
+    products = products.map(product => {
+      // Convert old "image" field to "images" array
+      if (!Array.isArray(product.images)) {
+        product.images = (product as any).image ? [(product as any).image] : [];
+        delete (product as any).image;
+        updated = true;
+      }
+      // Always ensure currentImageIndex exists
+      if (product.currentImageIndex == null) {
+        product.currentImageIndex = 0;
+        updated = true;
+      }
+      return product;
+    });
+
+    if (updated) {
+      localStorage.setItem(this.localStorageKey, JSON.stringify(products));
+    }
+  }
+
+  /** 🔹 Initialize default products if localStorage is empty */
   private initializeProducts() {
     const existing = localStorage.getItem(this.localStorageKey);
     if (!existing) {
@@ -70,17 +102,18 @@ export class ProductService {
           shape: 'round',
           changeableBand: true,
           editMode: false,
-          showDetails: false
+          showDetails: false,
+          currentImageIndex: 0
         },
         {
           name: 'Heartlander – Autumn Rust',
           description: 'Warm rust-tone dial.',
           images: [
             'assets/rust.png',
-            'assets/rust-1.png',
-            'assets/rust-2.png',
-            'assets/rust-3.png',
-            'assets/rust-4.png'
+             'assets/black_gold.png',
+            'assets/black.png',
+            'assets/blue_crimson.png',
+            'assets/chrono-diver-black-modern-rp.jpg'
           ],
           price: 575,
           displayType: 'dial',
@@ -101,15 +134,16 @@ export class ProductService {
           shape: 'round',
           changeableBand: true,
           editMode: false,
-          showDetails: false
+          showDetails: false,
+          currentImageIndex: 0
         },
         {
           name: 'Heartlander – Blue Sunburst',
           description: 'Bold sunburst blue dial.',
           images: [
             'assets/blue.png',
-            'assets/blue-1.png',
-            'assets/blue-2.png',
+            'assets/chrono-diver-black-modern-rp.jpg',
+            'assets/chrono-diver-black-vintage.jpg',
             'assets/blue-3.png',
             'assets/blue-4.png'
           ],
@@ -132,20 +166,22 @@ export class ProductService {
           shape: 'round',
           changeableBand: true,
           editMode: false,
-          showDetails: false
+          showDetails: false,
+          currentImageIndex: 0
         }
-        // Add more updated products similarly...
       ];
 
       localStorage.setItem(this.localStorageKey, JSON.stringify(defaultProducts));
     }
   }
 
+  /** 🔹 Get all products */
   getProducts(): Product[] {
     const data = localStorage.getItem(this.localStorageKey);
     return data ? JSON.parse(data) : [];
   }
 
+  /** 🔹 Save products back to localStorage */
   saveProducts(products: Product[]) {
     localStorage.setItem(this.localStorageKey, JSON.stringify(products));
   }

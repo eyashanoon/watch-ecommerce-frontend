@@ -38,7 +38,9 @@ export class AddProductComponent implements OnInit {
     shape: '',
     changeableBand: true,
     editMode: false,
-    showDetails: false
+    showDetails: false,
+              currentImageIndex: 0
+
   };
 
   availableBrands = ['Dryden', 'Rolex', 'iPhone', 'Samsung', 'Casio', 'Seiko', 'Citizen', 'Fossil', 'Timex', 'Bulova'];
@@ -156,7 +158,9 @@ export class AddProductComponent implements OnInit {
       shape: '',
       changeableBand: true,
       editMode: false,
-      showDetails: false
+      showDetails: false,
+                currentImageIndex: 0
+
     };
   }
 
