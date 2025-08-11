@@ -9,7 +9,7 @@ const API_URL = environment.apiBaseUrl+'/api/products';
 @Injectable({
   providedIn: 'root'
 })
-export class ProductService {
+export class ProductService1 {
   constructor(private http: HttpClient) {}
 
   // Optional: You can include token if your backend requires it

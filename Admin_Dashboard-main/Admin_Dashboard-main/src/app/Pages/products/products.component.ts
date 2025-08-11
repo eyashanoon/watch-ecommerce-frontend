@@ -3,9 +3,17 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { ProductService, Product } from '../../Service/product.service';
+ import { ProductService1} from '../../Service/product1.service';
+import { ProductService} from '../../Service/product.service';
+
 import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import {ImageService } from '../../Service/image.service';
+import {Image } from '../../models/Image.model';
+import {Product } from '../../models/product.model';
+import {forkJoin, map, switchMap } from 'rxjs';
+
+ 
 
 @Component({
   selector: 'app-products',
@@ -16,6 +24,10 @@ import { filter } from 'rxjs/operators';
 })
 export class ProductsComponent implements OnInit {
   product: any[] = [];
+
+  productMap = new Map<number, { product: Product, images: Image[],currentImageIndex:number }>();
+
+
   searchText: string = '';
   originalProduct: any = null;
   showAddForm = false;
@@ -69,7 +81,8 @@ export class ProductsComponent implements OnInit {
 
   shapes = ['round', 'square', 'rectangular', 'oval'];
 
-  constructor(private router: Router, private productService: ProductService) {}
+    constructor(private router: Router, private productService: ProductService,private productService1: ProductService1,private imageService:ImageService) {}
+ 
 
 ngOnInit(): void {
   this.loadProducts();
@@ -82,19 +95,58 @@ ngOnInit(): void {
 }
 
 loadProducts() {
-  this.product = this.productService.getProducts();
-
-  this.product.forEach(product => {
-    if (!product.images) {
-      product.images = product.image ? [product.image] : [];
-    }
-         console.log(product.currentImageIndex);
-
-    if (product.currentImageIndex === undefined || product.currentImageIndex === null) {
-      product.currentImageIndex = 0;
-    }
+   this.productService1.getAllProducts().pipe(
+    switchMap(products => {
+      const requests = products.map(product =>
+        this.imageService.getAllImagesByProductID(product.id).pipe(
+          map(images => ({
+            product,
+            images,
+            currentImageIndex: 0  // Initialize here
+          }))
+        )
+      );
+      return forkJoin(requests);
+    })
+  ).subscribe(results => {
+    results.forEach(({ product, images, currentImageIndex }) => {
+      this.productMap.set(product.id, { product, images, currentImageIndex });
+    });
+ 
   });
 }
+get productsWithImages() {
+  return Array.from(this.productMap.values()).map(item => ({
+    ...item.product,
+    images: item.images.map(img => 'data:image/jpeg;base64,' + img.data),
+    currentImageIndex: item.currentImageIndex
+  }));
+}
+
+prevImage(product: Product, event?: MouseEvent) {
+  if (event) event.stopPropagation();
+  const item = this.productMap.get(product.id);
+  if (!item) return;
+
+  if (item.currentImageIndex > 0) {
+    item.currentImageIndex--;
+  } else {
+    item.currentImageIndex = item.images.length - 1;
+  }
+}
+
+nextImage(product: Product, event?: MouseEvent) {
+  if (event) event.stopPropagation();
+  const item = this.productMap.get(product.id);
+  if (!item) return;
+
+  if (item.currentImageIndex < item.images.length - 1) {
+    item.currentImageIndex++;
+  } else {
+    item.currentImageIndex = 0;
+  }
+}
+
 
   get filteredProducts() {
     const search = this.searchText.toLowerCase();
@@ -209,14 +261,14 @@ loadProducts() {
     const encoded = encodeURIComponent(productName);
     this.router.navigate(['/edit-product', encoded]);
   }
-
+/*
   startCarousel(product: any) {
     if (product.carouselInterval) return;
 
     product.carouselInterval = setInterval(() => {
       this.nextImage(product, new Event('click'));
     }, 3000);
-  }
+  }*/
 
   stopCarousel(product: any) {
     if (product.carouselInterval) {
@@ -224,6 +276,7 @@ loadProducts() {
       product.carouselInterval = null;
     }
   }
+/*
 
 prevImage(product: any, event: Event) {
   event.stopPropagation(); // prevent click from opening details
@@ -241,6 +294,7 @@ nextImage(product: any, event: Event) {
       console.log(product.currentImageIndex)
   }
 }
+ 
 
   // New method called by arrow buttons that do nothing
   doNothing(event: Event) {
@@ -251,6 +305,14 @@ goToProductDetails(product: any): void {
   this.router.navigate(['/admin-product', encodedName], {
     state: { product }
   });
+}
+
+
+
+isHovered = false;
+
+toggleHover() {
+  this.isHovered = !this.isHovered;
 }
 
 

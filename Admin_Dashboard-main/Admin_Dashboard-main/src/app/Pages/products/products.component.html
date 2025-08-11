@@ -166,12 +166,14 @@
       </div>
     </div>
 
-    <!-- Product Grid -->
-    <div class="product-grid">
-      <div class="product-card" *ngFor="let product of filteredProducts; let i = index">
-        <div class="image-wrapper" (mouseenter)="startCarousel(product)" (mouseleave)="stopCarousel(product)">
+<!-- Product Grid -->
+<div class="product-grid">
+  <div class="product-wrapper" *ngFor="let product of productsWithImages">
+    <div class="product-card" [class.hovered]="isHovered">
+      <div class="product-content">
+        <div class="image-wrapper">
           <img
-            [src]="product.images[product.currentImageIndex || 0]"
+            [src]="product.images[product.currentImageIndex]"
             alt="{{ product.name }}"
             class="clickable"
             (click)="goToProductDetails(product)"
@@ -184,5 +186,10 @@
         <p class="product-price">{{ product.price | currency }}</p>
       </div>
     </div>
+  </div>
+</div>
+<button (click)="toggleHover()">Toggle Hover</button>
+
+
   </div>
 </div>
