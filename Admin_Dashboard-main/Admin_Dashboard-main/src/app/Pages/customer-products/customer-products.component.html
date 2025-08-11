@@ -181,7 +181,7 @@
       <div class="product-grid">
         <div *ngFor="let product of filteredProducts" class="product-card">
           <img
-            [src]="product.images"
+            [src]="product.images[0]"
             alt="{{ product.name }}"
             class="product-image clickable"
             (click)="goToProductDetails(product)"

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../Service/auth.service';
 
 @Component({
   selector: 'app-customer-profile',
@@ -10,70 +11,186 @@ import { Router } from '@angular/router';
   templateUrl: './customer-profile.component.html',
   styleUrls: ['./customer-profile.component.css']
 })
-export class CustomerProfileComponent {
-  editingPassword = false; // initialize here
+export class CustomerProfileComponent implements AfterViewInit, OnInit {
+  @ViewChild('videoRef') videoRef!: ElementRef<HTMLVideoElement>;
+
+  editingPassword = false;
   showPassword = false;
   showConfirmPassword = false;
 
-  constructor(private router: Router) {}
+  loading = true;
+  errorMsg = '';
 
-  user: {
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
-    confirmPassword: string;
-    role: string;
-  } | null = {
-    fullName: 'John Doe',
-    email: 'john@example.com',
-    phoneNumber: '+970599999999',
-    password: 'password123',
-    confirmPassword: 'password123',
-    role: 'Customer'
-  };
-
+  user: any = null; // profile data
   editMode = false;
+  editableUser: any = {};
 
-  editableUser: {
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
-    confirmPassword: string;
-    role: string;
-  } = {
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    password: '',
-    confirmPassword: '',
-    role: ''
-  };
+  constructor(private authService: AuthService, private router: Router) {}
+
+  ngAfterViewInit() {
+    if (this.videoRef) {
+      const video = this.videoRef.nativeElement;
+      video.muted = true;
+      video.play().catch(err => console.warn('Video play failed:', err));
+    }
+  }
+
+  ngOnInit() {
+    const idStr = localStorage.getItem("id");
+    const idNum = idStr ? Number(idStr) : NaN;
+
+    if (!idStr || isNaN(idNum)) {
+      this.errorMsg = 'User ID not found. Please log in again.';
+      this.loading = false;
+      return;
+    }
+
+    this.loading = true;
+
+    this.authService.getUserById(idNum).subscribe({
+      next: (profile) => {
+        this.user = profile;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to get user profile:', err);
+        this.errorMsg = 'Failed to load user profile. Please log in again.';
+        this.loading = false;
+      }
+    });
+  }
 
   enterEditMode(): void {
     if (this.user) {
       this.editableUser = { ...this.user };
       this.editMode = true;
-      this.editingPassword = false; // reset editing password flag on edit start
+      this.editingPassword = false;
       this.showPassword = false;
       this.showConfirmPassword = false;
+      this.editableUser.password = '';
+      this.editableUser.confirmPassword = '';
     }
   }
 
+  // New reusable validators for email and phone number:
+  private isValidEmail(email: string): boolean {
+    // Simple email regex similar to Validators.email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  private isValidPhone(phone: string): boolean {
+    // For example: exactly 10 digits, only numbers
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone);
+  }
+
+  private isValidPassword(password: string): boolean {
+    // At least 6 chars, at least one letter and one digit
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
+    return passwordRegex.test(password);
+  }
+
   saveChanges(): void {
-    // Optional: Add validation to check if password and confirmPassword match when editing password
-    if (this.editingPassword && this.editableUser.password !== this.editableUser.confirmPassword) {
-      alert("Password and Confirm Password do not match.");
+    // Validate required fields first
+    if (!this.editableUser.username || this.editableUser.username.trim().length < 3) {
+      alert('Full Name is required and must be at least 3 characters.');
       return;
     }
 
-    this.user = { ...this.editableUser };
-    this.editMode = false;
-    this.editingPassword = false;
-    this.showPassword = false;
-    this.showConfirmPassword = false;
-    // TODO: Send update to backend via API
+    if (!this.editableUser.email || !this.isValidEmail(this.editableUser.email)) {
+      alert('A valid Email is required.');
+      return;
+    }
+
+    if (!this.editableUser.phone || !this.isValidPhone(this.editableUser.phone)) {
+      alert('Phone number is required and must be exactly 10 digits.');
+      return;
+    }
+
+    if (this.editingPassword) {
+      if (!this.editableUser.password || !this.editableUser.confirmPassword) {
+        alert('Password and Confirm Password are required.');
+        return;
+      }
+      if (!this.isValidPassword(this.editableUser.password)) {
+        alert('Password must be at least 6 characters and contain at least one letter and one digit.');
+        return;
+      }
+      if (this.editableUser.password !== this.editableUser.confirmPassword) {
+        alert('Password and Confirm Password do not match.');
+        return;
+      }
+    const idStr = localStorage.getItem("id");
+    const idNum = idStr ? Number(idStr) : NaN;
+
+    if (!idStr || isNaN(idNum)) {
+      this.errorMsg = 'User ID not found. Please log in again.';
+      this.loading = false;
+      return;
+    }
+
+    this.loading = true;
+
+    const data={
+      password:this.editableUser.password
+
+    }
+
+    this.authService.updateUserProfilePassword(idNum, data).subscribe({
+      next: () => {
+        this.user = { ...this.editableUser };
+        this.editMode = false;
+        this.editingPassword = false;
+        this.showPassword = false;
+        this.showConfirmPassword = false;
+        alert('Profile updated successfully.');
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Update failed:', err);
+        alert('Failed to update profile. Please try again.');
+        this.loading = false;
+      }
+    });
+
+
+
+
+    } else {
+      // If not editing password, keep old password fields (or clear if needed)
+      this.editableUser.password = this.user.password || '';
+      this.editableUser.confirmPassword = this.user.confirmPassword || '';
+    }
+
+    // Proceed with update API call
+    const idStr = localStorage.getItem("id");
+    const idNum = idStr ? Number(idStr) : NaN;
+
+    if (!idStr || isNaN(idNum)) {
+      this.errorMsg = 'User ID not found. Please log in again.';
+      this.loading = false;
+      return;
+    }
+
+    this.loading = true;
+
+    this.authService.updateUserProfile(idNum, this.editableUser).subscribe({
+      next: () => {
+        this.user = { ...this.editableUser };
+        this.editMode = false;
+        this.editingPassword = false;
+        this.showPassword = false;
+        this.showConfirmPassword = false;
+        alert('Profile updated successfully.');
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Update failed:', err);
+        alert('Failed to update profile. Please try again.');
+        this.loading = false;
+      }
+    });
   }
 
   cancelEdit(): void {
@@ -83,11 +200,48 @@ export class CustomerProfileComponent {
     this.showConfirmPassword = false;
   }
 
+  cancelPasswordEdit(): void {
+    this.editingPassword = false;
+    this.editableUser.password = '';
+    this.editableUser.confirmPassword = '';
+    this.showPassword = false;
+    this.showConfirmPassword = false;
+  }
+
   deleteAccount(): void {
     if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      this.user = null;
-      // TODO: Delete from backend or localStorage
-      this.router.navigate(['/home']);
+
+      const idStr = localStorage.getItem("id");
+      const idNum = idStr ? Number(idStr) : NaN;
+
+      if (!idStr || isNaN(idNum)) {
+        this.errorMsg = 'User ID not found. Please log in again.';
+        this.loading = false;
+        return;
+      }
+
+      this.loading = true;
+
+      this.authService.deleteUserProfile(idNum).subscribe({
+        next: () => {
+          alert('Account deleted successfully.');
+          this.authService.logout();
+          this.router.navigate(['/home']);
+        },
+        error: (err) => {
+          console.error('Delete failed:', err);
+          alert('Failed to delete account. Please try again.');
+          this.loading = false;
+        }
+      });
     }
+  }
+
+  goToProducts() {
+    this.router.navigate(['/customer-product'], { state: { source: 'dashboard' } });
+  }
+
+  goToDashBoard() {
+    this.router.navigate(['/customer-dash-board'], { state: { source: 'dashboard' } });
   }
 }

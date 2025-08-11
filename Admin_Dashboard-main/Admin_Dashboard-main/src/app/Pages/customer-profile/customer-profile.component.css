@@ -1,13 +1,17 @@
 .profile-container {
+  margin-top: 80px; /* Add space above container */
   padding: 2rem;
   background: #fefefe;
   max-width: 600px;
-  margin: 3rem auto;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 3rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   border-radius: 16px;
   font-family: 'Segoe UI', sans-serif;
   transition: box-shadow 0.3s ease;
 }
+
 
 .profile-container:hover {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
@@ -145,4 +149,119 @@ input {
 
 .password-wrapper button:hover {
   color: #000;
+}
+/* Style for the Change Password button */
+.change-password-btn {
+  background-color: #232526;
+;    /* Bright blue */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+  user-select: none;
+}
+
+.change-password-btn:hover {
+  background-color: #383b3d;    /* Darker blue on hover */
+}
+
+/* Style for the Cancel Password Change button */
+.cancel-password-btn {
+  background-color: #232526;    /* Bootstrap's red */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+  user-select: none;
+  margin-top: 10px;
+}
+
+.cancel-password-btn:hover {
+  background-color: #383b3d;    /* Darker red on hover */
+}
+.background-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -2;
+}
+
+/* Overlay to darken video for text readability */
+.overlay {
+  position: fixed;
+  top: 0; 
+  left: 0;
+  width: 100vw; 
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+/* Topbar */
+.topbar {
+  position: fixed; /* fixed to top */
+  top: 20px;       
+  left: 20px;      
+  right: 20px;     
+  height: 80px;
+  background-color: #B6B09F;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  box-shadow: 0 10px 25px rgba(255,255,255,0.2),
+              0 4px 8px rgba(255,255,255,0.1);
+  color: #232526;
+  z-index: 1000;
+    margin-bottom: 20px; /* or whatever space you want */
+
+}
+
+/* Topbar left section */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-left img {
+  width: 80px;
+}
+
+.topbar-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+/* Topbar links on right */
+.topbar-links {
+  margin-left: auto;
+  display: flex;
+  gap: 20px;
+}
+
+.topbar-links a {
+  color: #232526;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.topbar-links a:hover {
+  background-color: rgba(255, 255, 255, 0.3);
 }

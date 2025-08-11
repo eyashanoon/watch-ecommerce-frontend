@@ -89,9 +89,9 @@ onSubmit() {
   const { username, password, userType } = this.signInForm.value;
 
   this.authService.login(username, password).subscribe({
-    next: (res: { token: string; roles: string[] }) => {
+    next: (res: { token: string; roles: string[]; id:number }) => {
       if (res.token) {
-        this.authService.saveToken(res.token);
+        this.authService.saveToken(res.token,res.roles , res.id);
 
         const roles = res.roles?.map(r => r.toUpperCase()) || [userType.toUpperCase()];
 
