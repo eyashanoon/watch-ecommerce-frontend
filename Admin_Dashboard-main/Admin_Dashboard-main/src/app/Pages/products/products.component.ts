@@ -24,7 +24,7 @@ import {forkJoin, map, switchMap } from 'rxjs';
 export class ProductsComponent implements OnInit {
   product: any[] = [];
 
-  productMap = new Map<number, { product: Product, images: Image[] }>();
+  productMap = new Map<number, { product: Product, images: Image[],currentImageIndex:number }>();
 
 
   searchText: string = '';
@@ -93,47 +93,54 @@ ngOnInit(): void {
 }
 
 loadProducts() {
-    this.productService1.getAllProducts().pipe(
-      switchMap(products => {
-        const requests = products.map(product =>
-          this.imageService.getAllImagesByProductID(product.id).pipe(
-            map(images => ({
-              product,
-              images
-            }))
-          )
-        );
-        return forkJoin(requests);
-      })
-    ).subscribe(results => {
-      results.forEach(({ product, images }) => {
-        this.productMap.set(product.id, { product, images });
-      });
+  this.productService1.getAllProducts().pipe(
+    switchMap(products => {
+      const requests = products.map(product =>
+        this.imageService.getAllImagesByProductID(product.id).pipe(
+          map(images => ({
+            product,
+            images,
+            currentImageIndex: 0  // Initialize here
+          }))
+        )
+      );
+      return forkJoin(requests);
+    })
+  ).subscribe(results => {
+    results.forEach(({ product, images, currentImageIndex }) => {
+      this.productMap.set(product.id, { product, images, currentImageIndex });
     });
+  });
 }
 get productsWithImages() {
   return Array.from(this.productMap.values()).map(item => ({
     ...item.product,
     images: item.images.map(img => 'data:image/jpeg;base64,' + img.data),
-    currentImageIndex: 0 // start showing the first image
+    currentImageIndex: item.currentImageIndex
   }));
 }
 
-prevImage(product: any, event?: MouseEvent) {
+prevImage(product: Product, event?: MouseEvent) {
   if (event) event.stopPropagation();
-  if (product.currentImageIndex > 0) {
-    product.currentImageIndex--;
+  const item = this.productMap.get(product.id);
+  if (!item) return;
+
+  if (item.currentImageIndex > 0) {
+    item.currentImageIndex--;
   } else {
-    product.currentImageIndex = product.images.length - 1;
+    item.currentImageIndex = item.images.length - 1;
   }
 }
 
-nextImage(product: any, event?: MouseEvent) {
+nextImage(product: Product, event?: MouseEvent) {
   if (event) event.stopPropagation();
-  if (product.currentImageIndex < product.images.length - 1) {
-    product.currentImageIndex++;
+  const item = this.productMap.get(product.id);
+  if (!item) return;
+
+  if (item.currentImageIndex < item.images.length - 1) {
+    item.currentImageIndex++;
   } else {
-    product.currentImageIndex = 0;
+    item.currentImageIndex = 0;
   }
 }
 
@@ -310,6 +317,11 @@ goToProductDetails(product: any): void {
 
 
 
+isHovered = false;
+
+toggleHover() {
+  this.isHovered = !this.isHovered;
+}
 
 
 
