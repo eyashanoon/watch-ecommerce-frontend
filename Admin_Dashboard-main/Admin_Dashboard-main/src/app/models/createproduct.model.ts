@@ -1,25 +1,22 @@
-export interface Product {
-  isHovered: boolean;
-  id: number;
+export interface ProductDTO {
   name: string;
-  description: string;
-  imageId: number[];          // list of image IDs related to the product
+  description?: string;
   brand: string;
+  size: number;
+  weight: number;
   handsColor: string;
   backgroundColor: string;
   bandColor: string;
   numberingFormat: string;
   bandMaterial: string;
   caseMaterial: string;
-  DisplayType: string;
+  displayType: string;
   shape: string;
   includesDate: boolean;
   hasFullNumerals: boolean;
   hasTickingSound: boolean;
   waterProof: boolean;
   changeableBand: boolean;
-  size: number;
-  weight: number;
   price: number;
   quantity: number;
 }

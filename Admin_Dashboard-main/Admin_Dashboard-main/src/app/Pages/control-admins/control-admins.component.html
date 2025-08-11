@@ -53,7 +53,7 @@
         pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
         #email="ngModel"
       />
-      <div class="error" *ngIf="isEmailDuplicate(admin.email, editIndex ?? undefined)">
+<div class="error" *ngIf="isEmailDuplicate(admin.email)">
         <small>This email is already used by another admin.</small>
       </div>
       <div class="error" *ngIf="email.invalid && (email.dirty || email.touched)">

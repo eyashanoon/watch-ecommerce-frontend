@@ -31,6 +31,12 @@ export class ProductService1 {
       headers: this.getAuthHeaders()
     });
   }
+addProduct(productData: any): Observable<any> {
+  console.log(productData);
+  return this.http.post<any>(API_URL, productData, {
+    headers: this.getAuthHeaders()
+  });
+}
 
 
 }

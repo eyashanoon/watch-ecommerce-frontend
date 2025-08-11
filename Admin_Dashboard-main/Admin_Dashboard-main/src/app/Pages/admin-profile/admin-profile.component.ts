@@ -5,13 +5,13 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../Service/auth.service';
 
 @Component({
-  selector: 'app-customer-profile',
+  selector: 'app-admin-profile',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './customer-profile.component.html',
-  styleUrls: ['./customer-profile.component.css']
+  templateUrl: './admin-profile.component.html',
+  styleUrls: ['./admin-profile.component.css']
 })
-export class CustomerProfileComponent implements AfterViewInit, OnInit {
+export class AdminProfileComponent implements AfterViewInit, OnInit {
   @ViewChild('videoRef') videoRef!: ElementRef<HTMLVideoElement>;
 
   editingPassword = false;
@@ -47,7 +47,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
     this.loading = true;
 
-    this.authService.getCustomerById(idNum).subscribe({
+    this.authService.getAdminById(idNum).subscribe({
       next: (profile) => {
         this.user = profile;
         this.loading = false;
@@ -137,7 +137,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
     }
 
-    this.authService.updateCustomerPassword(idNum, data).subscribe({
+    this.authService.updateAdminProfilePassword(idNum, data).subscribe({
       next: () => {
         this.user = { ...this.editableUser };
         this.editMode = false;
@@ -175,7 +175,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
     this.loading = true;
 
-    this.authService.updateCustomerProfile(idNum, this.editableUser).subscribe({
+    this.authService.updateAdminProfile(idNum, this.editableUser).subscribe({
       next: () => {
         this.user = { ...this.editableUser };
         this.editMode = false;
@@ -222,7 +222,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
       this.loading = true;
 
-      this.authService.deleteCustomerProfile(idNum).subscribe({
+      this.authService.deleteAdminProfile(idNum).subscribe({
         next: () => {
           alert('Account deleted successfully.');
           this.authService.logout();
@@ -238,10 +238,10 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
   }
 
   goToProducts() {
-    this.router.navigate(['/customer-product'], { state: { source: 'dashboard' } });
+    this.router.navigate(['/product'], { state: { source: 'dashboard' } });
   }
 
   goToDashBoard() {
-    this.router.navigate(['/customer-dash-board'], { state: { source: 'dashboard' } });
+    this.router.navigate(['/admin'], { state: { source: 'dashboard' } });
   }
 }

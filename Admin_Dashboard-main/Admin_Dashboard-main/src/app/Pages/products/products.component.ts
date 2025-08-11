@@ -299,7 +299,7 @@ nextImage(product: any, event: Event) {
   // New method called by arrow buttons that do nothing
   doNothing(event: Event) {
     event.stopPropagation();
-  }
+  }*/
 goToProductDetails(product: any): void {
   const encodedName = encodeURIComponent(product.name);
   this.router.navigate(['/admin-product', encodedName], {

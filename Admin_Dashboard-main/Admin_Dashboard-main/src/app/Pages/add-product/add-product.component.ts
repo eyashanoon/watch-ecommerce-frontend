@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ProductService, Product } from '../../Service/product.service';
+import { ProductService1 } from '../../Service/product1.service';  // Update path as needed
+import { Product } from '../../Service/product.service'; // Assuming your Product interface is here
+import { ProductDTO } from '../../models/createproduct.model'; // Assuming your Product interface is here
 
 @Component({
   selector: 'app-add-product',
@@ -11,15 +13,12 @@ import { ProductService, Product } from '../../Service/product.service';
   templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.css']
 })
-export class AddProductComponent implements OnInit {
-  products: Product[] = [];
-
-  // New: images is an array of 5 strings (empty initially)
+export class AddProductComponent {
   newProduct: Product = {
     name: '',
     price: 0,
     quantity: 0,
-    images: ['', '', '', '', ''],    // <-- updated here
+    images: ['', '', '', '', ''], 
     description: '',
     brand: '',
     waterProof: false,
@@ -39,8 +38,7 @@ export class AddProductComponent implements OnInit {
     changeableBand: true,
     editMode: false,
     showDetails: false,
-              currentImageIndex: 0
-
+    currentImageIndex: 0
   };
 
   availableBrands = ['Dryden', 'Rolex', 'iPhone', 'Samsung', 'Casio', 'Seiko', 'Citizen', 'Fossil', 'Timex', 'Bulova'];
@@ -53,25 +51,11 @@ export class AddProductComponent implements OnInit {
   numberingTypes = ['Latino', 'English', 'Arabic', 'Roman'];
   shapes = ['round', 'square', 'rectangular', 'oval'];
 
-  constructor(private router: Router, private productService: ProductService) {}
-
-  ngOnInit(): void {
-    this.loadProducts();
-  }
-
-  loadProducts() {
-    this.products = this.productService.getProducts();
-  }
-
-  saveProductsToLocalStorage() {
-    this.productService.saveProducts(this.products);
-  }
+  constructor(private router: Router, private productService: ProductService1) {}
 
   addProduct() {
-    this.loadProducts();
-
-    const name = this.newProduct.name.trim().toLowerCase();
-    // Validate that all images are non-empty and trimmed
+    // Trim and validate inputs
+    const name = this.newProduct.name.trim();
     const images = this.newProduct.images.map(img => img.trim());
 
     if (!name) {
@@ -79,11 +63,10 @@ export class AddProductComponent implements OnInit {
       return;
     }
 
-    // Check if any image is empty
-    if (images.some(img => img === '')) {
+/*    if (images.some(img => img === '')) {
       alert('All 5 image URLs are required.');
       return;
-    }
+    }*/
 
     const priceValid = /^\d+(\.\d+)?$/.test(this.newProduct.price.toString());
     if (!priceValid || this.newProduct.price <= 0) {
@@ -108,30 +91,42 @@ export class AddProductComponent implements OnInit {
       return;
     }
 
-    const isDuplicateName = this.products.some(
-      (p) => (p.name?.trim().toLowerCase() || '') === name
-    );
-    if (isDuplicateName) {
-      alert('A product with this name already exists.');
-      return;
-    }
+    // Prepare payload for backend
+    
+    const productPayload: ProductDTO = {
+      name: this.newProduct.name.trim(),
+      description: this.newProduct.description?.trim() || '',
+      brand: this.newProduct.brand,
+      size: Number(this.newProduct.size),
+      weight: Number(this.newProduct.wieght), // note the spelling fix to match backend 'weight'
+      handsColor: this.newProduct.handsColor,
+      backgroundColor: this.newProduct.backgroundColor,
+      bandColor: this.newProduct.bandColor,
+      numberingFormat: this.newProduct.numberingType, // mapping 'numberingType' to 'numberingFormat'
+      bandMaterial: this.newProduct.bandMaterial,
+      caseMaterial: this.newProduct.caseMaterial,
+      displayType: this.newProduct.displayType,
+      shape: this.newProduct.shape,
+      includesDate: this.newProduct.includesDate ,
+      hasFullNumerals: this.newProduct.hasFullNumerals ,
+      hasTickingSound: this.newProduct.hasTickingSound ,
+      waterProof: this.newProduct.waterProof,
+      changeableBand: this.newProduct.changeableBand ?? true,
+      price: Number(this.newProduct.price),
+      quantity: Number(this.newProduct.quantity),
+    };
 
-    // Check if any existing product has any of the new product's images
-    const isDuplicateImage = this.products.some(p =>
-      p.images.some(img => images.includes(img.trim()))
-    );
-    if (isDuplicateImage) {
-      alert('One or more of these images already exist in another product.');
-      return;
-    }
-
-    // Assign trimmed images array back
-    this.newProduct.images = images;
-
-    this.products.push({ ...this.newProduct });
-    this.saveProductsToLocalStorage();
-    this.resetNewProduct();
-    this.router.navigate(['/product']);
+    this.productService.addProduct(productPayload).subscribe({
+      next: (response) => {
+        alert('Product added successfully!');
+        this.resetNewProduct();
+        this.router.navigate(['/product']);
+      },
+      error: (err) => {
+        console.error('Error adding product:', err);
+        alert('Failed to add product. Please try again later.');
+      }
+    });
   }
 
   resetNewProduct() {
@@ -139,7 +134,7 @@ export class AddProductComponent implements OnInit {
       name: '',
       price: 0,
       quantity: 0,
-      images: ['', '', '', '', ''],    // reset images array
+      images: ['', '', '', '', ''], 
       description: '',
       brand: '',
       waterProof: false,
@@ -159,8 +154,7 @@ export class AddProductComponent implements OnInit {
       changeableBand: true,
       editMode: false,
       showDetails: false,
-                currentImageIndex: 0
-
+      currentImageIndex: 0
     };
   }
 

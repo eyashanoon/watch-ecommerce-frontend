@@ -169,7 +169,7 @@
 <!-- Product Grid -->
 <div class="product-grid">
   <div class="product-wrapper" *ngFor="let product of productsWithImages">
-    <div class="product-card" [class.hovered]="isHovered">
+    <div class="product-card"  >
       <div class="product-content">
         <div class="image-wrapper">
           <img
@@ -188,8 +188,7 @@
     </div>
   </div>
 </div>
-<button (click)="toggleHover()">Toggle Hover</button>
-
+ 
 
   </div>
 </div>

@@ -16,6 +16,7 @@ export class ControlAdminsComponent implements OnInit {
 
   admins: any[] = [];
   editIndex: number | null = null;
+  originalEmail: string | null = null;
   modifyPasswordOnly = false;
   originalAdminData: any = null;
 
@@ -34,34 +35,51 @@ export class ControlAdminsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadAdmins();
-     const nav = history.state?.admin;
-  if (nav) {
-    this.editAdminFromState(nav);
-  }
-  }editAdminFromState(adminData: any) {
-  this.admin = {
-    username: adminData.username,
-    email: adminData.email,
-    phone: adminData.phone,
-    password: '',
-    confirmPassword: '',
-    roles: adminData.roles
-  };
-  this.editIndex = null; // or find index if needed
-}
-
-  loadAdmins() {
-    this.adminService.getAllAdmins().subscribe({
-      next: (data) => {
-        console.log('Fetched admins:', data);
-        this.admins = data;
-      },
-      error: (error) => {
-        alert('Error loading admins');
-        console.error(error);
+    this.loadAdmins().then(() => {
+      const nav = history.state?.admin;
+      if (nav) {
+        this.editAdminFromState(nav);
       }
     });
+  }
+
+  // Changed loadAdmins to return a Promise for async sequencing
+  loadAdmins(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.adminService.getAllAdmins().subscribe({
+        next: (data) => {
+          this.admins = data;
+          resolve();
+        },
+        error: (error) => {
+          alert('Error loading admins');
+          console.error(error);
+          reject(error);
+        }
+      });
+    });
+  }
+
+  editAdminFromState(adminData: any) {
+    this.admin = {
+      username: adminData.username,
+      email: adminData.email,
+      phone: adminData.phone,
+      password: '',
+      confirmPassword: '',
+      roles: adminData.roles || []
+    };
+
+    // Find index by id or email
+    this.editIndex = this.admins.findIndex(a => a.id === adminData.id || a.email === adminData.email);
+
+    // Store original email for duplicate check
+    this.originalEmail = adminData.email.toLowerCase();
+
+    // Scroll to form
+    setTimeout(() => {
+      this.adminFormSection.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
   }
 
   allowOnlyNumbers(event: KeyboardEvent) {
@@ -75,42 +93,20 @@ export class ControlAdminsComponent implements OnInit {
     return this.admin.password === this.admin.confirmPassword;
   }
 
-  onSubmit() {
-    const isDuplicate = this.isEmailDuplicate(this.admin.email, this.editIndex ?? undefined);
-  if (isDuplicate) {
+onSubmit() {
+  if (this.isEmailDuplicate(this.admin.email)) {
     alert('This email is already used by another admin.');
     return;
   }
-    console.log("1"+this.modifyPasswordOnly)
-        console.log("n"+this.editIndex)
 
-    if (this.modifyPasswordOnly && this.editIndex !== null) {
-      console.log("dvddvdvdvd");
+  // Always ensure 'ADMIN' role present
+  if (!this.admin.roles.includes('ADMIN')) {
+    this.admin.roles.push('ADMIN');
+  }
 
-      if (!this.passwordsMatch()) {
-        alert("Passwords do not match");
-        return;
-      }
-      if (!this.admin.password || this.admin.password.length < 6) {
-        alert("Password must be at least 6 characters");
-        return;
-      }
-      else{
-        this.adminService.updateAdminPassword(this.admins[this.editIndex].id , { password: this.admin.password }).subscribe({
-          next: () => {
-            alert('Password updated successfully');
-            this.loadAdmins();
-            this.resetForm();
-          },
-          error: (err) => {
-            alert('Failed to update password');
-            console.error(err);
-          }
-        });
-        return;
-      }
-    }
-
+  if (this.editIndex !== null) {
+    // Editing existing admin
+    const adminToUpdate = this.admins[this.editIndex];
     const adminPayload: any = {
       username: this.admin.username,
       email: this.admin.email,
@@ -118,42 +114,72 @@ export class ControlAdminsComponent implements OnInit {
       roles: this.admin.roles
     };
 
-    if (this.modifyPasswordOnly && this.admin.password) {
-      adminPayload.password = this.admin.password;
-    }
-
-    if (this.editIndex !== null) {
-      const adminToUpdate = this.admins[this.editIndex];
-    
-      this.adminService.updateAdmin(adminToUpdate.id, adminPayload).subscribe({
-        next: () => {
+    this.adminService.updateAdmin(adminToUpdate.id, adminPayload).subscribe({
+      next: () => {
+        if (this.admin.password) {
+          if (!this.passwordsMatch()) {
+            alert("Passwords do not match");
+            return;
+          }
+          if (this.admin.password.length < 6) {
+            alert("Password must be at least 6 characters");
+            return;
+          }
+          this.adminService.updateAdminPassword(adminToUpdate.id, { password: this.admin.password }).subscribe({
+            next: () => {
+              alert('Admin and password updated successfully');
+              this.loadAdmins();
+              this.resetForm();
+            },
+            error: (err) => {
+              alert('Failed to update password');
+              console.error(err);
+            }
+          });
+        } else {
           alert('Admin updated successfully');
           this.loadAdmins();
           this.resetForm();
-        },
-        error: (err) => {
-          alert('Failed to update admin');
-          console.error(err);
         }
-      });
-    } else {
-      if (this.admin.password && this.passwordsMatch()) {
-        adminPayload.password = this.admin.password;
+      },
+      error: (err) => {
+        alert('Failed to update admin');
+        console.error(err);
       }
-
-      this.adminService.addAdmin(adminPayload).subscribe({
-        next: () => {
-          alert('Admin added successfully');
-          this.loadAdmins();
-          this.resetForm();
-        },
-        error: (err) => {
-          alert('Failed to add admin');
-          console.error(err);
-        }
-      });
+    });
+  } else {
+    // Adding new admin
+    if (!this.passwordsMatch()) {
+      alert("Passwords do not match");
+      return;
     }
+    if (!this.admin.password || this.admin.password.length < 6) {
+      alert("Password must be at least 6 characters");
+      return;
+    }
+    const adminPayload: any = {
+      username: this.admin.username,
+      email: this.admin.email,
+      phone: this.admin.phone,
+      roles: this.admin.roles,
+      password: this.admin.password
+    };
+
+    this.adminService.addAdmin(adminPayload).subscribe({
+      next: () => {
+        alert('Admin added successfully');
+        this.loadAdmins();
+        this.resetForm();
+      },
+      error: (err) => {
+        alert('Failed to add admin');
+        console.error(err);
+      }
+    });
   }
+}
+
+
 
   editAdmin(index: number) {
     const selected = this.admins[index];
@@ -168,6 +194,7 @@ export class ControlAdminsComponent implements OnInit {
     this.editIndex = index;
     this.modifyPasswordOnly = false;
     this.originalAdminData = null;
+    this.originalEmail = selected.email.toLowerCase();
 
     setTimeout(() => {
       this.adminFormSection.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -201,6 +228,7 @@ export class ControlAdminsComponent implements OnInit {
     this.editIndex = null;
     this.modifyPasswordOnly = false;
     this.originalAdminData = null;
+    this.originalEmail = null;
   }
 
   cancelEdit() {
@@ -238,14 +266,19 @@ export class ControlAdminsComponent implements OnInit {
     };
     return roles.map(r => roleMap[r] || r.toLowerCase()).join(', ');
   }
-isEmailDuplicate(email: string, excludeIndex?: number): boolean {
-  const trimmedEmail = email.trim().toLowerCase();
-  return this.admins.some((admin, index) =>
-    admin.email.trim().toLowerCase() === trimmedEmail && index !== excludeIndex
-  );
-}
+
+  isEmailDuplicate(email: string): boolean {
+    const trimmedEmail = email.trim().toLowerCase();
+    // If editing, exclude the original email
+    if (this.originalEmail && trimmedEmail === this.originalEmail) {
+      return false; // it's the same email, so no duplicate error
+    }
+    return this.admins.some(admin =>
+      admin.email.trim().toLowerCase() === trimmedEmail
+    );
+  }
+
   goToManagePage() {
     this.router.navigate(['/admin/manage']);
   }
-
 }

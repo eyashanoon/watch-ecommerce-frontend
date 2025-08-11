@@ -81,20 +81,20 @@ saveToken(token: string, roles: string[], id: number): void {
   }
 
   // --- New method: get user profile by email ---
-  getUserById(id: number): Observable<any> {
+  getAdminById(id: number): Observable<any> {
     return this.http.get(`${environment.apiBaseUrl}/api/admins/${id}`,{
       headers:this.getAuthHeaders()
     });
   }
 
-  updateUserProfile(id:number,userData: any): Observable<any> {
+  updateAdminProfile(id:number,userData: any): Observable<any> {
     return this.http.put(`${environment.apiBaseUrl}/api/admins/${id}`, userData,{
       headers:this.getAuthHeaders()
       
     });
   }
   
-  updateUserProfilePassword(id:number,userData: any): Observable<any> {
+  updateAdminProfilePassword(id:number,userData: any): Observable<any> {
     return this.http.put(`${environment.apiBaseUrl}/api/admins/changePassword/${id}`, userData,{
       headers:this.getAuthHeaders()
       
@@ -102,7 +102,7 @@ saveToken(token: string, roles: string[], id: number): void {
   }
 
 
-  deleteUserProfile( id:number): Observable<any> {
+  deleteAdminProfile( id:number): Observable<any> {
     return this.http.delete(`${environment.apiBaseUrl}/api/admins/${id}`,{
       headers:this.getAuthHeaders()
     });
@@ -117,4 +117,33 @@ saveToken(token: string, roles: string[], id: number): void {
     });
   }
 
+
+
+
+
+  
+// --- Customer methods (new) ---
+getCustomerById(id: number): Observable<any> {
+  return this.http.get(`${environment.apiBaseUrl}/api/customers/${id}`, {
+    headers: this.getAuthHeaders()
+  });
+}
+
+updateCustomerProfile(id: number, data: any): Observable<any> {
+  return this.http.put(`${environment.apiBaseUrl}/api/customers/${id}`, data, {
+    headers: this.getAuthHeaders()
+  });
+}
+
+updateCustomerPassword(id: number, data: any): Observable<any> {
+  return this.http.put(`${environment.apiBaseUrl}/api/customers/changePassword/${id}`, data, {
+    headers: this.getAuthHeaders()
+  });
+}
+
+deleteCustomerProfile(id: number): Observable<any> {
+  return this.http.delete(`${environment.apiBaseUrl}/api/customers/${id}`, {
+    headers: this.getAuthHeaders()
+  });
+}
 }

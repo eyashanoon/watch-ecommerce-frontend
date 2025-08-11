@@ -2,14 +2,16 @@ import { Component, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angula
 import { NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../Service/auth.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css'],
-  imports: [NgIf]
+  imports: [RouterModule, NgIf] // combine them in one array
 })
+
 export class AdminDashboardComponent implements AfterViewInit, OnInit {
   sidebarVisible = false;
 

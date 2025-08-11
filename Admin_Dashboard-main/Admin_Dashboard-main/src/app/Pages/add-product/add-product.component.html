@@ -41,8 +41,7 @@
     placeholder="Image URL {{ i + 1 }}"
     [(ngModel)]="newProduct.images[i]"
     [name]="'image' + i"
-    required
-    class="form-input"
+     class="form-input"
   />
 </div>
 
@@ -146,32 +145,33 @@
     <div class="field-with-title horizontal">
       <label class="field-title">Waterproof</label>
       <div class="radio-row">
-        <label><input type="radio" [(ngModel)]="newProduct.waterProof" name="waterProof" value="Yes" /> Yes</label>
-        <label><input type="radio" [(ngModel)]="newProduct.waterProof" name="waterProof" value="No" /> No</label>
+      <label><input type="radio" [(ngModel)]="newProduct.waterProof" name="waterProof" [value]="true" /> Yes</label>
+<label><input type="radio" [(ngModel)]="newProduct.waterProof" name="waterProof" [value]="false" /> No</label>
+
       </div>
     </div>
 
     <div class="field-with-title horizontal">
       <label class="field-title">Includes Date</label>
       <div class="radio-row">
-        <label><input type="radio" [(ngModel)]="newProduct.includesDate" name="includesDate" value="Yes" /> Yes</label>
-        <label><input type="radio" [(ngModel)]="newProduct.includesDate" name="includesDate" value="No" /> No</label>
+       <label><input type="radio" [(ngModel)]="newProduct.includesDate" name="includesDate" [value]="true" /> Yes</label>
+<label><input type="radio" [(ngModel)]="newProduct.includesDate" name="includesDate" [value]="false" /> No</label>
       </div>
     </div>
 
     <div class="field-with-title horizontal">
       <label class="field-title">Has Full Numerals</label>
       <div class="radio-row">
-        <label><input type="radio" [(ngModel)]="newProduct.hasFullNumerals" name="hasFullNumerals" value="Yes" /> Yes</label>
-        <label><input type="radio" [(ngModel)]="newProduct.hasFullNumerals" name="hasFullNumerals" value="No" /> No</label>
+        <label><input type="radio" [(ngModel)]="newProduct.hasFullNumerals" name="hasFullNumerals" [value]="true" /> Yes</label>
+<label><input type="radio" [(ngModel)]="newProduct.hasFullNumerals" name="hasFullNumerals" [value]="false" /> No</label>
       </div>
     </div>
 
     <div class="field-with-title horizontal">
       <label class="field-title">Ticking Sound</label>
       <div class="radio-row">
-        <label><input type="radio" [(ngModel)]="newProduct.hasTickingSound" name="hasTickingSound" value="Yes" /> Yes</label>
-        <label><input type="radio" [(ngModel)]="newProduct.hasTickingSound" name="hasTickingSound" value="No" /> No</label>
+       <label><input type="radio" [(ngModel)]="newProduct.hasTickingSound" name="hasTickingSound" [value]="true" /> Yes</label>
+<label><input type="radio" [(ngModel)]="newProduct.hasTickingSound" name="hasTickingSound" [value]="false" /> No</label>
       </div>
     </div>
 
