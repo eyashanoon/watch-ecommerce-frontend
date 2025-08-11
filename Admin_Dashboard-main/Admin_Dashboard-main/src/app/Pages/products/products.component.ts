@@ -120,8 +120,14 @@ get productsWithImages() {
   }));
 }
 
+activeProductId: number | null = null; // add this property to your component class
+
 prevImage(product: Product, event?: MouseEvent) {
   if (event) event.stopPropagation();
+
+  // Mark this product as active (hovered)
+  //this.activeProductId = product.id;
+
   const item = this.productMap.get(product.id);
   if (!item) return;
 
@@ -134,6 +140,10 @@ prevImage(product: Product, event?: MouseEvent) {
 
 nextImage(product: Product, event?: MouseEvent) {
   if (event) event.stopPropagation();
+
+  // Mark this product as active (hovered)
+  //this.activeProductId = product.id;
+
   const item = this.productMap.get(product.id);
   if (!item) return;
 
@@ -142,6 +152,19 @@ nextImage(product: Product, event?: MouseEvent) {
   } else {
     item.currentImageIndex = 0;
   }
+}
+positions: { [productId: number]: number } = {};
+
+// Called when left arrow clicked
+scrollLeft(productId: number) {
+  if (!this.positions[productId]) this.positions[productId] = 0;
+  this.positions[productId] += 100; // increase by 100%
+}
+
+// Called when right arrow clicked
+scrollRight(productId: number) {
+  if (!this.positions[productId]) this.positions[productId] = 0;
+  this.positions[productId] -= 100; // decrease by 100%
 }
 
 
@@ -317,11 +340,6 @@ goToProductDetails(product: any): void {
 
 
 
-isHovered = false;
-
-toggleHover() {
-  this.isHovered = !this.isHovered;
-}
 
 
 
