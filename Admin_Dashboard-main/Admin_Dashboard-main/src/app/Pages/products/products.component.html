@@ -169,7 +169,7 @@
 <!-- Product Grid -->
 <div class="product-grid">
   <div class="product-wrapper" *ngFor="let product of productsWithImages">
-    <div class="product-card" [class.hovered]="product.id === activeProductId">
+    <div class="product-card"  >
       <div class="product-content">
 
         <div class="image-wrapper" #imageContainer>
@@ -185,8 +185,8 @@
             />
           </div>
 
-          <button class="carousel-arrow left" (click)="scrollLeft(product.id)">&#10094;</button>
-          <button class="carousel-arrow right" (click)="scrollRight(product.id)">&#10095;</button>
+          <button class="carousel-arrow left" (click)="scrollLeft(product, $event)">&#10094;</button>
+          <button class="carousel-arrow right" (click)="scrollRight(product , $event)">&#10095;</button>
         </div>
 
         <h3 class="product-name">{{ product.name }}</h3>

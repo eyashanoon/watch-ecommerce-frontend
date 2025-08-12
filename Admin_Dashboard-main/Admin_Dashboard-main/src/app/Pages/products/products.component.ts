@@ -9,11 +9,19 @@ import { ProductService} from '../../Service/product.service';
 import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import {ImageService } from '../../Service/image.service';
+import {FeaturesService } from '../../Service/features.service';
+
 import {Image } from '../../models/Image.model';
 import {Product } from '../../models/product.model';
 import {forkJoin, map, switchMap } from 'rxjs';
 
-
+interface ProductWithImages {
+  id: number;
+  name: string;
+  price: number;
+  images: string[];
+  currentImageIndex: number;
+}
 @Component({
   selector: 'app-products',
   standalone: true,
@@ -22,6 +30,14 @@ import {forkJoin, map, switchMap } from 'rxjs';
   styleUrls: ['./products.component.css']
 })
 export class ProductsComponent implements OnInit {
+   constructor(private router: Router,
+     private productService: ProductService,
+     private productService1: ProductService1,
+     private imageService:ImageService,
+     private featuresService:FeaturesService
+    ) {}
+
+
   product: any[] = [];
 
   productMap = new Map<number, { product: Product, images: Image[],currentImageIndex:number }>();
@@ -53,11 +69,9 @@ export class ProductsComponent implements OnInit {
     changeableBand: true,
   };
 
-  availableColors = [
-    'Black', 'White', 'Gold', 'Silver', 'Rose Gold', 'Brown', 'Blue', 'Green',
-    'Red', 'Navy', 'Beige', 'Grey', 'Gunmetal', 'Bronze', 'Copper',
-    'Rust', 'Yellow', 'Orange', 'Purple', 'Pink', 'Turquoise', 'Cream'
-  ];
+
+
+
 
   availableBrands = [
     'Dryden', 'Rolex', 'iPhone', 'Samsung', 'Casio', 'Seiko', 'Citizen',
@@ -80,10 +94,23 @@ export class ProductsComponent implements OnInit {
 
   shapes = ['round', 'square', 'rectangular', 'oval'];
 
-   constructor(private router: Router, private productService: ProductService,private productService1: ProductService1,private imageService:ImageService) {}
+availableColors: string[] = [];
 
 ngOnInit(): void {
-  this.loadProducts();
+
+this.featuresService.getAllColors().subscribe(colorsObj => {
+  this.availableColors = Array.from(
+    new Set(
+      Object.values(colorsObj)   // Get the arrays from hands, background, band
+        .flat()                  // Flatten into one array
+        .map(c => c.trim())      // Remove extra spaces
+    )
+  );
+});
+
+
+
+  //this.loadProducts();
 
   this.router.events
     .pipe(filter(event => event instanceof NavigationEnd))
@@ -112,6 +139,8 @@ loadProducts() {
     });
   });
 }
+
+
 get productsWithImages() {
   return Array.from(this.productMap.values()).map(item => ({
     ...item.product,
@@ -119,53 +148,45 @@ get productsWithImages() {
     currentImageIndex: item.currentImageIndex
   }));
 }
-
-activeProductId: number | null = null; // add this property to your component class
-
-prevImage(product: Product, event?: MouseEvent) {
-  if (event) event.stopPropagation();
-
-  // Mark this product as active (hovered)
-  //this.activeProductId = product.id;
-
-  const item = this.productMap.get(product.id);
-  if (!item) return;
-
-  if (item.currentImageIndex > 0) {
-    item.currentImageIndex--;
-  } else {
-    item.currentImageIndex = item.images.length - 1;
-  }
-}
-
-nextImage(product: Product, event?: MouseEvent) {
-  if (event) event.stopPropagation();
-
-  // Mark this product as active (hovered)
-  //this.activeProductId = product.id;
-
-  const item = this.productMap.get(product.id);
-  if (!item) return;
-
-  if (item.currentImageIndex < item.images.length - 1) {
-    item.currentImageIndex++;
-  } else {
-    item.currentImageIndex = 0;
-  }
-}
 positions: { [productId: number]: number } = {};
 
-// Called when left arrow clicked
-scrollLeft(productId: number) {
-  if (!this.positions[productId]) this.positions[productId] = 0;
-  this.positions[productId] += 100; // increase by 100%
+
+
+scrollLeft(product: ProductWithImages , event?: MouseEvent) {
+    if (event) {
+    event.stopPropagation();
+  }
+
+   if (!this.positions[product.id] ) {
+    this.positions[product.id] = 0;
+  }
+
+  if (this.positions[product.id] >=0 ) {
+    // If already at the last image, wrap to the start
+    this.positions[product.id] = -(product.images.length - 1) * 100;
+  } else {
+    this.positions[product.id] += 100;
+  }
 }
 
+
 // Called when right arrow clicked
-scrollRight(productId: number) {
-  if (!this.positions[productId]) this.positions[productId] = 0;
-  this.positions[productId] -= 100; // decrease by 100%
+scrollRight(product: ProductWithImages, event?: MouseEvent) {
+    if (event) {
+    event.stopPropagation();
+  }
+  if (!this.positions[product.id] ) {
+    this.positions[product.id] = 0;
+   }
+   if(this.positions[product.id] <= -((product.images.length - 1) * 100)){
+        this.positions[product.id] = 0;
+   }
+  else this.positions[product.id] -= 100;
 }
+
+
+
+
 
 
   get filteredProducts() {
@@ -286,14 +307,7 @@ scrollRight(productId: number) {
     const encoded = encodeURIComponent(productName);
     this.router.navigate(['/edit-product', encoded]);
   }
-/*
-  startCarousel(product: any) {
-    if (product.carouselInterval) return;
 
-    product.carouselInterval = setInterval(() => {
-      this.nextImage(product, new Event('click'));
-    }, 3000);
-  }*/
 
   stopCarousel(product: any) {
     if (product.carouselInterval) {
@@ -301,34 +315,9 @@ scrollRight(productId: number) {
       product.carouselInterval = null;
     }
   }
-/*
-
-nextImage(product: any, event: Event) {
-  event.stopPropagation();
-
-  if (!product.images || product.images.length === 0) return;
-
-  product.currentImageIndex = (product.currentImageIndex + 1) % product.images.length;
-
-  // Force detection by reassigning reference
-  this.product = [...this.product];
-}
-
-prevImage(product: any, event: Event) {
-  event.stopPropagation();
-
-  if (!product.images || product.images.length === 0) return;
-
-  product.currentImageIndex = (product.currentImageIndex - 1 + product.images.length) % product.images.length;
-
-  // Force detection
-  this.product = [...this.product];
-}
-*/
 
 
-  // New method called by arrow buttons that do nothing
-  doNothing(event: Event) {
+   doNothing(event: Event) {
     event.stopPropagation();
   }
 goToProductDetails(product: any): void {
