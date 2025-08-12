@@ -178,8 +178,9 @@
             class="clickable"
             (click)="goToProductDetails(product)"
           />
-          <button class="carousel-arrow left" (click)="prevImage(product, $event)">&#10094;</button>
-          <button class="carousel-arrow right" (click)="nextImage(product, $event)">&#10095;</button>
+          <button class="carousel-arrow left" (click)="prevImage(product, $event); $event.stopPropagation()">&#10094;</button>
+<button class="carousel-arrow right" (click)="nextImage(product, $event); $event.stopPropagation()">&#10095;</button>
+
         </div>
 
         <h3 class="product-name">{{ product.name }}</h3>

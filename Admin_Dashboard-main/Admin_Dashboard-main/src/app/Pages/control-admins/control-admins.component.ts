@@ -13,7 +13,6 @@ import { AdminService } from '../../Service/admin.service';
 })
 export class ControlAdminsComponent implements OnInit {
   @ViewChild('adminFormSection') adminFormSection!: ElementRef;
-
   admins: any[] = [];
   editIndex: number | null = null;
   originalEmail: string | null = null;

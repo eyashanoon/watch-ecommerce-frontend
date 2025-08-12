@@ -743,18 +743,6 @@ box-sizing: border-box;
   opacity: 1;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 .carousel-arrow.left {
   left: -12px;
 }
@@ -763,6 +751,38 @@ box-sizing: border-box;
   right: -12px;
 }
 
+.product-card {
+  position: relative;
+  transition: all 0.3s ease;
+  /* your hover expand style */
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+  /* or whatever your expansion style is */
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+  background: rgba(0,0,0,0.3);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+  user-select: none;
+}
+
+.carousel-arrow.left {
+  left: 5px;
+}
+
+.carousel-arrow.right {
+  right: 5px;
+}
 
 
 .product-card.hovered{

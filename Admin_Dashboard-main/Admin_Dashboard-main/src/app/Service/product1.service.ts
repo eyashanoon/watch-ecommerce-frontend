@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {environment} from "../../app/environments/environment"
+import {environment} from "../environments/environment"
 
 // Adjust this URL according to your backend endpoint
 const API_URL = environment.apiBaseUrl+'/api/products';
