@@ -27,10 +27,10 @@
       </ng-container>
 
       <ng-template #limitedMenu>
-        <button *ngIf="hasRole('CONTROLADMINS')" (click)="goToAddAdminPage()">Control Admins</button>
-        <button *ngIf="hasRole('CONTROLPRODUCTS')" (click)="goToProductPage()">Product Management</button>
-        <button *ngIf="hasRole('CONTROLORDERSADMIN')" (click)="goToOrderPage()">Order Management</button>
-        <button *ngIf="hasRole('CONTROLREPORTADMIN')" (click)="goToReportPage()">Reports</button>
+        <button *ngIf="hasRole('OWNER')" (click)="goToAddAdminPage()">Control Admins</button>
+        <button *ngIf="hasRole('OWNER')" (click)="goToProductPage()">Product Management</button>
+        <button *ngIf="hasRole('OWNER')" (click)="goToOrderPage()">Order Management</button>
+        <button *ngIf="hasRole('OWNER')" (click)="goToReportPage()">Reports</button>
       </ng-template>
     </div>
   </div>

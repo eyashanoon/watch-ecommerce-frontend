@@ -90,10 +90,12 @@ onSubmit() {
 
   this.authService.login(username, password).subscribe({
     next: (res: { token: string; roles: string[]; id:number }) => {
+            console.log(res)
+
       if (res.token) {
         this.authService.saveToken(res.token,res.roles , res.id);
 
-        const roles = res.roles?.map(r => r.toUpperCase()) || [userType.toUpperCase()];
+        const roles = res.roles?.map(r => r.toUpperCase()) ;
 
         if (roles.includes('ADMIN')) {
           console.log('Admin logged in');

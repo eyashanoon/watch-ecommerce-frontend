@@ -22,7 +22,7 @@ export class AdminDashboardComponent implements AfterViewInit, OnInit {
     }
 
     // Example: restrict access only to users with at least one admin role
-    const allowedRoles = ['CONTROLADMINS', 'CONTROLPRODUCTS', 'CONTROLORDERSADMIN', 'CONTROLREPORTADMIN','ADMIN'];
+    const allowedRoles = [  'OWNER','ADMIN'];
     if (!this.authService.hasAnyRole(allowedRoles)) {
       alert('You do not have permission to access this page.');
       this.router.navigate(['/home']);
