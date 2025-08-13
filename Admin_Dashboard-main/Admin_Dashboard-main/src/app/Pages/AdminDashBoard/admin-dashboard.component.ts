@@ -56,8 +56,8 @@ export class AdminDashboardComponent implements AfterViewInit, OnInit {
     this.router.navigate(['/report']);
   }
 
-  goToAddAdminPage() {
-    this.router.navigate(['/control-admins']);
+  goToManageAdminsPage() {
+    this.router.navigate(['/admin/manage']);
   }
 
   @ViewChild('backgroundVideo') backgroundVideo!: ElementRef<HTMLVideoElement>;

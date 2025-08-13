@@ -1,55 +1,105 @@
-
-
-<!-- Add Product Form -->
+<!-- Add / Edit Product Form -->
 <div class="add-watch-card">
-  <h3 class="form-title">➕ Add a New Watch</h3>
+<h3 class="form-title">
+  <span *ngIf="mode === 'add'" class="plus-icon">➕</span>
+  <span *ngIf="mode !== 'add'" class="edit-icon">✏️</span>
+  {{ mode === 'add' ? 'Add a New Watch' : 'Edit Watch' }}
+</h3>
 
-  <form (ngSubmit)="addProduct()" #watchForm="ngForm" class="add-form">
 
+
+  <form (ngSubmit)="onSubmit()" #watchForm="ngForm" class="add-form">
     <!-- Basic Info -->
-<h4 class="section-heading">📝 Basic Info</h4>
+    <h4 class="section-heading">📝 Basic Info</h4>
+
     <div class="field-with-title horizontal">
       <label class="field-title" for="name">Watch Name</label>
-      <input id="name" type="text" placeholder="Watch Name" [(ngModel)]="newProduct.name" name="name" required class="form-input" />
+      <input id="name" type="text"   maxlength="15"
+ placeholder="Watch Name" [(ngModel)]="newProduct.name" name="name" required class="form-input" />
     </div>
 
-    <div class="field-with-title horizontal">
-      <label class="field-title" for="price">Price</label>
-      <input id="price" type="number" step="0.01" placeholder="Price" [(ngModel)]="newProduct.price" name="price" required class="form-input" />
-    </div>
-
-    <div class="field-with-title horizontal">
-      <label class="field-title" for="quantity">Quantity</label>
-      <input id="quantity" type="number" placeholder="Quantity" [(ngModel)]="newProduct.quantity" name="quantity" min="0" required class="form-input" />
-    </div>
-
-   <div *ngFor="let img of newProduct.images; let i = index" class="field-with-title horizontal">
-  <label class="field-title" [for]="'image' + i">Image URL {{ i + 1 }}</label>
-  <input
-    [id]="'image' + i"
+<div class="field-with-title horizontal">
+  <label class="field-title" for="price">Price</label>
+  <input 
     type="text"
-    placeholder="Image URL {{ i + 1 }}"
-    [(ngModel)]="newProduct.images[i]"
-    [name]="'image' + i"
-     class="form-input"
+    [(ngModel)]="newProduct.price"
+    name="price"
+    required
+    maxlength="18"
+    pattern="\d{1,15}(\.\d{1,2})?"
+    title="Enter up to 15 digits and at most one decimal point (optional 1-2 decimals)"
+    (keypress)="allowNumbersAndDot($event, newProduct.price)"
   />
 </div>
 
+<!-- Quantity -->
+<div class="field-with-title horizontal">
+  <label class="field-title" for="quantity">Quantity</label>
+  <input 
+    type="text"
+    [(ngModel)]="newProduct.quantity"
+    name="quantity"
+    required
+    maxlength="7"
+    pattern="\d{1,15}"
+    title="Enter up to 15 digits only"
+    (keypress)="allowOnlyNumbers($event)"
+  />
+</div>
+
+<!-- Size -->
+<div class="field-with-title horizontal">
+  <label class="field-title" for="size">Size</label>
+  <input 
+    type="text"
+    [(ngModel)]="newProduct.size"
+    name="size"
+    required
+    maxlength="18"
+    pattern="\d{1,15}(\.\d{1,2})?"
+    title="Enter up to 15 digits and at most one decimal point"
+    (keypress)="allowNumbersAndDot($event, newProduct.size)"
+  />
+</div>
+
+<!-- Weight -->
+<div class="field-with-title horizontal">
+  <label class="field-title" for="weight">Weight</label>
+  <input 
+    type="text"
+    [(ngModel)]="newProduct.wieght"
+    name="weight"
+    required
+    maxlength="18"
+    pattern="\d{1,15}(\.\d{1,2})?"
+    title="Enter up to 15 digits and at most one decimal point"
+    (keypress)="allowNumbersAndDot($event, newProduct.wieght)"
+  />
+</div>
+<div class="field-with-title vertical">
+  <div class="title-row">
+    <label class="field-title">Images</label>
+    <button type="button" class="add-image-btn" (click)="fileInput.click()">+ Add image</button>
+  </div>
+  <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" />
+  <div *ngFor="let file of imageFiles; let i = index" class="image-item">
+    <span>{{ file.name }}</span>
+    <button type="button" (click)="removeImage(i)">Remove</button>
+  </div>
+</div>
+
+
     <div class="field-with-title horizontal">
       <label class="field-title" for="description">Description</label>
-      <input id="description" type="text" placeholder="Description" [(ngModel)]="newProduct.description" name="description" required class="form-input" />
-    </div>
-
-    <div class="field-with-title horizontal">
-      <label class="field-title" for="size">Watch Size</label>
-      <input id="size" type="text" placeholder="Watch Size" [(ngModel)]="newProduct.size" name="size" required class="form-input" />
-    </div>
-
-    <div class="field-with-title horizontal">
-      <label class="field-title" for="wieght">Weight</label>
-      <input id="wieght" type="text" placeholder="weight" [(ngModel)]="newProduct.wieght" name="wieght" required pattern="^\d+(\.\d+)?$" title="Enter a valid wieght (e.g., 1.5)" class="form-input" />
-    </div>
-
+  <textarea
+    id="description"
+    placeholder="Description"
+    [(ngModel)]="newProduct.description"
+    name="description"
+    required
+    class="form-input"
+    rows="5"
+  ></textarea>    </div>
     <!-- Selects -->
     <div class="field-with-title horizontal">
       <label class="field-title" for="brand">Brand</label>
@@ -133,19 +183,18 @@
     <h4 class="section-heading">⚙️ Features</h4>
 
     <div class="field-with-title horizontal">
-      <label class="field-title">Waterproof</label>
+      <label  class="field-title">Waterproof</label>
       <div class="radio-row">
-      <label><input type="radio" [(ngModel)]="newProduct.waterProof" name="waterProof" [value]="true" /> Yes</label>
-<label><input type="radio" [(ngModel)]="newProduct.waterProof" name="waterProof" [value]="false" /> No</label>
-
+        <label><input type="radio" [(ngModel)]="newProduct.waterProof" name="waterProof" [value]="true" /> Yes</label>
+        <label><input type="radio" [(ngModel)]="newProduct.waterProof" name="waterProof" [value]="false" /> No</label>
       </div>
     </div>
 
     <div class="field-with-title horizontal">
       <label class="field-title">Includes Date</label>
       <div class="radio-row">
-       <label><input type="radio" [(ngModel)]="newProduct.includesDate" name="includesDate" [value]="true" /> Yes</label>
-<label><input type="radio" [(ngModel)]="newProduct.includesDate" name="includesDate" [value]="false" /> No</label>
+        <label><input type="radio" [(ngModel)]="newProduct.includesDate" name="includesDate" [value]="true" /> Yes</label>
+        <label><input type="radio" [(ngModel)]="newProduct.includesDate" name="includesDate" [value]="false" /> No</label>
       </div>
     </div>
 
@@ -153,24 +202,26 @@
       <label class="field-title">Has Full Numerals</label>
       <div class="radio-row">
         <label><input type="radio" [(ngModel)]="newProduct.hasFullNumerals" name="hasFullNumerals" [value]="true" /> Yes</label>
-<label><input type="radio" [(ngModel)]="newProduct.hasFullNumerals" name="hasFullNumerals" [value]="false" /> No</label>
+        <label><input type="radio" [(ngModel)]="newProduct.hasFullNumerals" name="hasFullNumerals" [value]="false" /> No</label>
       </div>
     </div>
 
     <div class="field-with-title horizontal">
       <label class="field-title">Ticking Sound</label>
       <div class="radio-row">
-       <label><input type="radio" [(ngModel)]="newProduct.hasTickingSound" name="hasTickingSound" [value]="true" /> Yes</label>
-<label><input type="radio" [(ngModel)]="newProduct.hasTickingSound" name="hasTickingSound" [value]="false" /> No</label>
+        <label><input type="radio" [(ngModel)]="newProduct.hasTickingSound" name="hasTickingSound" [value]="true" /> Yes</label>
+        <label><input type="radio" [(ngModel)]="newProduct.hasTickingSound" name="hasTickingSound" [value]="false" /> No</label>
       </div>
     </div>
 
     <!-- Buttons -->
     <div class="button-group">
-      <button type="submit" class="submit-btn fancy-btn">✨ Add Product</button>
+      <button type="submit" class="submit-btn fancy-btn">
+        {{ mode === 'add' ? '✨ Add Product' : '💾 Update Product' }}
+      </button>
       <button type="button" class="submit-btn cancel-btn" (click)="cancelAndReset(watchForm)">
         Cancel
       </button>
     </div>
-  </form>
-</div>
+  </form> 
+</div> 

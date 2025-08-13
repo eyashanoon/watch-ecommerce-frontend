@@ -7,11 +7,11 @@ export interface Product {
   images: string[]; // Multiple images supported
   description: string;
   brand: string;
-  waterProof: boolean;
-  includesDate: boolean;
+  waterProof?: boolean;
+  includesDate?: boolean;
   numberingType: string;
-  hasFullNumerals: boolean;
-  hasTickingSound: boolean;
+  hasFullNumerals?: boolean;
+  hasTickingSound?: boolean;
   size: number;
   wieght: number;
   bandColor: string;
@@ -21,7 +21,7 @@ export interface Product {
   caseMaterial: string;
   displayType: string;
   shape: string;
-  changeableBand: boolean;
+  changeableBand?: boolean;
   editMode: boolean;
   showDetails: boolean;
   currentImageIndex?: number; // For carousel tracking
