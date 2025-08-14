@@ -47,8 +47,9 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
     this.loading = true;
 
+
     this.authService.getCustomerById(idNum).subscribe({
-      next: (profile) => {
+       next: (profile) => {
         this.user = profile;
         this.loading = false;
       },
@@ -136,9 +137,9 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
       password:this.editableUser.password
 
     }
-
+ 
     this.authService.updateCustomerPassword(idNum, data).subscribe({
-      next: () => {
+       next: () => {
         this.user = { ...this.editableUser };
         this.editMode = false;
         this.editingPassword = false;
@@ -175,8 +176,9 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
     this.loading = true;
 
+ 
     this.authService.updateCustomerProfile(idNum, this.editableUser).subscribe({
-      next: () => {
+       next: () => {
         this.user = { ...this.editableUser };
         this.editMode = false;
         this.editingPassword = false;
@@ -221,9 +223,9 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
       }
 
       this.loading = true;
-
+ 
       this.authService.deleteCustomerProfile(idNum).subscribe({
-        next: () => {
+         next: () => {
           alert('Account deleted successfully.');
           this.authService.logout();
           this.router.navigate(['/home']);

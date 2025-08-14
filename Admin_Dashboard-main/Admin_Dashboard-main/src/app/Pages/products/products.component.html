@@ -171,20 +171,27 @@
   <div class="product-wrapper" *ngFor="let product of productsWithImages">
     <div class="product-card"  >
       <div class="product-content">
-        <div class="image-wrapper">
-          <img
-            [src]="product.images[product.currentImageIndex]"
-            alt="{{ product.name }}"
-            class="clickable"
-            (click)="goToProductDetails(product)"
-          />
-          <button class="carousel-arrow left" (click)="prevImage(product, $event); $event.stopPropagation()">&#10094;</button>
-<button class="carousel-arrow right" (click)="nextImage(product, $event); $event.stopPropagation()">&#10095;</button>
+ 
+        <div class="image-wrapper" #imageContainer>
+          <div
+            class="image-strip"
+            [style.transform]="'translateX(' + (positions[product.id] || 0) + '%)'"
+          >
+            <img *ngFor="let img of product.images"
+                 [src]="img"
+                 alt="{{ product.name }}"
+                 class="clickable"
+                 (click)="goToProductDetails(product)"
+            />
+          </div>
 
+          <button class="carousel-arrow left" (click)="scrollLeft(product, $event)">&#10094;</button>
+          <button class="carousel-arrow right" (click)="scrollRight(product , $event)">&#10095;</button>
+ 
         </div>
 
         <h3 class="product-name">{{ product.name }}</h3>
-        <p class="product-price">{{ product.price | currency }}</p>
+        <p class="product-price">{{ product.originalPrice | currency }}</p>
       </div>
     </div>
   </div>

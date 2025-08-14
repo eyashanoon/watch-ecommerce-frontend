@@ -43,7 +43,8 @@ imageFiles: File[] = [];
     changeableBand: true,
     editMode: false,
     showDetails: false,
-    currentImageIndex: 0
+               currentImageIndex: 0
+ 
   };
 
   availableBrands = ['Dryden', 'Rolex', 'iPhone', 'Samsung', 'Casio', 'Seiko', 'Citizen', 'Fossil', 'Timex', 'Bulova'];
@@ -332,7 +333,9 @@ prepareFormData(): FormData {
       changeableBand: true,
       editMode: false,
       showDetails: false,
-      currentImageIndex: 0
+                 currentImageIndex: 0
+
+ 
     };
   }
 

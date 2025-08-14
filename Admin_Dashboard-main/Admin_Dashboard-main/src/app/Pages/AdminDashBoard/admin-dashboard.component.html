@@ -16,12 +16,41 @@
             <button (click)="goToReportPage()">Reports</button>
           </ng-container>
 
-          <ng-template #limitedMenu>
-            <button *ngIf="hasRole('CONTROLADMINS')" (click)="goToManageAdminsPage()">Control Admins</button>
-            <button *ngIf="hasRole('CONTROLPRODUCTS')" (click)="goToProductPage()">Product Management</button>
-            <button *ngIf="hasRole('CONTROLORDERSADMIN')" (click)="goToOrderPage()">Order Management</button>
-            <button *ngIf="hasRole('CONTROLREPORTADMIN')" (click)="goToReportPage()">Reports</button>
-          </ng-template>
+ <!-- Sidebar + Main Content -->
+<div class="container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <button (click)="toggleSidebar()">☰</button>
+
+    <div class="sidebar-content" *ngIf="sidebarVisible">
+      <ng-container *ngIf="hasRole('CONTROLADMINS'); else limitedMenu">
+        <button (click)="goToAddAdminPage()">Control Admins</button>
+        <button (click)="goToProductPage()">Product Management</button>
+        <button (click)="goToOrderPage()">Order Management</button>
+        <button (click)="goToReportPage()">Reports</button>
+      </ng-container>
+
+      <ng-template #limitedMenu>
+        <button *ngIf="hasRole('OWNER')" (click)="goToAddAdminPage()">Control Admins</button>
+        <button *ngIf="hasRole('OWNER')" (click)="goToProductPage()">Product Management</button>
+        <button *ngIf="hasRole('OWNER')" (click)="goToOrderPage()">Order Management</button>
+        <button *ngIf="hasRole('OWNER')" (click)="goToReportPage()">Reports</button>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Main content should NOT be inside the sidebar -->
+  <div class="main">
+    <div class="grid">
+      <div class="card-row">
+        <div class="card">
+          <figure>Low Stock List</figure>
+          <p>Description: Items running low in stock.</p>
+        </div>
+        <div class="card">
+          <figure>Highest Demand</figure>
+          <p>Description: Products with the highest demand.</p>
+ 
         </div>
       </div>
 

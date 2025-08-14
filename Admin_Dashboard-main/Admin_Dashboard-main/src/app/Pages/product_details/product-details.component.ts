@@ -2,33 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
-interface Product {
-  name: string;
-  image: string;
-  description: string;
-  price: number;
-  brand: string;
-  waterProof: boolean;
-  includesDate: boolean;
-  numberingType: string;
-  hasFullNumerals: boolean;
-  hasTickingSound: boolean;
-  size: number;
-  wieght: number;
-  bandColor: string;
-  handsColor: string;
-  backgroundColor: string;
-  bandMaterial: string;
-  caseMaterial: string;
-  displayType: string;
-  shape: string;
-  changeableBand: boolean;
-  quantity: number;
-  selectedQty?: number;
-}
-
-
+import{ProductWithImages} from "../products/products.component"
+ 
 @Component({
   selector: 'app-product-details',
   standalone: true,
@@ -37,11 +12,12 @@ interface Product {
   styleUrls: ['./product-details.component.css']
 })
 export class ProductDetailsComponent {
-  product: Product | null = null;
+  product: ProductWithImages & {selectedQty: number} | null = null;
 
-  constructor(private router: Router) {
+  constructor(private router: Router ) {
     const nav = this.router.getCurrentNavigation();
     this.product = nav?.extras?.state?.['product'] ?? null;
+    console.log(this.product)
 
     if (!this.product) {
       this.router.navigate(['/']);
@@ -52,7 +28,7 @@ export class ProductDetailsComponent {
       this.product.selectedQty = 1;
     }
   }
-
+/*
   addToCart(product: Product) {
     if (!product.selectedQty || product.selectedQty < 1) {
       alert('Please select a quantity of at least 1.');
@@ -120,5 +96,5 @@ export class ProductDetailsComponent {
     const b = parseInt(hexColor.substr(4, 2), 16);
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
     return luminance > 0.6 ? 'black' : 'white';
-  }
+  }*/
 }

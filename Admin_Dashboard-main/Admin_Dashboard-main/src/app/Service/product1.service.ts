@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import {environment} from "../environments/environment"
+ import { Observable, map } from 'rxjs';
+import { environment } from "../../app/environments/environment";
+import { Product } from '../models/product.model';
+ 
 
-// Adjust this URL according to your backend endpoint
-const API_URL = environment.apiBaseUrl+'/api/products';
+const API_URL = environment.apiBaseUrl + '/api/products';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,6 @@ const API_URL = environment.apiBaseUrl+'/api/products';
 export class ProductService1 {
   constructor(private http: HttpClient) {}
 
-  // Optional: You can include token if your backend requires it
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
     return new HttpHeaders({
@@ -21,17 +21,18 @@ export class ProductService1 {
     });
   }
 
-  /**
-   * Adds a new admin user.
-   * @param adminData - The new admin's data.
-   */
-
-  getAllProducts(): Observable<any[]> {
-    return this.http.get<any[]>(API_URL , {
+  // Return the Page object directly
+  getAllProducts(): Observable<{ content: Product[]; [key: string]: any }> {
+    return this.http.get<{ content: Product[]; [key: string]: any }>(API_URL, {
       headers: this.getAuthHeaders()
     });
   }
-addProduct(productData: any): Observable<any> {
+ 
+  // Optional helper to directly get the array of products
+  getAllProductsArray(): Observable<Product[]> {
+    return this.getAllProducts().pipe(map(page => page.content));
+  }
+ addProduct(productData: any): Observable<any> {
   console.log(productData);
   return this.http.post<any>(API_URL, productData, {
     headers: this.getAuthHeaders()
@@ -44,4 +45,4 @@ addProduct(productData: any): Observable<any> {
     return this.http.put<any>(`${API_URL}/${id}`, productData, { headers: this.getAuthHeaders() });
   }
 
-}
+ }

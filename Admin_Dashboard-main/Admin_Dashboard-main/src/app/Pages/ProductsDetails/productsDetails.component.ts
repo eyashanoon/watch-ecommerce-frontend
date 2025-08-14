@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ProductService, Product } from '../../Service/product.service';
+import { ProductService } from '../../Service/product.service';
+import{ProductWithImages} from "../products/products.component"
 
 @Component({
   selector: 'app-productsDetails',
@@ -12,11 +13,12 @@ import { ProductService, Product } from '../../Service/product.service';
   styleUrls: ['./productsDetails.component.css']
 })
 export class ProductsDetailsComponent {
-  products: Product | null = null;
+  products: ProductWithImages & {selectedQty: number} | null = null;
 
   constructor(private router: Router, private productService: ProductService) {
     const nav = this.router.getCurrentNavigation();
     this.products = nav?.extras?.state?.['product'] ?? null;
+    console.log(this.products)
 
     if (!this.products) {
       this.router.navigate(['/']);
@@ -55,5 +57,10 @@ export class ProductsDetailsComponent {
   }
     goToHomePage() {
     this.router.navigate(['/product']);
+  }
+
+  scrollRight(product:ProductWithImages & {selectedQty: number} ){
+    if(product.currentImageIndex>=product.images.length-1)product.currentImageIndex=0;
+    else product.currentImageIndex++;
   }
 }

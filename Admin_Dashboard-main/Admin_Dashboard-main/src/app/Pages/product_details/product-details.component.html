@@ -13,7 +13,7 @@
   <h2>{{ product.name }}</h2>
 
   <img
-    [src]="product.image"
+    [src]="product.images[0]"
     alt="{{ product.name }}"
     class="product-detail-image"
   />
@@ -21,15 +21,15 @@
   <p>{{ product.description }}</p>
 
   <ul>
-    <li><strong>Price:</strong> ${{ product.price }}</li>
+    <li><strong>Price:</strong> ${{ product.originalPrice }}</li>
     <li><strong>Brand:</strong> {{ product.brand }}</li>
     <li><strong>Waterproof:</strong> {{ product.waterProof || false }}</li>
     <li><strong>Includes Date:</strong> {{ product.includesDate || false }}</li>
-    <li><strong>Numbering Type:</strong> {{ product.numberingType }}</li>
+    <li><strong>Numbering Type:</strong> {{ product.numberingFormat }}</li>
     <li><strong>Has Full Numerals:</strong> {{ product.hasFullNumerals || false }}</li>
     <li><strong>Ticking Sound:</strong> {{ product.hasTickingSound || false }}</li>
     <li><strong>Size:</strong> {{ product.size }}</li>
-    <li><strong>Weight:</strong> {{ product.wieght }} grams</li>
+    <li><strong>Weight:</strong> {{ product.weight }} grams</li>
     <li><strong>Band Color:</strong> {{ product.bandColor }}</li>
     <li><strong>Hands Color:</strong> {{ product.handsColor }}</li>
     <li><strong>Background Color:</strong> {{ product.backgroundColor }}</li>
@@ -54,11 +54,11 @@
 
       <span class="divider">|</span>
 
-      <button class="add-btn" (click)="addToCart(product)">
+      <!--  <button class="add-btn" (click)="addToCart(product)"> 
         <span class="cart-icon">🛒</span> Add to Cart
-      </button>
+      </button>-->
     </div>
-
+    <!-- 
     <div class="wishlist-side">
       <button class="edit-btn" (click)="toggleWishlist(product)">
         <span class="heart-icon" [class.active]="isInWishlist(product)">
@@ -67,5 +67,7 @@
         Wishlist
       </button>
     </div>
+-->
+
   </div>
 </div>

@@ -9,12 +9,45 @@ import { ProductService} from '../../Service/product.service';
 import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import {ImageService } from '../../Service/image.service';
+import {FeaturesService , ColorsResponse} from '../../Service/features.service';
+
 import {Image } from '../../models/Image.model';
 import {Product } from '../../models/product.model';
 import {forkJoin, map, switchMap } from 'rxjs';
 
  
 
+
+ 
+export interface ProductWithImages {
+  id: number;
+  name: string;
+  description: string;
+  imageId: number[];          // list of image IDs related to the product
+  brand: string;
+  handsColor: string;
+  backgroundColor: string;
+  bandColor: string;
+  numberingFormat: string;
+  bandMaterial: string;
+  caseMaterial: string;
+  displayType: string;
+  shape: string;
+  includesDate: boolean;
+  hasFullNumerals: boolean;
+  hasTickingSound: boolean;
+  waterProof: boolean;
+  changeableBand: boolean;
+  size: number;               // was number before, matches Java Double
+  weight: number;             // was number before, matches Java Double
+  originalPrice: number;      // corresponds to Double originalPrice
+  discountPrice: number;      // corresponds to Double discountPrice
+  discount: number;           // corresponds to Double discount
+  quantity: number;
+
+  images: string[];          // base64 image strings
+  currentImageIndex: number; // carousel index
+}
 @Component({
   selector: 'app-products',
   standalone: true,
@@ -23,6 +56,14 @@ import {forkJoin, map, switchMap } from 'rxjs';
   styleUrls: ['./products.component.css']
 })
 export class ProductsComponent implements OnInit {
+   constructor(private router: Router,
+     private productService: ProductService,
+     private productService1: ProductService1,
+     private imageService:ImageService,
+     private featuresService:FeaturesService
+    ) {}
+
+
   product: any[] = [];
 
   productMap = new Map<number, { product: Product, images: Image[],currentImageIndex:number }>();
@@ -54,22 +95,15 @@ export class ProductsComponent implements OnInit {
     changeableBand: true,
   };
 
-  availableColors = [
-    'Black', 'White', 'Gold', 'Silver', 'Rose Gold', 'Brown', 'Blue', 'Green',
-    'Red', 'Navy', 'Beige', 'Grey', 'Gunmetal', 'Bronze', 'Copper',
-    'Rust', 'Yellow', 'Orange', 'Purple', 'Pink', 'Turquoise', 'Cream'
-  ];
+
+
+
 
   availableBrands = [
     'Dryden', 'Rolex', 'iPhone', 'Samsung', 'Casio', 'Seiko', 'Citizen',
     'Fossil', 'Timex', 'Bulova'
   ];
 
-  bandColors = ['black', 'brown', 'silver', 'gold', 'blue', 'red', 'orange', 'white'];
-
-  handsColors = ['black', 'white', 'gold', 'silver', 'blue', 'red'];
-
-  backgroundColors = ['black', 'white', 'blue', 'red', 'green', 'silver', 'gold'];
 
   bandMaterials = ['leather', 'metal', 'rubber', 'fabric'];
 
@@ -81,10 +115,38 @@ export class ProductsComponent implements OnInit {
 
   shapes = ['round', 'square', 'rectangular', 'oval'];
 
-    constructor(private router: Router, private productService: ProductService,private productService1: ProductService1,private imageService:ImageService) {}
+ availableColors: string[] = [];
+  bandColors: string[] = [];
+
+  handsColors: string[] = [];
+
+  backgroundColors  : string[] = [];
+
  
 
 ngOnInit(): void {
+
+this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
+  console.log(colorsObj);
+    this.handsColors = colorsObj.Hands.map(c => c.trim());
+    this.backgroundColors = colorsObj.Background.map(c => c.trim());
+    this.bandColors = colorsObj.Band.map(c => c.trim());
+  console.log( "handsColors       "+this.handsColors);
+  console.log("backgroundColors    " +this.backgroundColors);
+  console.log("bandColors       "+ this.bandColors);
+
+
+  
+  this.availableColors = Array.from(
+    new Set(
+      Object.values(colorsObj)   // Get the arrays from hands, background, band
+        .flat()                  // Flatten into one array
+        .map(c => c.trim())      // Remove extra spaces
+    )
+  );
+});
+
+
   this.loadProducts();
 
   this.router.events
@@ -96,25 +158,30 @@ ngOnInit(): void {
 
 loadProducts() {
    this.productService1.getAllProducts().pipe(
-    switchMap(products => {
+    switchMap(page => {   // page is the Page<Product> object
+      const products = page.content;   // <-- extract the array
+ 
       const requests = products.map(product =>
         this.imageService.getAllImagesByProductID(product.id).pipe(
           map(images => ({
             product,
             images,
-            currentImageIndex: 0  // Initialize here
+            currentImageIndex: 0
           }))
         )
       );
       return forkJoin(requests);
     })
   ).subscribe(results => {
-    results.forEach(({ product, images, currentImageIndex }) => {
+     results.forEach(({ product, images, currentImageIndex }) => {
       this.productMap.set(product.id, { product, images, currentImageIndex });
     });
  
   });
 }
+
+
+
 get productsWithImages() {
   return Array.from(this.productMap.values()).map(item => ({
     ...item.product,
@@ -122,30 +189,47 @@ get productsWithImages() {
     currentImageIndex: item.currentImageIndex
   }));
 }
+positions: { [productId: number]: number } = {};
 
-prevImage(product: Product, event?: MouseEvent) {
-  if (event) event.stopPropagation();
-  const item = this.productMap.get(product.id);
-  if (!item) return;
 
-  if (item.currentImageIndex > 0) {
-    item.currentImageIndex--;
+
+scrollLeft(product: ProductWithImages , event?: MouseEvent) {
+    if (event) {
+    event.stopPropagation();
+    console.log(this.availableColors);
+
+  }
+
+   if (!this.positions[product.id] ) {
+    this.positions[product.id] = 0;
+  }
+
+  if (this.positions[product.id] >=0 ) {
+    // If already at the last image, wrap to the start
+    this.positions[product.id] = -(product.images.length - 1) * 100;
   } else {
-    item.currentImageIndex = item.images.length - 1;
+    this.positions[product.id] += 100;
   }
 }
 
-nextImage(product: Product, event?: MouseEvent) {
-  if (event) event.stopPropagation();
-  const item = this.productMap.get(product.id);
-  if (!item) return;
 
-  if (item.currentImageIndex < item.images.length - 1) {
-    item.currentImageIndex++;
-  } else {
-    item.currentImageIndex = 0;
+// Called when right arrow clicked
+scrollRight(product: ProductWithImages, event?: MouseEvent) {
+    if (event) {
+    event.stopPropagation();
   }
+  if (!this.positions[product.id] ) {
+    this.positions[product.id] = 0;
+   }
+   if(this.positions[product.id] <= -((product.images.length - 1) * 100)){
+        this.positions[product.id] = 0;
+   }
+  else this.positions[product.id] -= 100;
 }
+
+
+
+
 
 
   get filteredProducts() {
@@ -261,14 +345,7 @@ nextImage(product: Product, event?: MouseEvent) {
     const encoded = encodeURIComponent(productName);
     this.router.navigate(['/edit-product', encoded]);
   }
-/*
-  startCarousel(product: any) {
-    if (product.carouselInterval) return;
 
-    product.carouselInterval = setInterval(() => {
-      this.nextImage(product, new Event('click'));
-    }, 3000);
-  }*/
 
   stopCarousel(product: any) {
     if (product.carouselInterval) {
@@ -276,28 +353,10 @@ nextImage(product: Product, event?: MouseEvent) {
       product.carouselInterval = null;
     }
   }
-/*
-
-prevImage(product: any, event: Event) {
-  event.stopPropagation(); // prevent click from opening details
-  if (product.images && product.images.length > 0) {
-    product.currentImageIndex =
-      (product.currentImageIndex - 1 + product.images.length) % product.images.length;
-  }
-}
-
-nextImage(product: any, event: Event) {
-  event.stopPropagation();
-  if (product.images && product.images.length > 0) {
-    product.currentImageIndex =
-      (product.currentImageIndex + 1) % product.images.length;
-      console.log(product.currentImageIndex)
-  }
-}
  
 
-  // New method called by arrow buttons that do nothing
-  doNothing(event: Event) {
+   doNothing(event: Event) {
+ 
     event.stopPropagation();
   }*/
 goToProductDetails(product: any): void {
@@ -309,11 +368,6 @@ goToProductDetails(product: any): void {
 
 
 
-isHovered = false;
-
-toggleHover() {
-  this.isHovered = !this.isHovered;
-}
 
 
 
