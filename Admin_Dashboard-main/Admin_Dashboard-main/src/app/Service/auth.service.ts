@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
  import { environment } from "../../app/environments/environment";
-import { HttpHeaders } from '@angular/common/http';
 
 
 @Injectable({
@@ -82,17 +81,6 @@ export class AuthService {
     }
   }
 
-  decodeAndStoreRoles(token: string): void {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const extractedRoles = payload.roles || payload.role || [];
-      this.roles = Array.isArray(extractedRoles) ? extractedRoles : [extractedRoles];
-      localStorage.setItem('roles', JSON.stringify(this.roles));
-    } catch (error) {
-      console.error('Invalid token format', error);
-      this.roles = [];
-    }
-  }
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.getToken();
@@ -152,17 +140,6 @@ export class AuthService {
     });
   }
 
-  // --- New method: extract email from JWT token ---
-  getEmailFromToken(): string | null {
-    const token = this.getToken();
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.email || payload.sub || null;
-    } catch {
-      return null;
-    }
-  }
 
   // --- New method: get user profile by email ---
   getUserById(id: number): Observable<any> {
@@ -192,13 +169,5 @@ export class AuthService {
     });
   }
 
-
-    private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    });
-  }
 
 }

@@ -22,13 +22,13 @@
   <label class="field-title" for="price">Price</label>
   <input 
     type="text"
-    [(ngModel)]="newProduct.price"
+    [(ngModel)]="newProduct.originalPrice"
     name="price"
     required
     maxlength="18"
     pattern="\d{1,15}(\.\d{1,2})?"
     title="Enter up to 15 digits and at most one decimal point (optional 1-2 decimals)"
-    (keypress)="allowNumbersAndDot($event, newProduct.price)"
+    (keypress)="allowNumbersAndDot($event, newProduct.originalPrice)"
   />
 </div>
 
@@ -67,13 +67,13 @@
   <label class="field-title" for="weight">Weight</label>
   <input 
     type="text"
-    [(ngModel)]="newProduct.wieght"
+    [(ngModel)]="newProduct.weight"
     name="weight"
     required
     maxlength="18"
     pattern="\d{1,15}(\.\d{1,2})?"
     title="Enter up to 15 digits and at most one decimal point"
-    (keypress)="allowNumbersAndDot($event, newProduct.wieght)"
+    (keypress)="allowNumbersAndDot($event, newProduct.weight)"
   />
 </div>
 <div class="field-with-title vertical">
@@ -81,12 +81,20 @@
     <label class="field-title">Images</label>
     <button type="button" class="add-image-btn" (click)="fileInput.click()">+ Add image</button>
   </div>
-  <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" />
+
+  <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;" />
+
   <div *ngFor="let file of imageFiles; let i = index" class="image-item">
-    <span>{{ file.name }}</span>
+    <img
+      [src]="URL.createObjectURL(file)"
+      alt="{{ file.name }}"
+      class="preview-image"
+    />
+    <span class="file-name">{{ file.name }}</span>
     <button type="button" (click)="removeImage(i)">Remove</button>
   </div>
 </div>
+
 
 
     <div class="field-with-title horizontal">
@@ -172,8 +180,8 @@
     </div>
 
     <div class="field-with-title horizontal">
-      <label class="field-title" for="numberingType">Numbering Type</label>
-      <select id="numberingType" [(ngModel)]="newProduct.numberingType" name="numberingType" class="form-input">
+      <label class="field-title" for="numberingFormat">Numbering Type</label>
+      <select id="numberingFormat" [(ngModel)]="newProduct.numberingFormat" name="numberingFormat" class="form-input">
         <option value="" disabled>Select Numbering Type</option>
         <option *ngFor="let type of ['Latino','English','Arabic','Roman']" [value]="type">{{ type }}</option>
       </select>

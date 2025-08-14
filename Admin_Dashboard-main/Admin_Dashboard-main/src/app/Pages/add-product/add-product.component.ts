@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProductService1 } from '../../Service/product1.service';
-import { Product } from '../../Service/product.service';
+import{ProductWithImages} from "../products/products.component"
 import { ProductDTO } from '../../models/createproduct.model';
 
 @Component({
@@ -15,24 +15,25 @@ import { ProductDTO } from '../../models/createproduct.model';
 })
 export class AddProductComponent implements OnInit {
 imageFiles: File[] = [];
-
+URL = window.URL;
   mode: 'add' | 'edit' = 'add';
   productId?: string;
 
-  newProduct: Product = {
+  newProduct: ProductWithImages & {editMode: boolean,showDetails:boolean} = {
+    id: 0,
     name: '',
-    price: 0,
+    originalPrice: 0,
     quantity: 0,
-    images: ['', '', '', '', ''],
+    imageId: [],
     description: '',
     brand: '',
-    waterProof: undefined,
-    includesDate: undefined,
-    numberingType: '',
-    hasFullNumerals: undefined,
-    hasTickingSound: undefined,
+    waterProof: false,
+    includesDate: false,
+    numberingFormat: '',
+    hasFullNumerals: false,
+    hasTickingSound: false,
     size: 0,
-    wieght: 0,
+    weight: 0,
     bandColor: '',
     handsColor: '',
     backgroundColor: '',
@@ -43,7 +44,12 @@ imageFiles: File[] = [];
     changeableBand: true,
     editMode: false,
     showDetails: false,
-               currentImageIndex: 0
+    currentImageIndex: 0,
+     discountPrice: 0,      // corresponds to Double discountPrice
+    discount: 0,           // corresponds to Double discount
+     images: [],         // base64 image strings
+ 
+     
  
   };
 
@@ -89,7 +95,7 @@ onFileSelected(event: Event): void {
       next: (product: any) => {
         this.newProduct = {
           ...product,
-          wieght: product.weight, // Map backend's "weight" to form field
+          weight: product.weight, // Map backend's "weight" to form field
           images: product.images && product.images.length ? product.images : ['', '', '', '', '']
         };
       },
@@ -117,8 +123,8 @@ private validateForm(): boolean {
   }
 
   // Price
-  const priceValid = /^\d+(\.\d+)?$/.test(this.newProduct.price.toString());
-  if (!priceValid || this.newProduct.price <= 0) {
+  const priceValid = /^\d+(\.\d+)?$/.test(this.newProduct.originalPrice.toString());
+  if (!priceValid || this.newProduct.originalPrice <= 0) {
     alert('Price must be a valid positive number.');
     return false;
   }
@@ -138,7 +144,7 @@ private validateForm(): boolean {
   }
 
   // Weight
-  if (!/^\d+(\.\d+)?$/.test(this.newProduct.wieght.toString()) || this.newProduct.wieght <= 0) {
+  if (!/^\d+(\.\d+)?$/.test(this.newProduct.weight.toString()) || this.newProduct.weight <= 0) {
     alert('Weight must be a valid positive number.');
     return false;
   }
@@ -200,7 +206,7 @@ private validateForm(): boolean {
     alert('Please select a shape.');
     return false;
   }
-  if (!this.newProduct.numberingType) {
+  if (!this.newProduct.numberingFormat) {
     alert('Please select a numbering type.');
     return false;
   }
@@ -254,11 +260,11 @@ private validateForm(): boolean {
       description: this.newProduct.description?.trim() || '',
       brand: this.newProduct.brand,
       size: Number(this.newProduct.size),
-      weight: Number(this.newProduct.wieght),
+      weight: Number(this.newProduct.weight),
       handsColor: this.newProduct.handsColor,
       backgroundColor: this.newProduct.backgroundColor,
       bandColor: this.newProduct.bandColor,
-      numberingFormat: this.newProduct.numberingType,
+      numberingFormat: this.newProduct.numberingFormat,
       bandMaterial: this.newProduct.bandMaterial,
       caseMaterial: this.newProduct.caseMaterial,
       displayType: this.newProduct.displayType,
@@ -269,7 +275,7 @@ hasTickingSound: this.newProduct.hasTickingSound ?? false,
 waterProof: this.newProduct.waterProof ?? false,
 
       changeableBand: this.newProduct.changeableBand ?? true,
-      price: Number(this.newProduct.price),
+      price: Number(this.newProduct.originalPrice),
       quantity: Number(this.newProduct.quantity),
     };
   }
@@ -280,13 +286,13 @@ prepareFormData(): FormData {
   formData.append('description', this.newProduct.description?.trim() || '');
   formData.append('brand', this.newProduct.brand);
   formData.append('size', this.newProduct.size.toString());
-  formData.append('weight', this.newProduct.wieght.toString());
-  formData.append('price', this.newProduct.price.toString());
+  formData.append('weight', this.newProduct.weight.toString());
+  formData.append('price', this.newProduct.originalPrice.toString());
   formData.append('quantity', this.newProduct.quantity.toString());
   formData.append('handsColor', this.newProduct.handsColor);
   formData.append('backgroundColor', this.newProduct.backgroundColor);
   formData.append('bandColor', this.newProduct.bandColor);
-  formData.append('numberingFormat', this.newProduct.numberingType);
+  formData.append('numberingFormat', this.newProduct.numberingFormat);
   formData.append('bandMaterial', this.newProduct.bandMaterial);
   formData.append('caseMaterial', this.newProduct.caseMaterial);
   formData.append('displayType', this.newProduct.displayType);
@@ -311,18 +317,18 @@ prepareFormData(): FormData {
   resetNewProduct(): void {
     this.newProduct = {
       name: '',
-      price: 0,
+      originalPrice: 0,
       quantity: 0,
       images: ['', '', '', '', ''],
       description: '',
       brand: '',
       waterProof: false,
       includesDate: false,
-      numberingType: '',
+      numberingFormat: '',
       hasFullNumerals: false,
       hasTickingSound: false,
       size: 0,
-      wieght: 0,
+      weight: 0,
       bandColor: '',
       handsColor: '',
       backgroundColor: '',
@@ -333,8 +339,13 @@ prepareFormData(): FormData {
       changeableBand: true,
       editMode: false,
       showDetails: false,
-                 currentImageIndex: 0
+      currentImageIndex: 0,
+     id: 0,
+      imageId: [],
 
+     discountPrice: 0,      // corresponds to Double discountPrice
+    discount: 0,           // corresponds to Double discount
+ 
  
     };
   }

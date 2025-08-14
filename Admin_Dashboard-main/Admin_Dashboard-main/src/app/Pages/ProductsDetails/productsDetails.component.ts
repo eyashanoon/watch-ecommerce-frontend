@@ -29,13 +29,14 @@ export class ProductsDetailsComponent {
       this.products.selectedQty = 1;
     }
   }
-
-  editProduct() {
-    if (this.products) {
-      const encoded = encodeURIComponent(this.products.name);
-      this.router.navigate(['/edit-product', encoded]);
-    }
+editProduct() {
+  if (this.products) {
+    // Use the product ID, not the name
+    this.router.navigate(['/add-product', this.products.id]);
   }
+}
+
+
 
   deleteProduct() {
     if (!this.products) return;

@@ -95,7 +95,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
 goToProductPage() {
-  this.router.navigate(['/customer-product'], { state: { source: 'home' } });
+  this.router.navigate(['/product'], { state: { source: 'home' } });
 }
 
 

@@ -16,7 +16,9 @@ export const routes: Routes = [
 {
   path: 'product/edit/:id',  // edit mode uses same component
   component: AddProductComponent
-}
+},
+{ path: 'add-product/:id', component: AddProductComponent }
+
 ,
   { path: 'product', component: ProductsComponent },
   { path: '', component: HomeComponent },

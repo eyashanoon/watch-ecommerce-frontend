@@ -12,6 +12,24 @@
   flex-direction: column;
   align-items: center;
 }
+.image-item {
+  display: flex;
+  align-items: center; /* vertically center items */
+  gap: 8px; /* small gap between image and text */
+  margin-bottom: 6px; /* space between different files */
+}
+
+.preview-image {
+  width: 50px; /* or desired size */
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px; /* optional: rounded corners */
+}
+
+.file-name {
+  flex-grow: 1; /* take remaining space */
+}
+
 
 .add-watch-card:hover {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);

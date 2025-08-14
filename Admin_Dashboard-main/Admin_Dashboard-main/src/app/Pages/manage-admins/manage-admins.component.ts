@@ -62,6 +62,6 @@ export class ManageAdminsComponent implements OnInit {
   }
 
   goToAddAdmin() {
-    this.router.navigate(['/admin/add']);
+    this.router.navigate(['/control-admins']);
   }
 }

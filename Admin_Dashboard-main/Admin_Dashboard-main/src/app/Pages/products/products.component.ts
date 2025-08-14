@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
  import { ProductService1} from '../../Service/product1.service';
 import { ProductService} from '../../Service/product.service';
+import { AuthService } from '../../Service/auth.service';
+
 
 import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -60,7 +62,8 @@ export class ProductsComponent implements OnInit {
      private productService: ProductService,
      private productService1: ProductService1,
      private imageService:ImageService,
-     private featuresService:FeaturesService
+     private featuresService:FeaturesService,
+     private authService: AuthService
     ) {}
 
 
@@ -114,6 +117,7 @@ export class ProductsComponent implements OnInit {
   numberingTypes = ['Latino', 'English', 'Arabic', 'Roman'];
 
   shapes = ['round', 'square', 'rectangular', 'oval'];
+  canAddProduct = false;
 
  availableColors: string[] = [];
   bandColors: string[] = [];
@@ -154,6 +158,9 @@ this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
     .subscribe(() => {
       this.loadProducts();
     });
+  const roles = this.authService.getUserRoles(); // Example: ['ADMIN'] or ['CUSTOMER']
+  this.canAddProduct = roles.includes('ADMIN'); // Only admins can add products
+
 }
 
 loadProducts() {
@@ -332,6 +339,20 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
   goToHomePage() {
     this.router.navigate(['/home']);
   }
+goToProductDetails(product: any): void {
+  const encodedName = encodeURIComponent(product.name);
+  const roles = this.authService.getUserRoles();
+  const isLoggedIn = this.authService.isLoggedIn();
+
+  if (isLoggedIn && roles.includes('ADMIN')) {
+    // Admin goes to admin product details
+    this.router.navigate(['/admin-product', encodedName], { state: { product } });
+  } else {
+    // Customer or guest goes to normal product details
+    this.router.navigate(['/product', encodedName], { state: { product } });
+  }
+}
+
 
   toggleSidebar() {
     this.sidebarVisible = !this.sidebarVisible;
@@ -354,17 +375,11 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
     }
   }
  
-
-   doNothing(event: Event) {
- 
-    event.stopPropagation();
-  }*/
-goToProductDetails(product: any): void {
-  const encodedName = encodeURIComponent(product.name);
-  this.router.navigate(['/admin-product', encodedName], {
-    state: { product }
-  });
+doNothing(event: Event) {
+  event.stopPropagation();
 }
+
+
 
 
 
