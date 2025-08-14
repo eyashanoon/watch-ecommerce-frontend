@@ -90,8 +90,7 @@ onSubmit() {
 
   this.authService.login(username, password).subscribe({
     next: (res: { token: string; roles: string[]; id:number }) => {
-            console.log(res)
-
+ 
       if (res.token) {
         this.authService.saveToken(res.token,res.roles , res.id);
 

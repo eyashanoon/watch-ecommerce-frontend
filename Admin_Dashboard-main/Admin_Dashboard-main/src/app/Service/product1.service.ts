@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+ import { Observable, map } from 'rxjs';
 import { environment } from "../../app/environments/environment";
 import { Product } from '../models/product.model';
+ 
 
 const API_URL = environment.apiBaseUrl + '/api/products';
 
@@ -26,9 +27,22 @@ export class ProductService1 {
       headers: this.getAuthHeaders()
     });
   }
-
+ 
   // Optional helper to directly get the array of products
   getAllProductsArray(): Observable<Product[]> {
     return this.getAllProducts().pipe(map(page => page.content));
   }
+ addProduct(productData: any): Observable<any> {
+  console.log(productData);
+  return this.http.post<any>(API_URL, productData, {
+    headers: this.getAuthHeaders()
+  });
 }
+  getProductById(id: string): Observable<any> {
+    return this.http.get<any>(`${API_URL}/${id}`, { headers: this.getAuthHeaders() });
+  }
+    updateProduct(id: string, productData: any): Observable<any> {
+    return this.http.put<any>(`${API_URL}/${id}`, productData, { headers: this.getAuthHeaders() });
+  }
+
+ }

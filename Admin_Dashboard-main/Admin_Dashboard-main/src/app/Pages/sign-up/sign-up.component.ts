@@ -33,9 +33,9 @@ export class SignUpComponent implements AfterViewInit {
   constructor(private fb: FormBuilder, private router: Router) {
     this.SignUpForm = this.fb.group(
   {
-    fullName: ['', [Validators.required, Validators.minLength(3), this.usernameTakenValidator()]],
+    fullName: ['', [Validators.required, Validators.minLength(3)]],
 
-    email: ['', [Validators.required, Validators.email, this.emailTakenValidator()]],
+    email: ['', [Validators.required, Validators.email]],
 
     phoneNumber: ['', [Validators.required, Validators.pattern(/^\+?\d{7,14}$/)]],
 

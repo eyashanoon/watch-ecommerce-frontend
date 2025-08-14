@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { ProductService1} from '../../Service/product1.service';
+ import { ProductService1} from '../../Service/product1.service';
 import { ProductService} from '../../Service/product.service';
 
 import { NavigationEnd } from '@angular/router';
@@ -15,6 +15,7 @@ import {Image } from '../../models/Image.model';
 import {Product } from '../../models/product.model';
 import {forkJoin, map, switchMap } from 'rxjs';
 
+ 
 
 
  
@@ -72,7 +73,7 @@ export class ProductsComponent implements OnInit {
   originalProduct: any = null;
   showAddForm = false;
   sidebarVisible = false;
-
+ 
   filters = {
     maxPrice: 1000,
     maxQuantity: 100,
@@ -114,13 +115,14 @@ export class ProductsComponent implements OnInit {
 
   shapes = ['round', 'square', 'rectangular', 'oval'];
 
-availableColors: string[] = [];
+ availableColors: string[] = [];
   bandColors: string[] = [];
 
   handsColors: string[] = [];
 
   backgroundColors  : string[] = [];
 
+ 
 
 ngOnInit(): void {
 
@@ -155,9 +157,10 @@ this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
 }
 
 loadProducts() {
-  this.productService1.getAllProducts().pipe(
+   this.productService1.getAllProducts().pipe(
     switchMap(page => {   // page is the Page<Product> object
       const products = page.content;   // <-- extract the array
+ 
       const requests = products.map(product =>
         this.imageService.getAllImagesByProductID(product.id).pipe(
           map(images => ({
@@ -173,6 +176,7 @@ loadProducts() {
      results.forEach(({ product, images, currentImageIndex }) => {
       this.productMap.set(product.id, { product, images, currentImageIndex });
     });
+ 
   });
 }
 
@@ -259,11 +263,6 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
       );
     });
   }
-
-
-
-
-
 
   toggleDetails(product: any) {
     product.showDetails = !product.showDetails;
@@ -354,11 +353,12 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
       product.carouselInterval = null;
     }
   }
-
+ 
 
    doNothing(event: Event) {
+ 
     event.stopPropagation();
-  }
+  }*/
 goToProductDetails(product: any): void {
   const encodedName = encodeURIComponent(product.name);
   this.router.navigate(['/admin-product', encodedName], {
