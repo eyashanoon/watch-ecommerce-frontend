@@ -664,7 +664,7 @@ box-sizing: border-box;
   text-align: center;
 }
 
- 
+
 .action-buttons {
   margin-top: 5px;
   display: flex;
@@ -730,7 +730,7 @@ box-sizing: border-box;
   color: white;
   border: none;
   font-size: 15px;
-  padding: 4px 6px;
+  padding: 6px 8px;
   cursor: pointer;
   border-radius: 50%;
   user-select: none;

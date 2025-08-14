@@ -12,41 +12,37 @@ import {ImageService } from '../../Service/image.service';
 import {FeaturesService , ColorsResponse} from '../../Service/features.service';
 
 import {Image } from '../../models/Image.model';
-import {Product } from '../../models/product.model';
-import {forkJoin, map, switchMap } from 'rxjs';
+import {Product , ProductWithImages } from '../../models/product.model';
+import {forkJoin, map, switchMap, Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 
-
- 
-export interface ProductWithImages {
-  id: number;
-  name: string;
-  description: string;
-  imageId: number[];          // list of image IDs related to the product
-  brand: string;
-  handsColor: string;
-  backgroundColor: string;
-  bandColor: string;
-  numberingFormat: string;
-  bandMaterial: string;
-  caseMaterial: string;
-  displayType: string;
-  shape: string;
+type Filters = {
+  maxPrice: number;
+  maxQuantity: number;
+  maxWeight: number;
+  maxSize: number;
+  waterProof: boolean;
   includesDate: boolean;
   hasFullNumerals: boolean;
   hasTickingSound: boolean;
-  waterProof: boolean;
+  displayType: string;
+  bandColor: string;
+  handsColor: string;
+  backgroundColor: string;
+  bandMaterial: string;
+  caseMaterial: string;
+  brand: string;
+  numberingType: string;
+  shape: string;
   changeableBand: boolean;
-  size: number;               // was number before, matches Java Double
-  weight: number;             // was number before, matches Java Double
-  originalPrice: number;      // corresponds to Double originalPrice
-  discountPrice: number;      // corresponds to Double discountPrice
-  discount: number;           // corresponds to Double discount
-  quantity: number;
+    minPrice?: number;
+  minWeight?: number;
+  minSize?: number;
+  name: string;
+};
 
-  images: string[];          // base64 image strings
-  currentImageIndex: number; // carousel index
-}
+
 @Component({
   selector: 'app-products',
   standalone: true,
@@ -54,26 +50,31 @@ export interface ProductWithImages {
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.css']
 })
+
+
+
 export class ProductsComponent implements OnInit {
    constructor(private router: Router,
      private productService: ProductService,
      private productService1: ProductService1,
      private imageService:ImageService,
      private featuresService:FeaturesService
-    ) {}
+    ) {
+  }
+
+
 
 
   product: any[] = [];
 
   productMap = new Map<number, { product: Product, images: Image[],currentImageIndex:number }>();
 
-
   searchText: string = '';
   originalProduct: any = null;
   showAddForm = false;
   sidebarVisible = false;
 
-  filters = {
+  filters: Filters = {
     maxPrice: 1000,
     maxQuantity: 100,
     maxWeight: 60,
@@ -92,49 +93,137 @@ export class ProductsComponent implements OnInit {
     numberingType: '',
     shape: '',
     changeableBand: true,
+    name:'',
+
   };
 
+ defaultFilters: Filters = {
+  maxPrice: 1000,
+  maxQuantity: 100,
+  maxWeight: 60,
+  maxSize: 45,
+  waterProof: false,
+  includesDate: false,
+  hasFullNumerals: false,
+  hasTickingSound: false,
+  displayType: '',
+  bandColor: '',
+  handsColor: '',
+  backgroundColor: '',
+  bandMaterial: '',
+  caseMaterial: '',
+  brand: '',
+  numberingType: '',
+  shape: '',
+  changeableBand: true,
+  name:'',
+};
+    private filterChange$ = new Subject<Filters>();
+
+  onFiltersChanged() {
+    this.filterChange$.next({ ...this.filters }); // emit new filters
+  }
+
+  // maps frontend Filters → backend ProductQueryObject
+ mapFiltersToBackend(filters: Filters) {
+  return {
+    maxPrice: filters.maxPrice,
+    minPrice: filters['minPrice'] ?? 1, // optional min
+    maxWeight: filters.maxWeight,
+    minWeight: filters['minWeight'] ?? 1,
+    maxSize: filters.maxSize,
+    minSize: filters['minSize'] ?? 1,
+    waterProof: filters.waterProof,
+    includesDate: filters.includesDate,
+    hasFullNumerals: filters.hasFullNumerals,
+    hasTickingSound: filters.hasTickingSound,
+    displayType: filters.displayType,
+    bandMaterial: filters.bandMaterial,
+    caseMaterial: filters.caseMaterial,
+    brand: filters.brand,
+    shape: filters.shape,
+    changeableBand: filters.changeableBand,
+    numberingFormat: filters.numberingType // rename here
+  };
+}
+
+ mapFiltersToBackend1(filters: Filters) {
+  const backendFilters: any = {};
+
+  // Map frontend -> backend
+  const fieldMap: Record<string, string> = {
+    maxPrice: 'maxPrice',
+    maxWeight: 'maxWeight',
+    maxSize: 'maxSize',
+    waterProof: 'waterProof',
+    includesDate: 'includesDate',
+    hasFullNumerals: 'hasFullNumerals',
+    hasTickingSound: 'hasTickingSound',
+    displayType: 'displayType',
+    bandMaterial: 'bandMaterial',
+    caseMaterial: 'caseMaterial',
+    brand: 'brand',
+    numberingType: 'numberingFormat', // frontend -> backend
+    shape: 'shape',
+    changeableBand: 'changeableBand',
+    // min values: only include if max value changed
+    minPrice: 'minPrice',
+    minWeight: 'minWeight',
+    minSize: 'minSize',
+  };
+
+  for (const key in filters) {
+    if (filters[key as keyof Filters] !== this.defaultFilters[key as keyof Filters]) {
+      const backendKey = fieldMap[key] || key;
+      backendFilters[backendKey] = filters[key as keyof Filters];
+    }
+  }
+
+  // Set min values if max is customized
+  if (filters.maxPrice !== this.defaultFilters.maxPrice) backendFilters.minPrice = 0;
+  if (filters.maxWeight !== this.defaultFilters.maxWeight) backendFilters.minWeight = 0;
+  if (filters.maxSize !== this.defaultFilters.maxSize) backendFilters.minSize = 0;
+
+  return backendFilters;
+}
+
+  getFilteredProducts(filters: Filters) {
+    this.loadProducts();
+
+}
 
 
 
-
-  availableBrands = [
-    'Dryden', 'Rolex', 'iPhone', 'Samsung', 'Casio', 'Seiko', 'Citizen',
-    'Fossil', 'Timex', 'Bulova'
-  ];
-
-
-  bandMaterials = ['leather', 'metal', 'rubber', 'fabric'];
-
-  caseMaterials = ['crystal', 'stainless steel', 'plastic', 'ceramic'];
-
-  displayTypes = ['dial', 'digital', 'analog-digital'];
-
-  numberingTypes = ['Latino', 'English', 'Arabic', 'Roman'];
-
-  shapes = ['round', 'square', 'rectangular', 'oval'];
-
-availableColors: string[] = [];
+  availableColors: string[] = [];
   bandColors: string[] = [];
 
   handsColors: string[] = [];
 
   backgroundColors  : string[] = [];
 
+  availableBrands  : string[] = [];
+
+  bandMaterials: string[] = [];
+
+  caseMaterials: string[] = [];
+  displayTypes: string[] = [];
+  numberingTypes: string[] = [];
+  shapes: string[] = [];
+
 
 ngOnInit(): void {
+this.filterChange$
+      .pipe(debounceTime(300)) // waits 300ms after last change
+      .subscribe(filters => {
+        this.getFilteredProducts(filters);
+      });
 
 this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
-  console.log(colorsObj);
-    this.handsColors = colorsObj.Hands.map(c => c.trim());
-    this.backgroundColors = colorsObj.Background.map(c => c.trim());
-    this.bandColors = colorsObj.Band.map(c => c.trim());
-  console.log( "handsColors       "+this.handsColors);
-  console.log("backgroundColors    " +this.backgroundColors);
-  console.log("bandColors       "+ this.bandColors);
 
 
-  
+  this.handsColors = colorsObj.Hands.map(c => c.trim());
+  this.backgroundColors = colorsObj.Background.map(c => c.trim());
+  this.bandColors = colorsObj.Band.map(c => c.trim());
   this.availableColors = Array.from(
     new Set(
       Object.values(colorsObj)   // Get the arrays from hands, background, band
@@ -143,6 +232,27 @@ this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
     )
   );
 });
+
+  this.featuresService.getAllBrands().subscribe(brands =>{
+   this.availableBrands=brands;
+  });
+  this.featuresService.getAllBands().subscribe(band=>{
+    this.bandMaterials=band;
+   });
+  this.featuresService.getAllCases().subscribe(cases=>{
+    this.caseMaterials=cases;
+  });
+  this.featuresService.getAllDisplay_types().subscribe(DisplayTypes=>{
+    this.displayTypes=DisplayTypes;
+   });
+  this.featuresService.getAllNumbering_formats().subscribe(numberingTypes=>{
+    this.numberingTypes=numberingTypes;
+   });
+  this.featuresService.getAllShapes().subscribe(shapes=>{
+    this.shapes=shapes;
+    console.log(shapes);
+  });
+
 
 
   this.loadProducts();
@@ -154,8 +264,13 @@ this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
     });
 }
 
+
 loadProducts() {
-  this.productService1.getAllProducts().pipe(
+  const backendFilters = this.mapFiltersToBackend1(this.filters);
+  console.log(backendFilters)
+  this.productMap.clear();
+console.log(this.filters);
+  this.productService1.getAllProducts(backendFilters).pipe(
     switchMap(page => {   // page is the Page<Product> object
       const products = page.content;   // <-- extract the array
       const requests = products.map(product =>
@@ -259,6 +374,15 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
       );
     });
   }
+
+
+
+
+
+
+
+
+
 
 
 

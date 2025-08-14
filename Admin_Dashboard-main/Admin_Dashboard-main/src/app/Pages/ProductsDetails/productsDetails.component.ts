@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../Service/product.service';
-import{ProductWithImages} from "../products/products.component"
+import {Product , ProductWithImages } from '../../models/product.model';
 
 @Component({
   selector: 'app-productsDetails',

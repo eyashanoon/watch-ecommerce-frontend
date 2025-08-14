@@ -26,7 +26,7 @@ export class FeaturesService {
       });
     }
      getAllBrands(): Observable<any[]> {
-      return this.http.get<any[]>(`${API_URL}/${"brands"}`, {
+      return this.http.get<any[]>(`${API_URL}/${"brand"}`, {
         headers: this.getAuthHeaders()
       });
     }
