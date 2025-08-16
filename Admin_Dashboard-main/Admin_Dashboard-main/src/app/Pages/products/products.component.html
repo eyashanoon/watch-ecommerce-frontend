@@ -22,7 +22,8 @@
   <!-- Search Bar -->
   <div class="search-wrapper">
     <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Search watches..." [(ngModel)]="searchText" class="search-bar-with-icon" />
+    <input type="text" placeholder="Search watches..." [(ngModel)]="filters.name" class="search-bar-with-icon"          (ngModelChange)="onFiltersChanged()"
+/>
   </div>
 
   <div class="product-section">
@@ -206,7 +207,9 @@
         </div>
 
         <h3 class="product-name">{{ product.name }}</h3>
+        <p class="product-price">{{ product.quantity }}  unit </p>
         <p class="product-price">{{ product.originalPrice | currency }}</p>
+
       </div>
     </div>
   </div>
