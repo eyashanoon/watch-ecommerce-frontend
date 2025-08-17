@@ -2,7 +2,7 @@ import { Component, QueryList, ViewChildren, ElementRef, AfterViewInit } from '@
 import { CommonModule, NgIf, NgFor } from '@angular/common'; // <-- add NgIf and NgFor
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ProductService } from '../../Service/product.service';
+import { ProductService1 } from '../../Service/product1.service';
 import { ProductWithImages } from '../../models/product.model';
 
 @Component({
@@ -12,14 +12,25 @@ import { ProductWithImages } from '../../models/product.model';
   templateUrl: './productsDetails.component.html',
   styleUrls: ['./productsDetails.component.css']
 })
+
+
+type Filters = {
+ 
+  name: string;
+};
 export class ProductsDetailsComponent implements AfterViewInit {
   @ViewChildren('carouselImg') carouselImages!: QueryList<ElementRef<HTMLImageElement>>;
-
   currentIndex = 0;
   is3DViewActive = false;
-  products!: ProductWithImages & { selectedQty: number, colorCombinations:any[] }; // <-- fix strict property initialization
+  products!: ProductWithImages & { selectedQty: number, colorCombinations:any[] };
+  
+    filters: Filters = {
+ 
+    name:'',
+    }
+// <-- fix strict property initialization
 
-  constructor(private router: Router, private productService: ProductService) {
+  constructor(private router: Router, private productService: ProductService1) {
     const nav = this.router.getCurrentNavigation();
     const stateProduct = nav?.extras?.state?.['product'];
 
@@ -29,6 +40,8 @@ export class ProductsDetailsComponent implements AfterViewInit {
     }
 
     this.products = stateProduct;
+    this.filters.name=this.products.name;
+   // this.productService.getAllProducts(this.filters).subscribe()
     this.products.colorCombinations=  [
     { hands: "#000000", background: "#FFFFFF", band: "#FF0000" }, // comp1
     { hands: "#FFD700", background: "#000000", band: "#0000FF" }, // comp2
@@ -93,18 +106,5 @@ prevImage() {
   }
 
   deleteProduct() {
-    const confirmDelete = confirm('Are you sure you want to delete this product?');
-    if (!confirmDelete) return;
-
-    const allProducts = this.productService.getProducts();
-    const index = allProducts.findIndex(p => p.name === this.products.name);
-    if (index !== -1) {
-      allProducts.splice(index, 1);
-      this.productService.saveProducts(allProducts);
-      alert('Product deleted successfully!');
-      this.router.navigate(['/product']);
-    } else {
-      alert('Product not found.');
-    }
   }
 }

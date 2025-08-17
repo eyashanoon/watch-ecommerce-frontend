@@ -54,3 +54,5 @@ export interface ProductWithImages {
   images: string[];          // base64 image strings
   currentImageIndex: number; // carousel index
 }
+
+
