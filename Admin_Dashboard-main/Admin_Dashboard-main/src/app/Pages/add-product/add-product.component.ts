@@ -1,390 +1,305 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProductService1 } from '../../Service/product1.service';
-import{ProductWithImages} from "../products/products.component"
-import { ProductDTO } from '../../models/createproduct.model';
+import { ImageService } from '../../Service/image.service';
+import { FeaturesService, ColorsResponse } from '../../Service/features.service';
+import { Image } from '../../models/Image.model';
+
+// Validator: at least one image
+export const atLeastOneImage: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const array = control as FormArray;
+  return array && array.length > 0 ? null : { required: true };
+};
 
 @Component({
   selector: 'app-add-product',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.css']
 })
 export class AddProductComponent implements OnInit {
-imageFiles: File[] = [];
-URL = window.URL;
+  watchForm!: FormGroup;
+  imageFiles: File[] = [];           // newly selected files
+  loadedImages: Image[] = [];        // URLs loaded from server
+  deletedImageIds: number[] = [];    // track images marked for deletion
   mode: 'add' | 'edit' = 'add';
   productId?: string;
 
-  newProduct: ProductWithImages & {editMode: boolean,showDetails:boolean} = {
-    id: 0,
-    name: '',
-    originalPrice: 0,
-    quantity: 0,
-    imageId: [],
-    description: '',
-    brand: '',
-    waterProof: false,
-    includesDate: false,
-    numberingFormat: '',
-    hasFullNumerals: false,
-    hasTickingSound: false,
-    size: 0,
-    weight: 0,
-    bandColor: '',
-    handsColor: '',
-    backgroundColor: '',
-    bandMaterial: '',
-    caseMaterial: '',
-    displayType: '',
-    shape: '',
-    changeableBand: true,
-    editMode: false,
-    showDetails: false,
-    currentImageIndex: 0,
-     discountPrice: 0,      // corresponds to Double discountPrice
-    discount: 0,           // corresponds to Double discount
-     images: [],         // base64 image strings
- 
-     
- 
-  };
+  availableColors: string[] = [];
+  bandColors: string[] = [];
+  handsColors: string[] = [];
+  backgroundColors: string[] = [];
+  availableBrands: string[] = [];
+  bandMaterials: string[] = [];
+  caseMaterials: string[] = [];
+  displayTypes: string[] = [];
+  numberingTypes: string[] = [];
+  shapes: string[] = [];
 
-  availableBrands = ['Dryden', 'Rolex', 'iPhone', 'Samsung', 'Casio', 'Seiko', 'Citizen', 'Fossil', 'Timex', 'Bulova'];
-  bandColors = ['black', 'brown', 'silver', 'gold', 'blue', 'red', 'orange', 'white'];
-  handsColors = ['black', 'white', 'gold', 'silver', 'blue', 'red'];
-  backgroundColors = ['black', 'white', 'blue', 'red', 'green', 'silver', 'gold'];
-  bandMaterials = ['leather', 'metal', 'rubber', 'fabric'];
-  caseMaterials = ['crystal', 'stainless steel', 'plastic', 'ceramic'];
-  displayTypes = ['dial', 'digital', 'analog-digital'];
-  numberingTypes = ['Latino', 'English', 'Arabic', 'Roman'];
-  shapes = ['round', 'square', 'rectangular', 'oval'];
+  submitted = false;
 
   constructor(
+    private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private productService: ProductService1
+    private productService: ProductService1,
+    private featuresService: FeaturesService,
+    private imageService: ImageService
   ) {}
 
   ngOnInit(): void {
+    this.loadFeatures();
     this.productId = this.route.snapshot.paramMap.get('id') ?? undefined;
+    this.initializeForm();
     if (this.productId) {
       this.mode = 'edit';
       this.loadProductForEdit(this.productId);
     }
   }
-// Remove a file from the list
-removeImage(index: number): void {
-  this.imageFiles.splice(index, 1);
-}
 
-onFileSelected(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    const file = input.files[0];
-    this.imageFiles.push(file);
-    input.value = ''; // Clear the input so user can select the next file
+  initializeForm(): void {
+    this.watchForm = this.fb.group({
+      name: ['', [Validators.required, Validators.maxLength(15)]],
+      price: [0, [Validators.required, Validators.min(0.01)]],
+      quantity: [0, [Validators.required, Validators.pattern(/^\d{1,15}$/)]],
+      size: [0, [Validators.required, Validators.min(0.01)]],
+      weight: [0, [Validators.required, Validators.min(0.01)]],
+      description: ['', Validators.required],
+      brand: ['', Validators.required],
+      displayType: ['', Validators.required],
+      shape: ['', Validators.required],
+      bandColor: ['', Validators.required],
+      handsColor: ['', Validators.required],
+      backgroundColor: ['', Validators.required],
+      bandMaterial: ['', Validators.required],
+      caseMaterial: ['', Validators.required],
+      numberingFormat: ['', Validators.required],
+      waterProof: [null, Validators.required],
+      includesDate: [null, Validators.required],
+      hasFullNumerals: [null, Validators.required],
+      changeableBand: [null, Validators.required],
+      hasTickingSound: [null, Validators.required],
+      images: this.fb.array([], atLeastOneImage),
+      discount: [0],
+      discountPrice: [0]
+    });
   }
-}
+
+  get images(): FormArray {
+    return this.watchForm.get('images') as FormArray;
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      Array.from(input.files).forEach(file => {
+        this.imageFiles.push(file);
+        const url = URL.createObjectURL(file);
+        this.images.push(this.fb.control(url));
+      });
+      input.value = '';
+    }
+  }
+
+  removeImage(index: number): void {
+    if (index < this.loadedImages.length) {
+      // Existing image marked for deletion
+      const img = this.loadedImages[index];
+      this.deletedImageIds.push(img.id);
+      this.loadedImages.splice(index, 1);
+    } else {
+      // Newly added (not yet uploaded)
+      this.imageFiles.splice(index - this.loadedImages.length, 1);
+    }
+    this.images.removeAt(index);
+  }
+
+  loadFeatures() {
+    this.featuresService.getAllColors().subscribe((colorsObj: ColorsResponse) => {
+      this.handsColors = colorsObj.Hands.map(c => c.trim());
+      this.backgroundColors = colorsObj.Background.map(c => c.trim());
+      this.bandColors = colorsObj.Band.map(c => c.trim());
+      this.availableColors = Array.from(new Set(Object.values(colorsObj).flat().map(c => c.trim())));
+    });
+    this.featuresService.getAllBrands().subscribe(brands => this.availableBrands = brands);
+    this.featuresService.getAllBands().subscribe(band => this.bandMaterials = band);
+    this.featuresService.getAllCases().subscribe(cases => this.caseMaterials = cases);
+    this.featuresService.getAllDisplay_types().subscribe(DisplayTypes => this.displayTypes = DisplayTypes);
+    this.featuresService.getAllNumbering_formats().subscribe(numberingTypes => this.numberingTypes = numberingTypes);
+    this.featuresService.getAllShapes().subscribe(shapes => this.shapes = shapes);
+  }
+
+  loadProductImages(productId: number): void {
+    this.imageService.getAllImagesByProductID(productId).subscribe({
+      next: (images: Image[]) => {
+        this.images.clear(); // clear existing FormArray
+        this.loadedImages = images; // store loaded images
+        images.forEach(img => {
+          const dataUrl = `data:image/jpeg;base64,${img.data}`;
+          this.images.push(this.fb.control(dataUrl));
+        });
+      },
+      error: (err) => console.error('Failed to load images', err)
+    });
+  }
 
   loadProductForEdit(id: string): void {
     this.productService.getProductById(id).subscribe({
       next: (product: any) => {
-        this.newProduct = {
-          ...product,
-          weight: product.weight, // Map backend's "weight" to form field
-          images: product.images && product.images.length ? product.images : ['', '', '', '', '']
-        };
+        this.watchForm.patchValue({
+          name: product.name,
+          price: product.originalPrice,
+          quantity: product.quantity,
+          size: product.size,
+          weight: product.weight,
+          description: product.description,
+          brand: product.brand,
+          displayType: product.displayType,
+          shape: product.shape,
+          bandColor: product.bandColor,
+          handsColor: product.handsColor,
+          backgroundColor: product.backgroundColor,
+          bandMaterial: product.bandMaterial,
+          caseMaterial: product.caseMaterial,
+          numberingFormat: product.numberingFormat,
+          waterProof: product.waterProof,
+          includesDate: product.includesDate,
+          hasFullNumerals: product.hasFullNumerals,
+          changeableBand: product.changeableBand,
+          hasTickingSound: product.hasTickingSound,
+          discount: product.discount || 0,
+          discountPrice: product.discountPrice || 0
+        });
       },
-      error: (err) => {
+      error: err => {
         console.error('Failed to load product', err);
         alert('Could not load product for editing.');
         this.router.navigate(['/product']);
       }
     });
+
+    this.loadProductImages(Number(id));
+  }
+
+  prepareFormData(): FormData {
+    const formData = new FormData();
+    const formValue = this.watchForm.value;
+
+    Object.entries(formValue).forEach(([key, value]) => {
+      if (key !== 'images') {
+        formData.append(key, value?.toString() ?? '');
+      }
+    });
+
+    this.imageFiles.forEach(file => formData.append('images', file));
+
+    return formValue;
   }
 
   onSubmit(): void {
+    this.submitted = true;
+    this.watchForm.markAllAsTouched();
+
+    if (this.watchForm.invalid) {
+      this.scrollToFirstInvalidControl();
+      return;
+    }
+
+    const formData = this.prepareFormData();
+
     if (this.mode === 'add') {
-      this.addProduct();
+      this.productService.addProduct(formData).subscribe({
+        next: (product: any) => {
+          const uploadObservables = this.imageFiles.map(file =>
+            this.imageService.addImageToProduct(product.id, file)
+          );
+          uploadObservables.forEach(obs => obs.subscribe());
+          alert('Product added successfully!');
+          this.resetForm();
+          this.router.navigate(['/product']);
+        },
+        error: err => console.error('Error adding product:', err)
+      });
     } else {
-      this.updateProduct();
+      this.productService.updateProduct(this.productId!, formData).subscribe({
+        next: () => {
+          // Upload new images
+          this.imageFiles.forEach(file => {
+            this.imageService.addImageToProduct(Number(this.productId), file).subscribe({
+              next: img => {
+                const dataUrl = `data:image/jpeg;base64,${img.data}`;
+                this.images.push(this.fb.control(dataUrl));
+                this.loadedImages.push(img);
+              },
+              error: err => console.error('Failed to upload image', err)
+            });
+          });
+
+          // Delete images marked for deletion
+          this.deletedImageIds.forEach(id => {
+            this.imageService.deleteImage(id).subscribe({
+              next: () => console.log('Deleted image', id),
+              error: err => console.error('Failed to delete image', err)
+            });
+          });
+
+          this.imageFiles = [];
+          this.deletedImageIds = [];
+          this.loadProductForEdit(this.productId!);
+        },
+        error: err => {
+          console.error('Error updating product:', err);
+          alert('Failed to update product. Please try again later.');
+        }
+      });
     }
   }
 
-private validateForm(): boolean {
-  // Name
-  if (!this.newProduct.name.trim()) {
-    alert('Product name is required.');
-    return false;
+  resetForm(): void {
+    this.watchForm.reset();
+    this.images.clear();
+    this.imageFiles = [];
+    this.deletedImageIds = [];
+    this.watchForm.patchValue({ changeableBand: true, discount: 0, discountPrice: 0 });
   }
 
-  // Price
-  const priceValid = /^\d+(\.\d+)?$/.test(this.newProduct.originalPrice.toString());
-  if (!priceValid || this.newProduct.originalPrice <= 0) {
-    alert('Price must be a valid positive number.');
-    return false;
-  }
-
-  // Quantity
-  const quantity = Number(this.newProduct.quantity);
-  if (!Number.isInteger(quantity) || quantity <= 0) {
-    alert('Quantity must be a valid positive integer.');
-    return false;
-  }
-  this.newProduct.quantity = quantity;
-
-  // Size
-  if (!/^\d+(\.\d+)?$/.test(this.newProduct.size.toString()) || this.newProduct.size <= 0) {
-    alert('Size must be a valid positive number.');
-    return false;
-  }
-
-  // Weight
-  if (!/^\d+(\.\d+)?$/.test(this.newProduct.weight.toString()) || this.newProduct.weight <= 0) {
-    alert('Weight must be a valid positive number.');
-    return false;
-  }
-
-  // Images
-  if (!this.imageFiles || this.imageFiles.length === 0) {
-    alert('Please upload at least one image.');
-    return false;
-  }
-
-  // Yes/No Radio Groups
-  if (this.newProduct.waterProof === undefined) {
-    alert('Please select Waterproof: Yes or No.');
-    return false;
-  }
-  if (this.newProduct.includesDate === undefined) {
-    alert('Please select Includes Date: Yes or No.');
-    return false;
-  }
-  if (this.newProduct.hasFullNumerals === undefined) {
-    alert('Please select Has Full Numerals: Yes or No.');
-    return false;
-  }
-  if (this.newProduct.hasTickingSound === undefined) {
-    alert('Please select Ticking Sound: Yes or No.');
-    return false;
-  }
-
-  // Dropdowns / Select Fields
-  if (!this.newProduct.brand) {
-    alert('Please select a brand.');
-    return false;
-  }
-  if (!this.newProduct.bandColor) {
-    alert('Please select a band color.');
-    return false;
-  }
-  if (!this.newProduct.handsColor) {
-    alert('Please select a hands color.');
-    return false;
-  }
-  if (!this.newProduct.backgroundColor) {
-    alert('Please select a background color.');
-    return false;
-  }
-  if (!this.newProduct.bandMaterial) {
-    alert('Please select a band material.');
-    return false;
-  }
-  if (!this.newProduct.caseMaterial) {
-    alert('Please select a case material.');
-    return false;
-  }
-  if (!this.newProduct.displayType) {
-    alert('Please select a display type.');
-    return false;
-  }
-  if (!this.newProduct.shape) {
-    alert('Please select a shape.');
-    return false;
-  }
-  if (!this.newProduct.numberingFormat) {
-    alert('Please select a numbering type.');
-    return false;
-  }
-
-  // Description
-  if (!this.newProduct.description.trim()) {
-    alert('Please enter a description.');
-    return false;
-  }
-
-  return true;
-}
-
-
-  addProduct(): void {
-    if (!this.validateForm()) return;
-    const formData = this.prepareFormData();
-
-    this.productService.addProduct(formData).subscribe({
-      next: () => {
-        alert('Product added successfully!');
-        this.resetNewProduct();
-        this.router.navigate(['/product']);
-      },
-      error: (err) => {
-        console.error('Error adding product:', err);
-        alert('Failed to add product. Please try again later.');
-      }
-    });
-  }
-
-  updateProduct(): void {
-    if (!this.validateForm()) return;
-
-    const formData = this.prepareFormData();
-    this.productService.updateProduct(this.productId!, formData).subscribe({
-      next: () => {
-        alert('Product updated successfully!');
-        this.router.navigate(['/product']);
-      },
-      error: (err) => {
-        console.error('Error updating product:', err);
-        alert('Failed to update product. Please try again later.');
-      }
-    });
-  }
-
-  private preparePayload(): ProductDTO {
-    return {
-      name: this.newProduct.name.trim(),
-      description: this.newProduct.description?.trim() || '',
-      brand: this.newProduct.brand,
-      size: Number(this.newProduct.size),
-      weight: Number(this.newProduct.weight),
-      handsColor: this.newProduct.handsColor,
-      backgroundColor: this.newProduct.backgroundColor,
-      bandColor: this.newProduct.bandColor,
-      numberingFormat: this.newProduct.numberingFormat,
-      bandMaterial: this.newProduct.bandMaterial,
-      caseMaterial: this.newProduct.caseMaterial,
-      displayType: this.newProduct.displayType,
-      shape: this.newProduct.shape,
-     includesDate: this.newProduct.includesDate ?? false,
-hasFullNumerals: this.newProduct.hasFullNumerals ?? false,
-hasTickingSound: this.newProduct.hasTickingSound ?? false,
-waterProof: this.newProduct.waterProof ?? false,
-
-      changeableBand: this.newProduct.changeableBand ?? true,
-      price: Number(this.newProduct.originalPrice),
-      quantity: Number(this.newProduct.quantity),
-    };
-  }
-prepareFormData(): FormData {
-  const formData = new FormData();
-
-  formData.append('name', this.newProduct.name.trim());
-  formData.append('description', this.newProduct.description?.trim() || '');
-  formData.append('brand', this.newProduct.brand);
-  formData.append('size', this.newProduct.size.toString());
-  formData.append('weight', this.newProduct.weight.toString());
-  formData.append('price', this.newProduct.originalPrice.toString());
-  formData.append('quantity', this.newProduct.quantity.toString());
-  formData.append('handsColor', this.newProduct.handsColor);
-  formData.append('backgroundColor', this.newProduct.backgroundColor);
-  formData.append('bandColor', this.newProduct.bandColor);
-  formData.append('numberingFormat', this.newProduct.numberingFormat);
-  formData.append('bandMaterial', this.newProduct.bandMaterial);
-  formData.append('caseMaterial', this.newProduct.caseMaterial);
-  formData.append('displayType', this.newProduct.displayType);
-  formData.append('shape', this.newProduct.shape);
-  formData.append('changeableBand', this.newProduct.changeableBand ? 'true' : 'false');
-  formData.append('includesDate', this.newProduct.includesDate ? 'true' : 'false');
-  formData.append('hasFullNumerals', this.newProduct.hasFullNumerals ? 'true' : 'false');
-  formData.append('hasTickingSound', this.newProduct.hasTickingSound ? 'true' : 'false');
-  formData.append('waterProof', this.newProduct.waterProof ? 'true' : 'false');
-
-  // Append files
-  this.imageFiles.forEach(file => {
-    if (file) {
-      formData.append('images', file);
-    }
-  });
-
-  return formData;
-}
-
-
-  resetNewProduct(): void {
-    this.newProduct = {
-      name: '',
-      originalPrice: 0,
-      quantity: 0,
-      images: ['', '', '', '', ''],
-      description: '',
-      brand: '',
-      waterProof: false,
-      includesDate: false,
-      numberingFormat: '',
-      hasFullNumerals: false,
-      hasTickingSound: false,
-      size: 0,
-      weight: 0,
-      bandColor: '',
-      handsColor: '',
-      backgroundColor: '',
-      bandMaterial: '',
-      caseMaterial: '',
-      displayType: '',
-      shape: '',
-      changeableBand: true,
-      editMode: false,
-      showDetails: false,
-      currentImageIndex: 0,
-     id: 0,
-      imageId: [],
-
-     discountPrice: 0,      // corresponds to Double discountPrice
-    discount: 0,           // corresponds to Double discount
- 
- 
-    };
-  }
-
-  cancelAndReset(watchForm: any): void {
-    if (watchForm) {
-      watchForm.reset();
-    }
-    this.resetNewProduct();
+  cancelAndReset(): void {
+    this.resetForm();
     this.router.navigate(['/product']);
   }
 
-  goToProductPage(): void {
-    this.router.navigate(['/product']);
-  }
-  // Allow numbers and at most one dot
-allowNumbersAndDot(event: KeyboardEvent, currentValue: any) {
-  const char = event.key;
-  // Allow control keys
-  if (['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(char)) return;
-  
-  // Only one dot allowed
-  if (char === '.' && String(currentValue).includes('.')) {
-    event.preventDefault();
-    return;
+  allowNumbersAndDot(event: KeyboardEvent, currentValue: any) {
+    const char = event.key;
+    if (['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(char)) return;
+    if (char === '.' && String(currentValue).includes('.')) {
+      event.preventDefault();
+      return;
+    }
+    if (!/\d/.test(char) && char !== '.') event.preventDefault();
   }
 
-  // Allow digits
-  if (!/\d/.test(char) && char !== '.') {
-    event.preventDefault();
+  allowOnlyNumbers(event: KeyboardEvent) {
+    const char = event.key;
+    if (['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(char)) return;
+    if (!/\d/.test(char)) event.preventDefault();
   }
-}
 
-// Allow only digits (for quantity)
-allowOnlyNumbers(event: KeyboardEvent) {
-  const char = event.key;
-  if (['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(char)) return;
-  if (!/\d/.test(char)) {
-    event.preventDefault();
+  scrollToFirstInvalidControl() {
+    setTimeout(() => {
+      const firstInvalid: HTMLElement | null = document.querySelector(
+        'form .ng-invalid, form .images-invalid, form .ng-invalid input, form .ng-invalid select, form .ng-invalid textarea'
+      ) as HTMLElement;
+
+      if (firstInvalid) {
+        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstInvalid.classList.add('shake');
+        firstInvalid.focus({ preventScroll: true });
+
+        setTimeout(() => firstInvalid.classList.remove('shake'), 500);
+      }
+    }, 0);
   }
-}
 }

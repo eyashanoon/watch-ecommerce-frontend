@@ -1,235 +1,290 @@
-<!-- Add / Edit Product Form -->
+<!-- Add / Edit Product Form - Reactive Form Version -->
 <div class="add-watch-card">
-<h3 class="form-title">
-  <span *ngIf="mode === 'add'" class="plus-icon">➕</span>
-  <span *ngIf="mode !== 'add'" class="edit-icon">✏️</span>
-  {{ mode === 'add' ? 'Add a New Watch' : 'Edit Watch' }}
-</h3>
+  <h3 class="form-title">
+    <span *ngIf="mode === 'add'" class="plus-icon">➕</span>
+    <span *ngIf="mode !== 'add'" class="edit-icon">✏️</span>
+    {{ mode === 'add' ? 'Add a New Watch' : 'Edit Watch' }}
+  </h3>
 
+  <form [formGroup]="watchForm" (ngSubmit)="onSubmit()" class="add-form">
 
-
-  <form (ngSubmit)="onSubmit()" #watchForm="ngForm" class="add-form">
     <!-- Basic Info -->
     <h4 class="section-heading">📝 Basic Info</h4>
 
-    <div class="field-with-title horizontal">
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('name')?.invalid && (watchForm.get('name')?.touched || submitted)}">
       <label class="field-title" for="name">Watch Name</label>
-      <input id="name" type="text"   maxlength="15"
- placeholder="Watch Name" [(ngModel)]="newProduct.name" name="name" required class="form-input" />
+      <input id="name" type="text" maxlength="15" placeholder="Watch Name" formControlName="name" class="form-input" />
+      <div *ngIf="watchForm.get('name')?.invalid && (watchForm.get('name')?.touched || submitted)" class="error">
+        Name is required
+      </div>
     </div>
 
-<div class="field-with-title horizontal">
-  <label class="field-title" for="price">Price</label>
-  <input 
-    type="text"
-    [(ngModel)]="newProduct.originalPrice"
-    name="price"
-    required
-    maxlength="18"
-    pattern="\d{1,15}(\.\d{1,2})?"
-    title="Enter up to 15 digits and at most one decimal point (optional 1-2 decimals)"
-    (keypress)="allowNumbersAndDot($event, newProduct.originalPrice)"
-  />
-</div>
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('price')?.invalid && (watchForm.get('price')?.touched || submitted)}">
+      <label class="field-title" for="price">Price</label>
+      <input id="price" type="text" maxlength="18" placeholder="Price" formControlName="price"
+             (keypress)="allowNumbersAndDot($event, watchForm.get('price')?.value)" />
+      <div *ngIf="watchForm.get('price')?.invalid && (watchForm.get('price')?.touched || submitted)" class="error">
+        Invalid price
+      </div>
+    </div>
 
-<!-- Quantity -->
-<div class="field-with-title horizontal">
-  <label class="field-title" for="quantity">Quantity</label>
-  <input 
-    type="text"
-    [(ngModel)]="newProduct.quantity"
-    name="quantity"
-    required
-    maxlength="7"
-    pattern="\d{1,15}"
-    title="Enter up to 15 digits only"
-    (keypress)="allowOnlyNumbers($event)"
-  />
-</div>
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('quantity')?.invalid && (watchForm.get('quantity')?.touched || submitted)}">
+      <label class="field-title" for="quantity">Quantity</label>
+      <input id="quantity" type="text" maxlength="7" placeholder="Quantity" formControlName="quantity"
+             (keypress)="allowOnlyNumbers($event)" />
+      <div *ngIf="watchForm.get('quantity')?.invalid && (watchForm.get('quantity')?.touched || submitted)" class="error">
+        Invalid quantity
+      </div>
+    </div>
 
-<!-- Size -->
-<div class="field-with-title horizontal">
-  <label class="field-title" for="size">Size</label>
-  <input 
-    type="text"
-    [(ngModel)]="newProduct.size"
-    name="size"
-    required
-    maxlength="18"
-    pattern="\d{1,15}(\.\d{1,2})?"
-    title="Enter up to 15 digits and at most one decimal point"
-    (keypress)="allowNumbersAndDot($event, newProduct.size)"
-  />
-</div>
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('size')?.invalid && (watchForm.get('size')?.touched || submitted)}">
+      <label class="field-title" for="size">Size</label>
+      <input id="size" type="text" maxlength="18" placeholder="Size" formControlName="size"
+             (keypress)="allowNumbersAndDot($event, watchForm.get('size')?.value)" />
+      <div *ngIf="watchForm.get('size')?.invalid && (watchForm.get('size')?.touched || submitted)" class="error">
+        Invalid size
+      </div>
+    </div>
 
-<!-- Weight -->
-<div class="field-with-title horizontal">
-  <label class="field-title" for="weight">Weight</label>
-  <input 
-    type="text"
-    [(ngModel)]="newProduct.weight"
-    name="weight"
-    required
-    maxlength="18"
-    pattern="\d{1,15}(\.\d{1,2})?"
-    title="Enter up to 15 digits and at most one decimal point"
-    (keypress)="allowNumbersAndDot($event, newProduct.weight)"
-  />
-</div>
-<div class="field-with-title vertical">
-  <div class="title-row">
-    <label class="field-title">Images</label>
-    <button type="button" class="add-image-btn" (click)="fileInput.click()">+ Add image</button>
-  </div>
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('weight')?.invalid && (watchForm.get('weight')?.touched || submitted)}">
+      <label class="field-title" for="weight">Weight</label>
+      <input id="weight" type="text" maxlength="18" placeholder="Weight" formControlName="weight"
+             (keypress)="allowNumbersAndDot($event, watchForm.get('weight')?.value)" />
+      <div *ngIf="watchForm.get('weight')?.invalid && (watchForm.get('weight')?.touched || submitted)" class="error">
+        Invalid weight
+      </div>
+    </div>
 
-  <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;" />
+    <!-- Images -->
+    <div class="field-with-title vertical"
+         [ngClass]="{'images-invalid shake': images.invalid && (images.touched || submitted)}">
+      <div class="title-row">
+        <label class="field-title">Images</label>
+        <button type="button" class="add-image-btn" (click)="fileInput.click()">+ Add image</button>
+      </div>
+      <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;" />
+      <div formArrayName="images">
+        <div *ngFor="let imgCtrl of images.controls; let i = index" [formGroupName]="i" class="image-item">
+          <img [src]="imgCtrl.value" alt="image {{ i }}" class="preview-image" />
+          <button type="button" (click)="removeImage(i)">Remove</button>
+        </div>
+      </div>
+      <div *ngIf="images.invalid && (images.touched || submitted)" class="error">At least one image is required</div>
+    </div>
 
-  <div *ngFor="let file of imageFiles; let i = index" class="image-item">
-    <img
-      [src]="URL.createObjectURL(file)"
-      alt="{{ file.name }}"
-      class="preview-image"
-    />
-    <span class="file-name">{{ file.name }}</span>
-    <button type="button" (click)="removeImage(i)">Remove</button>
-  </div>
-</div>
-
-
-
-    <div class="field-with-title horizontal">
+    <!-- Description -->
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('description')?.invalid && (watchForm.get('description')?.touched || submitted)}">
       <label class="field-title" for="description">Description</label>
-  <textarea
-    id="description"
-    placeholder="Description"
-    [(ngModel)]="newProduct.description"
-    name="description"
-    required
-    class="form-input"
-    rows="5"
-  ></textarea>    </div>
+      <textarea id="description" placeholder="Description" formControlName="description"
+                class="form-input" rows="5"></textarea>
+      <div *ngIf="watchForm.get('description')?.invalid && (watchForm.get('description')?.touched || submitted)" class="error">
+        Description is required
+      </div>
+    </div>
+
     <!-- Selects -->
-    <div class="field-with-title horizontal">
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('brand')?.invalid && (watchForm.get('brand')?.touched || submitted)}">
       <label class="field-title" for="brand">Brand</label>
-      <select id="brand" [(ngModel)]="newProduct.brand" name="brand" required class="form-input">
+      <select id="brand" formControlName="brand" class="form-input">
         <option value="" disabled>Select Brand</option>
-        <option *ngFor="let brand of ['Dryden','Rolex','iPhone','Samsung','Casio','Seiko','Citizen','Fossil','Timex','Bulova']" [value]="brand">{{ brand }}</option>
+        <option *ngFor="let brand of availableBrands" [value]="brand">{{ brand }}</option>
       </select>
+      <div *ngIf="watchForm.get('brand')?.invalid && (watchForm.get('brand')?.touched || submitted)" class="error">
+        Brand is required
+      </div>
     </div>
 
-    <div class="field-with-title horizontal">
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('displayType')?.invalid && (watchForm.get('displayType')?.touched || submitted)}">
       <label class="field-title" for="displayType">Display Type</label>
-      <select id="displayType" [(ngModel)]="newProduct.displayType" name="displayType" required class="form-input">
+      <select id="displayType" formControlName="displayType" class="form-input">
         <option value="" disabled>Select Display Type</option>
-        <option *ngFor="let type of ['dial', 'digital', 'analog-digital']" [value]="type">{{ type }}</option>
+        <option *ngFor="let type of displayTypes" [value]="type">{{ type }}</option>
       </select>
+      <div *ngIf="watchForm.get('displayType')?.invalid && (watchForm.get('displayType')?.touched || submitted)" class="error">
+        Display type is required
+      </div>
     </div>
 
-    <div class="field-with-title horizontal">
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('shape')?.invalid && (watchForm.get('shape')?.touched || submitted)}">
       <label class="field-title" for="shape">Shape</label>
-      <select id="shape" [(ngModel)]="newProduct.shape" name="shape" required class="form-input">
+      <select id="shape" formControlName="shape" class="form-input">
         <option value="" disabled>Select Shape</option>
-        <option *ngFor="let shape of ['round', 'square', 'rectangle', 'oval']" [value]="shape">{{ shape }}</option>
+        <option *ngFor="let shape of shapes" [value]="shape">{{ shape }}</option>
       </select>
+      <div *ngIf="watchForm.get('shape')?.invalid && (watchForm.get('shape')?.touched || submitted)" class="error">
+        Shape is required
+      </div>
     </div>
 
     <!-- Colors -->
     <h4 class="section-heading">🎨 Colors</h4>
-
-    <div class="field-with-title horizontal">
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('bandColor')?.invalid && (watchForm.get('bandColor')?.touched || submitted)}">
       <label class="field-title" for="bandColor">Band Color</label>
-      <select id="bandColor" [(ngModel)]="newProduct.bandColor" name="bandColor" class="form-input">
+      <select id="bandColor" formControlName="bandColor" class="form-input">
         <option value="" disabled>Select Band Color</option>
-        <option *ngFor="let color of ['black','brown','silver','gold','blue','red','orange','white']" [value]="color">{{ color }}</option>
+        <option *ngFor="let color of bandColors" [value]="color">{{ color }}</option>
       </select>
+      <div *ngIf="watchForm.get('bandColor')?.invalid && (watchForm.get('bandColor')?.touched || submitted)" class="error">
+        Band color is required
+      </div>
     </div>
 
-    <div class="field-with-title horizontal">
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('handsColor')?.invalid && (watchForm.get('handsColor')?.touched || submitted)}">
       <label class="field-title" for="handsColor">Hands Color</label>
-      <select id="handsColor" [(ngModel)]="newProduct.handsColor" name="handsColor" class="form-input">
+      <select id="handsColor" formControlName="handsColor" class="form-input">
         <option value="" disabled>Select Hands Color</option>
-        <option *ngFor="let color of ['black','white','gold','silver','blue','red']" [value]="color">{{ color }}</option>
+        <option *ngFor="let color of handsColors" [value]="color">{{ color }}</option>
       </select>
+      <div *ngIf="watchForm.get('handsColor')?.invalid && (watchForm.get('handsColor')?.touched || submitted)" class="error">
+        Hands color is required
+      </div>
     </div>
 
-    <div class="field-with-title horizontal">
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('backgroundColor')?.invalid && (watchForm.get('backgroundColor')?.touched || submitted)}">
       <label class="field-title" for="backgroundColor">Background Color</label>
-      <select id="backgroundColor" [(ngModel)]="newProduct.backgroundColor" name="backgroundColor" class="form-input">
+      <select id="backgroundColor" formControlName="backgroundColor" class="form-input">
         <option value="" disabled>Select Background Color</option>
-        <option *ngFor="let color of ['black','white','blue','red','green','silver','gold']" [value]="color">{{ color }}</option>
+        <option *ngFor="let color of backgroundColors" [value]="color">{{ color }}</option>
       </select>
+      <div *ngIf="watchForm.get('backgroundColor')?.invalid && (watchForm.get('backgroundColor')?.touched || submitted)" class="error">
+        Background color is required
+      </div>
     </div>
 
     <!-- Materials -->
     <h4 class="section-heading">🔧 Materials</h4>
-
-    <div class="field-with-title horizontal">
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('bandMaterial')?.invalid && (watchForm.get('bandMaterial')?.touched || submitted)}">
       <label class="field-title" for="bandMaterial">Band Material</label>
-      <select id="bandMaterial" [(ngModel)]="newProduct.bandMaterial" name="bandMaterial" class="form-input">
+      <select id="bandMaterial" formControlName="bandMaterial" class="form-input">
         <option value="" disabled>Select Band Material</option>
-        <option *ngFor="let material of ['leather','metal','rubber','fabric']" [value]="material">{{ material }}</option>
+        <option *ngFor="let material of bandMaterials" [value]="material">{{ material }}</option>
       </select>
+      <div *ngIf="watchForm.get('bandMaterial')?.invalid && (watchForm.get('bandMaterial')?.touched || submitted)" class="error">
+        Band material is required
+      </div>
     </div>
 
-    <div class="field-with-title horizontal">
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('caseMaterial')?.invalid && (watchForm.get('caseMaterial')?.touched || submitted)}">
       <label class="field-title" for="caseMaterial">Case Material</label>
-      <select id="caseMaterial" [(ngModel)]="newProduct.caseMaterial" name="caseMaterial" class="form-input">
+      <select id="caseMaterial" formControlName="caseMaterial" class="form-input">
         <option value="" disabled>Select Case Material</option>
-        <option *ngFor="let material of ['crystal','stainless steel','plastic','ceramic']" [value]="material">{{ material }}</option>
+        <option *ngFor="let material of caseMaterials" [value]="material">{{ material }}</option>
       </select>
+      <div *ngIf="watchForm.get('caseMaterial')?.invalid && (watchForm.get('caseMaterial')?.touched || submitted)" class="error">
+        Case material is required
+      </div>
     </div>
 
-    <div class="field-with-title horizontal">
+    <div class="field-with-title horizontal"
+         [ngClass]="{'shake': watchForm.get('numberingFormat')?.invalid && (watchForm.get('numberingFormat')?.touched || submitted)}">
       <label class="field-title" for="numberingFormat">Numbering Type</label>
-      <select id="numberingFormat" [(ngModel)]="newProduct.numberingFormat" name="numberingFormat" class="form-input">
+      <select id="numberingFormat" formControlName="numberingFormat" class="form-input">
         <option value="" disabled>Select Numbering Type</option>
-        <option *ngFor="let type of ['Latino','English','Arabic','Roman']" [value]="type">{{ type }}</option>
+        <option *ngFor="let type of numberingTypes" [value]="type">{{ type }}</option>
       </select>
+      <div *ngIf="watchForm.get('numberingFormat')?.invalid && (watchForm.get('numberingFormat')?.touched || submitted)" class="error">
+        Numbering type is required
+      </div>
     </div>
 
     <!-- Radios -->
     <h4 class="section-heading">⚙️ Features</h4>
 
-    <div class="field-with-title horizontal">
-      <label  class="field-title">Waterproof</label>
-      <div class="radio-row">
-        <label><input type="radio" [(ngModel)]="newProduct.waterProof" name="waterProof" [value]="true" /> Yes</label>
-        <label><input type="radio" [(ngModel)]="newProduct.waterProof" name="waterProof" [value]="false" /> No</label>
-      </div>
-    </div>
+<!-- Waterproof -->
+<div class="field-with-title horizontal"
+     [ngClass]="{'shake': (watchForm.get('waterProof')?.invalid && (watchForm.get('waterProof')?.touched || submitted))}"
+     [class.invalid]="watchForm.get('waterProof')?.invalid && submitted">
+  <label class="field-title">Waterproof</label>
+  <div class="radio-row">
+    <label><input type="radio" formControlName="waterProof" [value]="true" /> Yes</label>
+    <label><input type="radio" formControlName="waterProof" [value]="false" /> No</label>
+  </div>
+  <div *ngIf="watchForm.get('waterProof')?.invalid && submitted" class="error">
+    Please select an option
+  </div>
+</div>
 
-    <div class="field-with-title horizontal">
-      <label class="field-title">Includes Date</label>
-      <div class="radio-row">
-        <label><input type="radio" [(ngModel)]="newProduct.includesDate" name="includesDate" [value]="true" /> Yes</label>
-        <label><input type="radio" [(ngModel)]="newProduct.includesDate" name="includesDate" [value]="false" /> No</label>
-      </div>
-    </div>
+<!-- Includes Date -->
+<div class="field-with-title horizontal"
+     [ngClass]="{'shake': (watchForm.get('includesDate')?.invalid && (watchForm.get('includesDate')?.touched || submitted))}"
+     [class.invalid]="watchForm.get('includesDate')?.invalid && submitted">
+  <label class="field-title">Includes Date</label>
+  <div class="radio-row">
+    <label><input type="radio" formControlName="includesDate" [value]="true" /> Yes</label>
+    <label><input type="radio" formControlName="includesDate" [value]="false" /> No</label>
+  </div>
+  <div *ngIf="watchForm.get('includesDate')?.invalid && submitted" class="error">
+    Please select an option
+  </div>
+</div>
 
-    <div class="field-with-title horizontal">
-      <label class="field-title">Has Full Numerals</label>
-      <div class="radio-row">
-        <label><input type="radio" [(ngModel)]="newProduct.hasFullNumerals" name="hasFullNumerals" [value]="true" /> Yes</label>
-        <label><input type="radio" [(ngModel)]="newProduct.hasFullNumerals" name="hasFullNumerals" [value]="false" /> No</label>
-      </div>
-    </div>
+<!-- Has Full Numerals -->
+<div class="field-with-title horizontal"
+     [ngClass]="{'shake': (watchForm.get('hasFullNumerals')?.invalid && (watchForm.get('hasFullNumerals')?.touched || submitted))}"
+     [class.invalid]="watchForm.get('hasFullNumerals')?.invalid && submitted">
+  <label class="field-title">Has Full Numerals</label>
+  <div class="radio-row">
+    <label><input type="radio" formControlName="hasFullNumerals" [value]="true" /> Yes</label>
+    <label><input type="radio" formControlName="hasFullNumerals" [value]="false" /> No</label>
+  </div>
+  <div *ngIf="watchForm.get('hasFullNumerals')?.invalid && submitted" class="error">
+    Please select an option
+  </div>
+</div>
 
-    <div class="field-with-title horizontal">
-      <label class="field-title">Ticking Sound</label>
-      <div class="radio-row">
-        <label><input type="radio" [(ngModel)]="newProduct.hasTickingSound" name="hasTickingSound" [value]="true" /> Yes</label>
-        <label><input type="radio" [(ngModel)]="newProduct.hasTickingSound" name="hasTickingSound" [value]="false" /> No</label>
-      </div>
-    </div>
+<!-- Changable Band -->
+<div class="field-with-title horizontal"
+     [ngClass]="{'shake': (watchForm.get('changeableBand')?.invalid && (watchForm.get('changeableBand')?.touched || submitted))}"
+     [class.invalid]="watchForm.get('changeableBand')?.invalid && submitted">
+  <label class="field-title">Changeable Band</label>
+  <div class="radio-row">
+    <label><input type="radio" formControlName="changeableBand" [value]="true" /> Yes</label>
+    <label><input type="radio" formControlName="changeableBand" [value]="false" /> No</label>
+  </div>
+  <div *ngIf="watchForm.get('changeableBand')?.invalid && submitted" class="error">
+    Please select an option
+  </div>
+</div>
+
+
+<!-- Ticking Sound -->
+<div class="field-with-title horizontal"
+     [ngClass]="{'shake': (watchForm.get('hasTickingSound')?.invalid && (watchForm.get('hasTickingSound')?.touched || submitted))}"
+     [class.invalid]="watchForm.get('hasTickingSound')?.invalid && submitted">
+  <label class="field-title">Ticking Sound</label>
+  <div class="radio-row">
+    <label><input type="radio" formControlName="hasTickingSound" [value]="true" /> Yes</label>
+    <label><input type="radio" formControlName="hasTickingSound" [value]="false" /> No</label>
+  </div>
+  <div *ngIf="watchForm.get('hasTickingSound')?.invalid && submitted" class="error">
+    Please select an option
+  </div>
+</div>
+
 
     <!-- Buttons -->
     <div class="button-group">
       <button type="submit" class="submit-btn fancy-btn">
         {{ mode === 'add' ? '✨ Add Product' : '💾 Update Product' }}
       </button>
-      <button type="button" class="submit-btn cancel-btn" (click)="cancelAndReset(watchForm)">
+      <button type="button" class="submit-btn cancel-btn" (click)="cancelAndReset()">
         Cancel
       </button>
     </div>
-  </form> 
-</div> 
+
+  </form>
+</div>
