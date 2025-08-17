@@ -34,6 +34,6 @@ getAllProducts(filters: any): Observable<{ content: Product[]; [key: string]: an
     params: params
   });
 }
- 
+
 
 }

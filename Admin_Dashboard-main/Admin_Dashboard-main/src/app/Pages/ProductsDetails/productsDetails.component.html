@@ -14,44 +14,120 @@
 <!-- Product Details Section -->
 <div class="product-detail-container" *ngIf="products">
 
-  <!-- Top Section: Images + Key Info -->
-  <div class="product-top-section">
+  <div class="product-wrapper">
 
     <!-- Left: Image Section -->
-    <div class="image-section">
-      <div class="vertical-thumbnails" *ngIf="!is3DViewActive">
-        <img *ngFor="let img of products.images; let i = index"
-             [src]="img"
-             [class.selected]="i === currentIndex"
-             (click)="selectImage(i)" />
-      </div>
-      <div class="main-image-container" *ngIf="!is3DViewActive">
-        <img [src]="products.images[currentIndex]" class="main-image" />
-      </div>
+    <div class="image-wrapper">
+      <div class="image-section">
+        <div class="vertical-thumbnails" *ngIf="!is3DViewActive">
+          <img *ngFor="let img of products.images; let i = index"
+               [src]="img"
+               [class.selected]="i === currentIndex"
+               (click)="selectImage(i)" />
+        </div>
+        <div class="main-image-container" *ngIf="!is3DViewActive">
+          <img [src]="products.images[currentIndex]" class="main-image" />
+        </div>
 
-      <!-- Carousel arrows -->
-      <button class="carousel-arrow left" (click)="prevImage()">&#10094;</button>
-      <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
-    </div>
+        <!-- Carousel arrows -->
+        <button class="carousel-arrow left" (click)="prevImage()">&#10094;</button>
+        <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
 
-    <!-- Right: Vertical Info -->
-    <div class="product-info-panel">
-      <h1 class="product-name">{{ products.name }}</h1>
-      <p class="product-short-desc">{{ products.description }}</p>
-      <div class="product-detail-item"><strong>Price:</strong> ${{ products.originalPrice }}</div>
-      <div class="product-detail-item"><strong>Quantity:</strong> {{ products.selectedQty }}</div>
-      <div class="action-buttons">
-        <button (click)="editProduct()">Edit</button>
-        <button (click)="deleteProduct()">Delete</button>
+        <!-- 3D View Button -->
+        <button class="toggle-3d-btn" (click)="toggle3DView()">
+          {{ is3DViewActive ? 'Close 3D View' : 'Open 3D View' }}
+        </button>
       </div>
     </div>
 
+    <!-- Right: Info Section -->
+    <div class="info-wrapper">
+
+      <!-- Top: Most important info -->
+      <div class="main-info">
+        <h1 class="product-name">{{ products.name }}</h1>
+        <div class="product-price"><strong>Price:</strong> ${{ products.originalPrice }}</div>
+        <div class="product-qty"><strong>Quantity:</strong> {{ products.selectedQty }}</div>
+
+
+<!-- Color Combinations Section -->
+<!-- Color Combinations Section -->
+<div class="color-combinations" *ngIf="products?.colorCombinations">
+  <h3>Color Combinations</h3>
+
+  <div class="combo-grid">
+    <div *ngFor="let combo of products.colorCombinations; let i = index" class="watch-combo">
+      <div class="watch-template">
+        <!-- Band Top -->
+        <div class="watch-band" [style.backgroundColor]="combo.band"></div>
+
+        <!-- Watch Case -->
+        <div class="watch-case" [style.backgroundColor]="combo.background">
+          <!-- Hour ticks -->
+          <div *ngFor="let tick of [].constructor(12); let j = index"
+               class="watch-tick"
+               [style.transform]="'rotate(' + (j*30) + 'deg) translateY(-30%)'">
+          </div>
+          <!-- Hands -->
+          <div class="watch-hand hour" [style.backgroundColor]="combo.hands"></div>
+          <div class="watch-hand minute" [style.backgroundColor]="combo.hands"></div>
+        </div>
+
+        <!-- Band Bottom -->
+        <div class="watch-band" [style.backgroundColor]="combo.band"></div>
+      </div>
+      <span class="combo-label">Combo {{ i+1 }}</span>
+    </div>
   </div>
+</div>
 
-  <!-- 3D Carousel Toggle -->
-  <button class="toggle-3d-btn" (click)="toggle3DView()">
-    {{ is3DViewActive ? 'Close 3D View' : 'Open 3D View' }}
-  </button>
+
+
+
+        <div class="action-buttons">
+          <button (click)="editProduct()">Edit</button>
+          <button (click)="deleteProduct()">Delete</button>
+        </div>
+        <p class="product-short-desc">{{ products.description }}</p>
+      </div>
+
+      <!-- Bottom: Specs/features -->
+      <div class="product-specs">
+        <div class="spec-category">
+          <h3>General</h3>
+          <div><strong>Brand:</strong> {{ products.brand }}</div>
+          <div><strong>Shape:</strong> {{ products.shape }}</div>
+          <div><strong>Size:</strong> {{ products.size }}</div>
+          <div><strong>Weight:</strong> {{ products.weight }} g</div>
+        </div>
+
+        <div class="spec-category">
+          <h3>Appearance</h3>
+          <div><strong>Band Color:</strong> {{ products.bandColor }}</div>
+          <div><strong>Hands Color:</strong> {{ products.handsColor }}</div>
+          <div><strong>Background:</strong> {{ products.backgroundColor }}</div>
+        </div>
+
+        <div class="spec-category">
+          <h3>Materials</h3>
+          <div><strong>Band:</strong> {{ products.bandMaterial }}</div>
+          <div><strong>Case:</strong> {{ products.caseMaterial }}</div>
+        </div>
+
+        <div class="spec-category">
+          <h3>Features</h3>
+          <div><strong>Display:</strong> {{ products.displayType }}</div>
+          <div><strong>Numbering:</strong> {{ products.numberingFormat }}</div>
+          <div><strong>Waterproof:</strong> {{ products.waterProof ? 'Yes' : 'No' }}</div>
+          <div><strong>Date:</strong> {{ products.includesDate ? 'Yes' : 'No' }}</div>
+          <div><strong>Full Numerals:</strong> {{ products.hasFullNumerals ? 'Yes' : 'No' }}</div>
+          <div><strong>Ticking Sound:</strong> {{ products.hasTickingSound ? 'Yes' : 'No' }}</div>
+          <div><strong>Changeable Band:</strong> {{ products.changeableBand ? 'Yes' : 'No' }}</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
   <!-- 3D Carousel Overlay -->
   <div class="carousel-overlay" *ngIf="is3DViewActive">
@@ -62,27 +138,6 @@
     </div>
     <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
   </div>
-
-  <!-- Bottom Section: Full Specs -->
-  <div class="product-bottom-section">
-    <div class="product-specs-column">
-      <div class="spec-row"><strong>Brand:</strong> {{ products.brand }}</div>
-      <div class="spec-row"><strong>Numbering Type:</strong> {{ products.numberingFormat }}</div>
-      <div class="spec-row"><strong>Size:</strong> {{ products.size }}</div>
-      <div class="spec-row"><strong>Weight:</strong> {{ products.weight }} grams</div>
-      <div class="spec-row"><strong>Band Color:</strong> {{ products.bandColor }}</div>
-      <div class="spec-row"><strong>Hands Color:</strong> {{ products.handsColor }}</div>
-      <div class="spec-row"><strong>Background Color:</strong> {{ products.backgroundColor }}</div>
-      <div class="spec-row"><strong>Band Material:</strong> {{ products.bandMaterial }}</div>
-      <div class="spec-row"><strong>Case Material:</strong> {{ products.caseMaterial }}</div>
-      <div class="spec-row"><strong>Display Type:</strong> {{ products.displayType }}</div>
-      <div class="spec-row"><strong>Shape:</strong> {{ products.shape }}</div>
-      <div class="spec-row"><strong>Waterproof:</strong> {{ products.waterProof ? 'Yes' : 'No' }}</div>
-      <div class="spec-row"><strong>Includes Date:</strong> {{ products.includesDate ? 'Yes' : 'No' }}</div>
-      <div class="spec-row"><strong>Full Numerals:</strong> {{ products.hasFullNumerals ? 'Yes' : 'No' }}</div>
-      <div class="spec-row"><strong>Ticking Sound:</strong> {{ products.hasTickingSound ? 'Yes' : 'No' }}</div>
-      <div class="spec-row"><strong>Changeable Band:</strong> {{ products.changeableBand ? 'Yes' : 'No' }}</div>
-    </div>
-  </div>
+  <div class="ff"></div>
 
 </div>

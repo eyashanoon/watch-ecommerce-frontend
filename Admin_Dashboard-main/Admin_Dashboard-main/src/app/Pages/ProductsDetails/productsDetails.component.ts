@@ -17,7 +17,7 @@ export class ProductsDetailsComponent implements AfterViewInit {
 
   currentIndex = 0;
   is3DViewActive = false;
-  products!: ProductWithImages & { selectedQty: number }; // <-- fix strict property initialization
+  products!: ProductWithImages & { selectedQty: number, colorCombinations:any[] }; // <-- fix strict property initialization
 
   constructor(private router: Router, private productService: ProductService) {
     const nav = this.router.getCurrentNavigation();
@@ -29,6 +29,12 @@ export class ProductsDetailsComponent implements AfterViewInit {
     }
 
     this.products = stateProduct;
+    this.products.colorCombinations=  [
+    { hands: "#000000", background: "#FFFFFF", band: "#FF0000" }, // comp1
+    { hands: "#FFD700", background: "#000000", band: "#0000FF" }, // comp2
+    { hands: "#FFFFFF", background: "#333333", band: "#008000" }, // comp3
+    { hands: "#FF69B4", background: "#F0E68C", band: "#8B4513" }  // comp4
+  ]
     if (!this.products.selectedQty) this.products.selectedQty = 1;
   }
 
@@ -76,7 +82,7 @@ prevImage() {
     this.currentIndex = index;
   }
 
- 
+
 
   signOut() { console.log('Sign out'); }
   goToHomePage() { this.router.navigate(['/product']); }
