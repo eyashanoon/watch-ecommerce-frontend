@@ -268,8 +268,10 @@ this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
       this.loadProducts();
     });
   const roles = this.authService.getUserRoles(); // Example: ['ADMIN'] or ['CUSTOMER']
-  this.canAddProduct = roles.includes('ADMIN'); // Only admins can add products
-
+  this.canAddProduct = this.authService.hasAnyRole([
+    'CREATE_PRODUCT',
+    'OWNER'
+  ]);
 }
 
 
@@ -475,7 +477,7 @@ goToProductDetails(product: any): void {
   }
 
   goToAddProductPage() {
-    this.router.navigate(['/add-product']);
+    this.router.navigate(['/product/add']);
   }
 
   goToEdit(productName: string) {

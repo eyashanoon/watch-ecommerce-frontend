@@ -34,7 +34,20 @@
       <!-- Top: Most important info -->
       <div class="main-info">
         <h1 class="product-name">{{ products.name }}</h1>
-        <div class="product-price"><strong>Price:</strong> ${{ products.originalPrice }}</div>
+<!-- Product Price / Discount -->
+<div class="product-price">
+  <strong>Price:</strong> ${{ products.originalPrice }}
+</div>
+
+<!-- Discount (only if user has role) -->
+<div class="product-discount" *ngIf="hasRole('SEE_DISCOUNT') || hasRole('OWNER') || hasRole('REMOVE_DISCOUNT')">
+  <strong>Discount:</strong> {{ products.discount}}%
+  
+  <!-- Remove discount button for authorized users -->
+  <button *ngIf="hasRole('REMOVE_DISCOUNT')" (click)="removeDiscount()">Remove</button>
+</div>
+
+
         <div class="product-qty"><strong>Quantity:</strong> {{ products.selectedQty }}</div>
 
 
@@ -73,8 +86,8 @@
 
 
 <div class="action-buttons">
-  <button *ngIf="hasRole('UPDATE_PRODUCT')" (click)="editProduct()">Edit</button>
-  <button *ngIf="hasRole('DELETE_PRODUCT')" (click)="deleteProduct()">Delete</button>
+  <button *ngIf="hasRole('UPDATE_PRODUCT') || hasRole('OWNER')" (click)="editProduct()">Edit</button>
+  <button *ngIf="hasRole('DELETE_PRODUCT') || hasRole('OWNER')" (click)="deleteProduct()">Delete</button>
 </div>
       
 

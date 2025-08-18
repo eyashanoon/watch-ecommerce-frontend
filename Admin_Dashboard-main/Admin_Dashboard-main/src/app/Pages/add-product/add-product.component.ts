@@ -6,6 +6,7 @@ import { ProductService1 } from '../../Service/product1.service';
 import { ImageService } from '../../Service/image.service';
 import { FeaturesService, ColorsResponse } from '../../Service/features.service';
 import { Image } from '../../models/Image.model';
+import { AuthService } from '../../Service/auth.service';
 
 // Validator: at least one image
 export const atLeastOneImage: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -47,10 +48,16 @@ export class AddProductComponent implements OnInit {
     private route: ActivatedRoute,
     private productService: ProductService1,
     private featuresService: FeaturesService,
-    private imageService: ImageService
+    private imageService: ImageService,
+    public authService: AuthService
+  
   ) {}
-
+canAddDiscount: boolean = false;
   ngOnInit(): void {
+     this.canAddDiscount = this.authService.hasAnyRole([
+    'ADD_DISCOUNT',
+    'OWNER'
+  ]);
     this.loadFeatures();
     this.productId = this.route.snapshot.paramMap.get('id') ?? undefined;
     console.log('Product ID:', this.productId);
@@ -84,8 +91,15 @@ export class AddProductComponent implements OnInit {
       changeableBand: [null, Validators.required],
       hasTickingSound: [null, Validators.required],
       images: this.fb.array([], atLeastOneImage),
-      discount: [0],
-      discountPrice: [0]
+discount: [
+    0, // default value
+    [
+      Validators.required,  // must not be empty
+      Validators.min(0),    // cannot be negative
+      Validators.max(100)   // cannot exceed 100
+    ]
+  ] ,
+       discountPrice: [0]
     });
   }
 
@@ -132,6 +146,7 @@ export class AddProductComponent implements OnInit {
     this.featuresService.getAllNumbering_formats().subscribe(numberingTypes => this.numberingTypes = numberingTypes);
     this.featuresService.getAllShapes().subscribe(shapes => this.shapes = shapes);
   }
+
 
   loadProductImages(productId: number): void {
     this.imageService.getAllImagesByProductID(productId).subscribe({

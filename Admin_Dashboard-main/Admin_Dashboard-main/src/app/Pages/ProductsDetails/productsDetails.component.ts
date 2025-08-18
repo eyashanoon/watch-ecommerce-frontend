@@ -123,4 +123,12 @@ editProduct() {
 
   deleteProduct() {
   }
+  removeDiscount() {
+  if (this.hasRole('REMOVE_DISCOUNT')) {
+    this.products.discount = 0;
+    // Optionally, call API to update backend
+    // this.productService.updateDiscount(this.products.id, 0).subscribe();
+  }
+}
+
 }

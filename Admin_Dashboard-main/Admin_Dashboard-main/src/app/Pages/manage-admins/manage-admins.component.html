@@ -1,14 +1,16 @@
 <div class="admin-list">
 
-  <!-- Go to Add Admin / Control Admins Button (always visible) -->
-  <div style="margin-bottom: 15px;">
-    <button (click)="goToAddAdmin()" class="control-btn">
-      Go to Add Admin
-    </button>
-  </div>
+<!-- Go to Add Admin Button (only for ADD_ADMIN or OWNER) -->
+<div style="margin-bottom: 15px;" 
+     *ngIf="authService.hasAnyRole(['ADD_ADMIN', 'OWNER'])">
+  <button (click)="goToAddAdmin()" class="control-btn">
+    Go to Add Admin
+  </button>
+</div>
+
 
   <!-- Admins Table (permission restricted) -->
-  <ng-container *ngIf="hasPermission; else noPermission">
+  <ng-container *ngIf="canSeeAdmins; else noPermission">
     <div *ngIf="admins.length > 0">
       <div class="data-names">
         <div><h2>Username</h2></div>
@@ -31,14 +33,30 @@
           </div>
         </div>
 
-        <div class="admin-actions">
-          <button class="icon-btn" (click)="editAdmin(a)" title="Edit">✏️</button>
-          <button class="icon-btn" (click)="deleteAdmin(a.id)" title="Delete">🗑️</button>
-        </div>
+<div class="admin-actions">
+  <!-- Edit button: only if UPDATE_ADMIN or OWNER -->
+  <button 
+    *ngIf="authService.hasAnyRole(['UPDATE_ADMIN', 'OWNER'])"
+    class="icon-btn" 
+    (click)="editAdmin(a)" 
+    title="Edit">
+    ✏️
+  </button>
+
+  <!-- Delete button: only if REMOVE_ADMIN or OWNER -->
+  <button 
+    *ngIf="authService.hasAnyRole(['REMOVE_ADMIN', 'OWNER'])"
+    class="icon-btn" 
+    (click)="deleteAdmin(a.id)" 
+    title="Delete">
+    🗑️
+  </button>
+</div>
+
       </div>
     </div>
 
-    <p *ngIf="admins.length === 0">No admins added yet.</p>
+    <p *ngIf="admins.length === 0">Loading Admins...</p>
   </ng-container>
 
   <!-- No permission message -->
