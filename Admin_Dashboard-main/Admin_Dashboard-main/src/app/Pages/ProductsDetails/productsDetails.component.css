@@ -57,7 +57,7 @@
 
 .main-image-container { flex-grow: 1; display: flex; justify-content: center; align-items: center; width: 80%; height: 90%;}
 .main-image { width:  80%; height: 80%; border-radius: 12px;  object-fit: cover;  }
-.vertical-thumbnails { display: flex; flex-direction: column; gap: 10px; }
+.vertical-thumbnails { display: flex; flex-direction: column; gap: 10px;  overflow: hidden; height: 80%;}
 .vertical-thumbnails img { width: 60px; height: 70px; border: 2px solid #ccc; border-radius: 6px; cursor: pointer; transition: 0.2s; }
 .vertical-thumbnails img.selected { border-color: #f90; transform: scale(1.1); }
 .carousel-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; font-size: 24px; padding: 5px 9px; cursor: pointer; border-radius: 50%; z-index: 10; }
@@ -195,4 +195,53 @@
   font-size: 0.6rem;
   font-weight: 500;
   color: #333;
+}
+/* Mobile layout */
+
+
+@media (max-width: 768px) {
+  .product-wrapper {
+    flex-direction: column;   /* still stacked for mobile */
+    gap: 1.5rem;
+  }
+
+  .image-wrapper, 
+  .info-wrapper {
+    width: 100%;
+  }
+
+  .image-section {
+    position: relative;       /* remove sticky on mobile */
+    top: auto;
+    height: 70vh;
+    flex-direction: column;   /* stack main image + thumbnails */
+    align-items: center;
+  }
+
+  .main-image-container {
+    width: 100%;
+    height: auto;
+    justify-content: center;
+  }
+
+  .main-image {
+    width: 100%;
+    max-width: 350px;         /* keep it nice on mobile */
+    height:  45vh;
+    margin-bottom: 30px;
+  }
+
+  /* 🔹 Thumbnails go horizontal under main image */
+  .vertical-thumbnails {
+    flex-direction: row;      /* switch to horizontal */
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1rem;
+  }
+
+  .vertical-thumbnails img {
+    width: 55px;
+    height: 65px;
+  }
 }

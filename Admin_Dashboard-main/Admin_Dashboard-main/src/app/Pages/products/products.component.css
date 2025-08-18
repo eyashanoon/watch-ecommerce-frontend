@@ -554,31 +554,7 @@
 
 
 
-
-
-.product-card {
-  border-radius: 12px;
-   background-color: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  font-size: 0.95rem;    
-  height: 400px;       /* ✅ Slightly reduce font */
-}
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 
 

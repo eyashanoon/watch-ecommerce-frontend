@@ -5,10 +5,43 @@ import { Router } from '@angular/router';
 import { ProductService1 } from '../../Service/product1.service';
 import { ProductWithImages } from '../../models/product.model';
 import { AuthService } from '../../Service/auth.service';
+import { ImageService } from '../../Service/image.service';
+import { Image } from '../../models/Image.model';
+import { switchMap, map } from 'rxjs/operators';
+
+
 type Filters = {
- 
+  maxPrice: number;
+  maxQuantity: number;
+  maxWeight: number;
+  maxSize: number;
+  waterProof: boolean;
+  includesDate: boolean;
+  hasFullNumerals: boolean;
+  hasTickingSound: boolean;
+  displayType: string;
+  bandColor: string;
+  handsColor: string;
+  backgroundColor: string;
+  bandMaterial: string;
+  caseMaterial: string;
+  brand: string;
+  numberingType: string;
+  shape: string;
+  changeableBand: boolean;
+    minPrice?: number;
+  minWeight?: number;
+  minSize?: number;
   name: string;
 };
+type ClorCombinations={
+  hands:String;
+  background:string;
+  band:string;
+  id:number;
+}
+
+
 
 @Component({
   selector: 'app-productsDetails',
@@ -24,34 +57,120 @@ export class ProductsDetailsComponent implements AfterViewInit {
   @ViewChildren('carouselImg') carouselImages!: QueryList<ElementRef<HTMLImageElement>>;
   currentIndex = 0;
   is3DViewActive = false;
-  products!: ProductWithImages & { selectedQty: number, colorCombinations:any[] };
-  
-    filters: Filters = {
+  products!: ProductWithImages & { selectedQty: number, colorCombinations:ClorCombinations[] };
+  loadedImages:any[]=[] ;
+  productID:number=0;
+  colorCombinations!:ClorCombinations[];
  
-    name:'',
-    }
-// <-- fix strict property initialization
-
-  constructor(private router: Router, private productService: ProductService1,   public authService: AuthService ) {
+   constructor(private router: Router, private productService: ProductService1,   public authService: AuthService ,private imageService:ImageService ) {
     const nav = this.router.getCurrentNavigation();
     const stateProduct = nav?.extras?.state?.['product'];
+    this.productID=stateProduct.id;
+    this.loadProduct(this.productID);
+    this.loadProductImages(this.productID)
 
     if (!stateProduct) {
       this.router.navigate(['/']);
       return;
     }
+ 
+   }
 
-    this.products = stateProduct;
-    this.filters.name=this.products.name;
-   // this.productService.getAllProducts(this.filters).subscribe()
-    this.products.colorCombinations=  [
-    { hands: "#000000", background: "#FFFFFF", band: "#FF0000" }, // comp1
-    { hands: "#FFD700", background: "#000000", band: "#0000FF" }, // comp2
-    { hands: "#FFFFFF", background: "#333333", band: "#008000" }, // comp3
-    { hands: "#FF69B4", background: "#F0E68C", band: "#8B4513" }  // comp4
-  ]
-    if (!this.products.selectedQty) this.products.selectedQty = 1;
-  }
+    loadProductImages(productId: number): void {
+      this.imageService.getAllImagesByProductID(productId).subscribe({
+        next: (images: Image[]) => {
+           this.loadedImages =  images.map(img => 'data:image/jpeg;base64,' + img.data),
+           console.log(this.loadedImages) // store loaded images
+        },
+        error: (err) => console.error('Failed to load images', err)
+      });
+    }
+    /*
+    loadProduct(productId: number): void {
+       this.productService.getProductById(productId).subscribe({
+        next: (pro: ProductWithImages & { selectedQty: number, colorCombinations:any[] }) => {
+           this.products = pro;
+           this.productService.getProductByName(pro.name).subscribe({
+            next:(pros:ProductWithImages[])=>{
+              this.colorCombinations=pros.map(p=>{
+                return {
+                  hands: p.handsColor, 
+                  background: p.backgroundColor,
+                   band: p.bandColor,
+                   id:p.id 
+                }
+              })
+            }
+           })
+           
+                
+           this.products.colorCombinations= this.colorCombinations;
+
+           console.log(this.products);
+          /* [
+          { hands: "#000000", background: "#FFFFFF", band: "#FF0000",id:0  }, // comp1
+          { hands: "#FFD700", background: "#000000", band: "#0000FF",id:1 }, // comp2
+          { hands: "#FFFFFF", background: "#333333", band: "#008000",id:2 }, // comp3
+          { hands: "#FF69B4", background: "#F0E68C", band: "#8B4513",id:2 }  // comp4
+        ]
+    
+        },
+        error: (err) => console.error('Failed to load product', err)
+      });
+    }
+    
+    */
+   
+loadProduct(productId: number): void {
+  this.productService.getProductById(productId).pipe(
+    switchMap((pro: ProductWithImages & { selectedQty: number }) => 
+      this.productService.getProductByName(pro.name).pipe(
+        map((pros: ProductWithImages[]) => {
+          const colorCombinations = pros.map(p => ({
+            hands: p.handsColor,
+            background: p.backgroundColor,
+            band: p.bandColor,
+            id: p.id
+          }));
+
+          return { ...pro, colorCombinations }; // merge with main product
+        })
+      )
+    )
+  ).subscribe({
+    next: (product) => {
+      this.products = product;
+      console.log(this.products);
+    },
+    error: (err) => console.error('Failed to load product', err)
+  });
+}
+changeWatchColor(combo: ClorCombinations) {
+  this.loadProduct(combo.id);
+  this.loadProductImages(combo.id);
+  this.productService.getProductById(combo.id).pipe(
+    switchMap(product => 
+      this.productService.getProductByName(product.name).pipe(
+        map(products => {
+          const colorCombinations = products.map(p => ({
+            hands: p.handsColor,
+            background: p.backgroundColor,
+            band: p.bandColor,
+            id: p.id
+          }));
+          return { ...product, colorCombinations };
+        })
+      )
+    )
+  ).subscribe({
+    next: (product) => {
+      this.products = product; // update current product
+      console.log('Changed watch:', this.products);
+    },
+    error: err => console.error('Failed to load watch', err)
+  });
+}
+
  
 
   ngAfterViewInit() {
@@ -60,10 +179,10 @@ export class ProductsDetailsComponent implements AfterViewInit {
     this.carouselImages.changes.subscribe(() => {
       if (this.is3DViewActive) this.update3DCarousel();
     });
+
    }
    hasRole(role: string): boolean {
-    console.log("role:"+this.authService.getUserRoles());
-  const roles = this.authService.getUserRoles();
+   const roles = this.authService.getUserRoles();
   const normalize = (r: string) => r.toUpperCase().replace('-', '_');
   return roles.some(r => normalize(r) === normalize(role));
 }
@@ -73,9 +192,9 @@ export class ProductsDetailsComponent implements AfterViewInit {
 
 
 update3DCarousel() {
-  if (!this.products?.images?.length) return;
+  if (!this.loadedImages?.length) return;
 
-  const total = this.products.images.length;
+  const total = this.loadedImages.length;
   const angle = 360 / total;
   const radius = 400; // Can increase to 500 for even bigger spacing
 
@@ -89,15 +208,15 @@ update3DCarousel() {
 
 
 nextImage() {
-  this.currentIndex = (this.currentIndex + 1) % this.products.images.length;
+  console.log("gggggggggg")
+  this.currentIndex = (this.currentIndex + 1) % this.loadedImages.length;
   if (this.is3DViewActive) this.update3DCarousel();
 
 
-  console.log(localStorage.getItem('roles'));
-}
+ }
 
 prevImage() {
-  this.currentIndex = (this.currentIndex - 1 + this.products.images.length) % this.products.images.length;
+  this.currentIndex = (this.currentIndex - 1 + this.loadedImages.length) % this.loadedImages.length;
   if (this.is3DViewActive) this.update3DCarousel();
 }
 
@@ -123,4 +242,13 @@ editProduct() {
 
   deleteProduct() {
   }
+
+addToCart(products:any){
+
+}
+addToWishlist(products:any){
+
+}
+
+ 
 }

@@ -26,7 +26,7 @@ export class AddProductComponent implements OnInit {
   loadedImages: Image[] = [];        // URLs loaded from server
   deletedImageIds: number[] = [];    // track images marked for deletion
   mode: 'add' | 'edit' = 'add';
-  productId?: string;
+  productId?: number;
 
   availableColors: string[] = [];
   bandColors: string[] = [];
@@ -52,8 +52,9 @@ export class AddProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadFeatures();
-    this.productId = this.route.snapshot.paramMap.get('id') ?? undefined;
-    console.log('Product ID:', this.productId);
+this.productId = this.route.snapshot.paramMap.get('id') 
+  ? Number(this.route.snapshot.paramMap.get('id')) 
+  : undefined;    console.log('Product ID:', this.productId);
     this.initializeForm();
     if (this.productId) {
       this.mode = 'edit';
@@ -147,7 +148,7 @@ export class AddProductComponent implements OnInit {
     });
   }
 
-  loadProductForEdit(id: string): void {
+  loadProductForEdit(id: number): void {
     this.productService.getProductById(id).subscribe({
       next: (product: any) => {
         this.watchForm.patchValue({
@@ -241,12 +242,12 @@ export class AddProductComponent implements OnInit {
           });
 
           // Delete images marked for deletion
-          this.deletedImageIds.forEach(id => {
+          /*this.deletedImageIds.forEach(id => {
             this.imageService.deleteImage(id).subscribe({
               next: () => console.log('Deleted image', id),
               error: err => console.error('Failed to delete image', err)
             });
-          });
+          });*/
 
           this.imageFiles = [];
           this.deletedImageIds = [];

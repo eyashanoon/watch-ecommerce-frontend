@@ -460,7 +460,7 @@ goToProductDetails(product: any): void {
   const roles = this.authService.getUserRoles();
   const isLoggedIn = this.authService.isLoggedIn();
 
-  if (isLoggedIn && roles.includes('ADMIN')) {
+  if (isLoggedIn && (roles.includes('ADMIN')|| roles.includes('CUSTOMER'))) {
     // Admin goes to admin product details
     this.router.navigate(['/admin-product', encodedName], { state: { product } });
   } else {

@@ -37,10 +37,13 @@ getAllProducts(filters: any): Observable<{ content: Product[]; [key: string]: an
     params: params
   });
 }
-  getProductById(id: string): Observable<any> {
+  getProductById(id: number): Observable<any> {
     return this.http.get<any>(`${API_URL}/${id}`, { headers: this.getAuthHeaders() });
   }
-    updateProduct(id: string, productData: any): Observable<any> {
+    getProductByName(name: String): Observable<any[]> {
+    return this.http.get<any[]>(`${API_URL}/products/name/${name}`, { headers: this.getAuthHeaders() });
+  }
+    updateProduct(id: number, productData: any): Observable<any> {
     return this.http.put<any>(`${API_URL}/${id}`, productData, { headers: this.getAuthHeaders() });
   }
  addProduct(productData: any): Observable<any> {
