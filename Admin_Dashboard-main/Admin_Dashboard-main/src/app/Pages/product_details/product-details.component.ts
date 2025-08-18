@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import {Product , ProductWithImages } from '../../models/product.model';
-
+ import { ProductService } from '../../Service/product.service';
+import { ProductWithImages } from '../products/products.component';
+ import {Product , ProductWithImages } from '../../models/product.model';
+ 
 @Component({
   selector: 'app-product-details',
   standalone: true,
@@ -12,15 +14,14 @@ import {Product , ProductWithImages } from '../../models/product.model';
   styleUrls: ['./product-details.component.css']
 })
 export class ProductDetailsComponent {
-  product: ProductWithImages & {selectedQty: number} | null = null;
+  product: (ProductWithImages & { selectedQty: number }) | null = null;
 
-  constructor(private router: Router ) {
+  constructor(private router: Router, private productService: ProductService) {
     const nav = this.router.getCurrentNavigation();
     this.product = nav?.extras?.state?.['product'] ?? null;
-    console.log(this.product)
 
     if (!this.product) {
-      this.router.navigate(['/']);
+      this.router.navigate(['/product']); // fallback to product listing
       return;
     }
 
@@ -28,35 +29,33 @@ export class ProductDetailsComponent {
       this.product.selectedQty = 1;
     }
   }
-/*
-  addToCart(product: Product) {
+
+  // Add to Cart
+  addToCart(product: ProductWithImages & { selectedQty: number }) {
     if (!product.selectedQty || product.selectedQty < 1) {
       alert('Please select a quantity of at least 1.');
       return;
     }
 
-    let cart: Product[] = JSON.parse(localStorage.getItem('cart') || '[]');
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-    const existingIndex = cart.findIndex(item => item.name === product.name);
+    const existingIndex = cart.findIndex((item: any) => item.name === product.name);
 
     if (existingIndex !== -1) {
-      // Update existing quantity
       cart[existingIndex].selectedQty = (cart[existingIndex].selectedQty ?? 0) + product.selectedQty;
     } else {
-      // Add new product with selectedQty
       cart.push({ ...product });
     }
 
     localStorage.setItem('cart', JSON.stringify(cart));
     alert(`${product.name} added to cart (Qty: ${product.selectedQty})`);
-
-    // Reset selectedQty after adding to cart (optional)
     product.selectedQty = 1;
   }
 
-  toggleWishlist(product: Product) {
-    let wishlist: Product[] = JSON.parse(localStorage.getItem('wishlist') || '[]');
-    const index = wishlist.findIndex(item => item.name === product.name);
+  // Add/Remove from Wishlist
+  toggleWishlist(product: ProductWithImages & { selectedQty: number }) {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    const index = wishlist.findIndex((item: any) => item.name === product.name);
 
     if (index === -1) {
       wishlist.push(product);
@@ -68,33 +67,13 @@ export class ProductDetailsComponent {
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
   }
 
-  isInWishlist(product: Product): boolean {
-    const wishlist: Product[] = JSON.parse(localStorage.getItem('wishlist') || '[]');
-    return wishlist.some(item => item.name === product.name);
+  isInWishlist(product: ProductWithImages & { selectedQty: number }): boolean {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    return wishlist.some((item: any) => item.name === product.name);
   }
 
-  isDarkColor(color: string): boolean {
-    if (!color) return false;
-    const ctx = document.createElement('canvas').getContext('2d');
-    if (!ctx) return false;
-    ctx.fillStyle = color;
-    const computed = ctx.fillStyle;
-    const rgb = computed.match(/\d+/g);
-    if (!rgb || rgb.length < 3) return false;
-    const r = parseInt(rgb[0], 10);
-    const g = parseInt(rgb[1], 10);
-    const b = parseInt(rgb[2], 10);
-    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-    return luminance < 128;
+  scrollRight(product: ProductWithImages & { selectedQty: number }) {
+    if (product.currentImageIndex >= product.images.length - 1) product.currentImageIndex = 0;
+    else product.currentImageIndex++;
   }
-
-  getContrastingColor(hexColor: string): string {
-    if (!hexColor) return 'black';
-    hexColor = hexColor.replace('#', '');
-    const r = parseInt(hexColor.substr(0, 2), 16);
-    const g = parseInt(hexColor.substr(2, 2), 16);
-    const b = parseInt(hexColor.substr(4, 2), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return luminance > 0.6 ? 'black' : 'white';
-  }*/
 }

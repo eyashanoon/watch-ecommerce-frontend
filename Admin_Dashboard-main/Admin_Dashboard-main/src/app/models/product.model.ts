@@ -1,4 +1,5 @@
 export interface Product {
+  isHovered: boolean;
   id: number;
   name: string;
   description: string;

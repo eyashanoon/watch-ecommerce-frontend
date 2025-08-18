@@ -32,7 +32,7 @@ export class ManageAdminsComponent implements OnInit {
 
   editAdmin(admin: any) {
     // Use query params or state if needed, here redirecting simply
-    this.router.navigate(['/admin/add'], { state: { admin } });
+    this.router.navigate(['/control-admins'], { state: { admin } });
   }
 
   deleteAdmin(adminId: number) {
@@ -62,6 +62,6 @@ export class ManageAdminsComponent implements OnInit {
   }
 
   goToAddAdmin() {
-    this.router.navigate(['/admin/add']);
+    this.router.navigate(['/control-admins']);
   }
 }

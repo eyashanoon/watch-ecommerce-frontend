@@ -5,15 +5,20 @@ import { OrdersComponent } from './Pages/orders/orders.component';
 import { HomeComponent } from './Pages/home/home.component';
 import { CustomerProductsComponent } from './Pages/customer-products/customer-products.component';
 import { AddProductComponent  }    from './Pages/add-product/add-product.component';
-import { EditProductComponent } from './Pages/edit-product/edit-product.component';
 
 
 export const routes: Routes = [
   { path: 'admin', component: AdminDashboardComponent },
 {
-  path: 'edit-product/:name',
-  component: EditProductComponent
-}
+  path: 'product/add',
+  component: AddProductComponent
+},
+{
+  path: 'product/edit/:id',  // edit mode uses same component
+  component: AddProductComponent
+},
+{ path: 'add-product/:id', component: AddProductComponent }
+
 ,
   { path: 'product', component: ProductsComponent },
   { path: '', component: HomeComponent },
@@ -52,6 +57,10 @@ export const routes: Routes = [
 {
   path: 'customer-profile',
   loadComponent: () => import('./Pages/customer-profile/customer-profile.component').then(m => m.CustomerProfileComponent)
+},
+{
+  path: 'admin-profile',
+  loadComponent: () => import('./Pages/admin-profile/admin-profile.component').then(m => m.AdminProfileComponent)
 },
 
 {

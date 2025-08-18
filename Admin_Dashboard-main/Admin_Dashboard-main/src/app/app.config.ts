@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { routes } from './app.routes';
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
-import { EditProductComponent } from './Pages/edit-product/edit-product.component'; 
 import { CustomerDashBoardComponent } from './Pages/customer-dash-board/customer-dash-board.component';
 import { AdminDashboardComponent } from './Pages/AdminDashBoard/admin-dashboard.component';
 import { ProductsComponent } from './Pages/products/products.component';
@@ -30,7 +29,6 @@ export const appImports = [
   RouterModule.forRoot(routes),
   FormsModule, // Import FormsModule in this configuration
   CommonModule,
-  EditProductComponent, // Declare components
   CustomerDashBoardComponent,
   AdminDashboardComponent,
   ProductsComponent,

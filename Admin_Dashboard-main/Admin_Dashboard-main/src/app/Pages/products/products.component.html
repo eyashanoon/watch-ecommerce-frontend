@@ -1,20 +1,12 @@
-<!-- Top Navigation Bar -->
-<div class="topbar">
-  <div class="topbar-left">
-    <img src="assets/logo.png" alt="Logo" style="width: 80px; height: auto;" />
-    <h1>| La Royale Watches Store</h1>
-  </div>
-  <div class="topbar-links">
-    <a href="#">Profile</a>
-    <a href="#" (click)="goToHomePage(); $event.preventDefault()">Home</a>
-    <a href="#" (click)="goToHomePage(); $event.preventDefault()">Sign Out</a>
-    <a href="tel:+970599999999">+970599999999</a>
-  </div>
-</div>
-
 <!-- Floating Add Button -->
-<button class="floating-add-button" (click)="goToAddProductPage()" title="Add New Product">➕</button>
-
+<!-- Floating Add Button -->
+<button 
+  *ngIf="canAddProduct"
+  class="floating-add-button" 
+  (click)="goToAddProductPage()" 
+  title="Add New Product">
+  ➕
+</button>
 <!-- Product Section -->
 <div class="product-container">
   <h2 class="title">Our Collection</h2>
@@ -188,7 +180,7 @@
   <div class="product-wrapper" *ngFor="let product of productsWithImages">
     <div class="product-card"  >
       <div class="product-content">
-
+ 
         <div class="image-wrapper" #imageContainer>
           <div
             class="image-strip"
@@ -204,18 +196,20 @@
 
           <button class="carousel-arrow left" (click)="scrollLeft(product, $event)">&#10094;</button>
           <button class="carousel-arrow right" (click)="scrollRight(product , $event)">&#10095;</button>
+ 
         </div>
 
-        <h3 class="product-name">{{ product.name }}</h3>
+         <h3 class="product-name clickable"
+                 (click)="goToProductDetails(product)">{{ product.name }}</h3>
+ 
         <p class="product-price">{{ product.quantity }}  unit </p>
-        <p class="product-price">{{ product.originalPrice | currency }}</p>
+         <p class="product-price">{{ product.originalPrice | currency }}</p>
 
       </div>
     </div>
   </div>
 </div>
-
-
+ 
 
   </div>
 </div>

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from "../../app/environments/environment";
-import { HttpHeaders } from '@angular/common/http';
+ import { environment } from "../../app/environments/environment";
+
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +13,12 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  // --- Authentication ---
   login(username: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { username, password });
   }
 
-saveToken(token: string, roles: string[], id: number): void {
+ saveToken(token: string, roles: string[], id: number): void {
   localStorage.setItem('authToken', token);
   localStorage.setItem('roles', JSON.stringify(roles));  // store array as JSON string
   localStorage.setItem('id', id.toString());             // convert number to string
@@ -35,6 +36,7 @@ saveToken(token: string, roles: string[], id: number): void {
       console.error('Invalid token format', error);
       this.roles = [];
     }
+ 
   }
 
   getToken(): string | null {
@@ -48,13 +50,13 @@ saveToken(token: string, roles: string[], id: number): void {
   logout(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('roles');
+    localStorage.removeItem('id');
     this.roles = [];
   }
 
+  // --- Roles Handling ---
   getUserRoles(): string[] {
-    if (this.roles.length > 0) {
-      return this.roles;
-    }
+    if (this.roles.length > 0) return this.roles;
     const storedRoles = localStorage.getItem('roles');
     return storedRoles ? JSON.parse(storedRoles) : [];
   }
@@ -64,11 +66,10 @@ saveToken(token: string, roles: string[], id: number): void {
   }
 
   hasAnyRole(rolesToCheck: string[]): boolean {
-    const userRoles = this.getUserRoles();
-    return rolesToCheck.some(role => userRoles.includes(role));
+    return rolesToCheck.some(role => this.hasRole(role));
   }
 
-  // --- New method: extract email from JWT token ---
+  // --- JWT Helper ---
   getEmailFromToken(): string | null {
     const token = this.getToken();
     if (!token) return null;
@@ -79,6 +80,66 @@ saveToken(token: string, roles: string[], id: number): void {
       return null;
     }
   }
+
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.getToken();
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    });
+  }
+
+  // --- Admin API ---
+  getAdminById(id: number): Observable<any> {
+    return this.http.get(`${environment.apiBaseUrl}/api/admins/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  updateAdminProfile(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiBaseUrl}/api/admins/${id}`, data, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  updateAdminProfilePassword(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiBaseUrl}/api/admins/changePassword/${id}`, data, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  deleteAdminProfile(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiBaseUrl}/api/admins/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // --- Customer API ---
+  getCustomerById(id: number): Observable<any> {
+    return this.http.get(`${environment.apiBaseUrl}/api/customers/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  updateCustomerProfile(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiBaseUrl}/api/customers/${id}`, data, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  updateCustomerPassword(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiBaseUrl}/api/customers/changePassword/${id}`, data, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  deleteCustomerProfile(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiBaseUrl}/api/customers/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
 
   // --- New method: get user profile by email ---
   getUserById(id: number): Observable<any> {
@@ -108,13 +169,5 @@ saveToken(token: string, roles: string[], id: number): void {
     });
   }
 
-
-    private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    });
-  }
 
 }

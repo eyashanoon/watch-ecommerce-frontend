@@ -15,6 +15,14 @@
               0 4px 8px rgba(255, 255, 255, 0.1);
   z-index: 1000; /* on top */
 }
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff; /* or your color */
+  padding: 0 20px; /* <-- this adds space on left & right */
+  box-sizing: border-box;
+}
 
 /* Push container down below topbar */
 .container {

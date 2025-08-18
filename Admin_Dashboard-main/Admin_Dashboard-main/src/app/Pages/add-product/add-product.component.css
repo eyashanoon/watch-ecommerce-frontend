@@ -12,6 +12,24 @@
   flex-direction: column;
   align-items: center;
 }
+.image-item {
+  display: flex;
+  align-items: center; /* vertically center items */
+  gap: 8px; /* small gap between image and text */
+  margin-bottom: 6px; /* space between different files */
+}
+
+.preview-image {
+  width: 50px; /* or desired size */
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px; /* optional: rounded corners */
+}
+
+.file-name {
+  flex-grow: 1; /* take remaining space */
+}
+
 
 .add-watch-card:hover {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
@@ -48,17 +66,16 @@
   gap: 16px;
   max-width: 900px;
   margin-bottom: 20px;
-  padding: 0 20px;
+  padding-left: 20px; 
 }
 
 /* Label style aligned right */
 .field-title {
   width: 150px;
-  text-align: right;
+  text-align: center;
   font-weight: 600;
   color: #232526;
   margin: 0;
-  line-height: 1;
 }
 
 /* Inputs and selects fill the rest of the row */
@@ -124,6 +141,24 @@ select:focus {
   gap: 20px;
   margin-top: 1.5rem;
 }
+.ng-invalid.ng-touched,
+.images-invalid {
+  border: 2px solid red;
+  border-radius: 4px;
+}
+
+.shake {
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
 
 /* Cancel button styling */
 .cancel-btn {
@@ -183,70 +218,6 @@ select:focus {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Topbar container */
-.topbar {
-  width: 95%;
-  max-width: 1200px;
-  height: 80px;
-  margin: 30px auto 0;
-  background-color: #B6B09F;
-  color: #232526;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 28px;
-  border-radius: 14px;
-  box-shadow:
-    0 10px 25px rgba(255, 255, 255, 0.2),
-    0 4px 8px rgba(255, 255, 255, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-/* Left side of topbar: logo + title */
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.topbar-left img {
-  width: 100px;
-  display: block;
-}
-
-.topbar-left h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #232526;
-  margin: 0;
-  text-shadow: 0 1px 8px #cccccc44;
-}
-
-/* Right side: navigation links */
-.topbar-links {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.topbar-links a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
-  cursor: pointer;
-}
-
-.topbar-links a:hover {
-  background-color: #ddd;
-}
-
 /* Section headings inside form */
 .section-heading {
   font-size: 18px;
@@ -259,31 +230,112 @@ select:focus {
   max-width: 900px;
   text-align: left;
 }
-
-/* Responsive adjustments */
-@media (max-width: 900px) {
-  .field-with-title.horizontal {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .field-title {
-    width: 100%;
-    text-align: left;
-    margin-bottom: 6px;
-  }
-
-  .form-input,
-  select,
-  .radio-row {
-    width: 100%;
-  }
-
-  .topbar-left img {
-    width: 70px;
-  }
-
-  .topbar-left h1 {
-    font-size: 18px;
-  }
+.field-with-title.vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
+.image-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.image-input-wrapper {
+  display: flex;
+  flex-direction: column; /* Stack input + file name + remove button vertically */
+  gap: 5px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.file-name {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+
+.error {
+color: #c0392b;
+font-size: 13px;
+margin-top: 4px;
+}
+
+.error small {
+color: #d93025;
+font-size: 13px;
+}
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* same spacing as .horizontal */
+  padding-left: 20px; /* match horizontal form rows */
+}
+
+.title-row .field-title {
+  width: 150px;        /* match other labels */
+  text-align: center;    /* same as all labels */
+  margin-right: 5px;  /* same gap as other fields */
+}
+
+.title-row .add-image-btn {
+  flex-shrink: 0;     /* prevent button from stretching or pushing away */
+}
+
+.field-with-title.vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.image-item {
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  border-radius: 5px;
+  margin: 0 auto; /* centers horizontally */
+}
+
+
+.image-item button {
+  color: #6f6b61;
+  border: none;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.image-item button:hover {
+  background-color: #6f6b61;
+  color: white;
+}
+.plus-icon {
+  color: #B6B09F;
+  font-family: "Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  font-size: 1.2em;
+}
+
+.add-image-btn {
+  background-color: #B6B09F; 
+  color: white;              
+  height: auto;
+  width: auto;
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-image-btn:hover {
+  background-color: #6f6b61; /* Darker blue on hover */
+}
+
+
+ 

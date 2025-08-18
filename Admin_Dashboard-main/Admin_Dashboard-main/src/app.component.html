@@ -1,2 +1,58 @@
 
+<div>
+
+<div class="topbar">
+<div class="topbar-left" (click)="goToHome()" style="cursor: pointer;">
+  <img src="/assets/logo.png" alt="Logo" />
+  <h1>| La Royale Watches Store</h1>
+</div>
+
+  <div class="topbar-links" *ngIf="isHomePage">
+    <a href="#" (click)="scrollToAbout($event)">About</a>
+    <a href="#" (click)="goToSignInPage(); $event.preventDefault()">Sign In</a>
+    <a href="#" (click)="goToSignUpPage(); $event.preventDefault()">Sign Up</a>
+  </div>
+
+  <div class="topbar-links" *ngIf="isAdminProfilePage">
+    <!-- put links for other pages here -->
+    <a href="#" (click)="  goToAdminPanel(); $event.preventDefault()">Admin Panel</a>
+  </div>
+  <div class="topbar-links" *ngIf="isAddProductPage">
+    <a href="#" (click)="  goToProducts(); $event.preventDefault()">Products</a>
+  </div>
+  <div class="topbar-links" *ngIf="isAdminDashBoard">
+    <a routerLink="/admin-profile" href="/admin-profile">Profile</a>
+    <a href="#" (click)="signOut($event)">Sign Out</a>
+  </div>
+<div class="topbar-links" *ngIf="isCustomerDashBoard">
+    <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
+    <a routerLink="/customer-profile" href="/customer-profile">Profile</a>
+    <a href="#" (click)="signOut($event)">Sign Out</a>
+</div>
+<div class="topbar-links" *ngIf="isProductsPage">
+    <a href="#" (click)="  goToPanel(); $event.preventDefault()">Go to dashboard</a>
+</div>
+<div class="topbar-links" *ngIf="isManageAdmins">
+    <a href="#" (click)="  goToAdminPanel(); $event.preventDefault()">Go to Admin Panel</a>
+</div>
+<div class="topbar-links" *ngIf="isAdminProductDetails">
+    <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
+</div>
+<div class="topbar-links" *ngIf="isCustomerProductDetails">
+    <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
+</div>
+<div class="topbar-links" *ngIf="isControlAdmins">
+    <a href="#" (click)="  goToAdminPanel(); $event.preventDefault()">Go to Admin Panel</a>
+</div>
+</div>
+
+
+<!-- Main router outlet -->
 <router-outlet></router-outlet>
+ <footer class="footer">
+    <p>
+      Need help? Contact our support: 
+      <a href="tel:+970599999999">+970599999999</a>
+    </p>
+  </footer>
+</div>

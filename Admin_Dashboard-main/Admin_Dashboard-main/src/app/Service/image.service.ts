@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {environment} from "../../app/environments/environment"
+import { environment } from "../environments/environment";
 
-// Adjust this URL according to your backend endpoint
-const API_URL = environment.apiBaseUrl+'/api/product/image';
+// Base API URL
+const API_URL = environment.apiBaseUrl + '/api/product/image';
 
 @Injectable({
   providedIn: 'root'
@@ -12,25 +12,37 @@ const API_URL = environment.apiBaseUrl+'/api/product/image';
 export class ImageService {
   constructor(private http: HttpClient) {}
 
-  // Optional: You can include token if your backend requires it
+  // Auth headers if needed
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
     return new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
+      // Do NOT set Content-Type here for multipart/form-data; browser will set it
+      Authorization: `Bearer ${token || ''}`
     });
   }
 
-  /**
-   * Adds a new admin user.
-   * @param adminData - The new admin's data.
-   */
-
-  getAllImagesByProductID(id: number): Observable<any[]> {
-    return this.http.get<any[]>(`${API_URL}/product/${id}` , {
+  // Get all images for a product
+  getAllImagesByProductID(productId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${API_URL}/product/${productId}`, {
       headers: this.getAuthHeaders()
     });
   }
 
+  // Add an image to a product
+  addImageToProduct(productId: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('ProductId', productId.toString());
+    formData.append('image', file);
 
+    return this.http.post<any>(`${API_URL}`, formData, {
+      headers: this.getAuthHeaders() // do NOT include Content-Type; browser handles it
+    });
+  }
+
+  // Delete an image by its ID
+  deleteImage(imageId: number): Observable<any> {
+    return this.http.delete(`${API_URL}/${imageId}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 }

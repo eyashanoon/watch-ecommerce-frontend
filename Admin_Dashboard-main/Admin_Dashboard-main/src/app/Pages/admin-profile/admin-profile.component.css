@@ -210,8 +210,6 @@ input {
 
 /* Topbar */
 .topbar {
-   position: fixed; /* fixed to top */
- 
   top: 20px;       
   left: 20px;      
   right: 20px;     
@@ -225,8 +223,6 @@ input {
               0 4px 8px rgba(255,255,255,0.1);
   color: #232526;
   z-index: 1000;
-     margin-bottom: 20px; /* or whatever space you want */
- 
 
 }
 

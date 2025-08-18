@@ -50,6 +50,7 @@ export class ProductsDetailsComponent implements AfterViewInit {
   ]
     if (!this.products.selectedQty) this.products.selectedQty = 1;
   }
+ 
 
   ngAfterViewInit() {
     if (this.is3DViewActive) this.update3DCarousel();
@@ -57,7 +58,10 @@ export class ProductsDetailsComponent implements AfterViewInit {
     this.carouselImages.changes.subscribe(() => {
       if (this.is3DViewActive) this.update3DCarousel();
     });
-  }
+   }
+}
+
+
 
 update3DCarousel() {
   if (!this.products?.images?.length) return;

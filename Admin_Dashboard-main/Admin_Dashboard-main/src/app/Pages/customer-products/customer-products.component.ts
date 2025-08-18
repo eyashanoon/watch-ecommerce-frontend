@@ -1,14 +1,39 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { ProductService, Product } from '../../Service/product.service';
-
+ import { RouterModule } from '@angular/router';
+ import { ProductService1} from '../../Service/product1.service';
+import { Product,ProductService} from '../../Service/product.service';
 @Component({
   selector: 'app-customer-products',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, RouterModule],
+  templateUrl: './customer-products.component.html',
+  styleUrls: ['./customer-products.component.css']
+})
+export class CustomerProductsComponent implements OnInit {
+   
+  
+  ngOnInit(): void {
+    
+  }
+
+    
+ 
+ 
+}
+
+/*
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+ import { RouterModule } from '@angular/router';
+ import { ProductService1} from '../../Service/product1.service';
+import { Product,ProductService} from '../../Service/product.service';
+@Component({
+  selector: 'app-customer-products',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './customer-products.component.html',
   styleUrls: ['./customer-products.component.css']
 })
@@ -172,3 +197,4 @@ export class CustomerProductsComponent implements OnInit {
     }
   }
 }
+*/

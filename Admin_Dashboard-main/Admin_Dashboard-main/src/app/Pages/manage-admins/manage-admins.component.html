@@ -1,18 +1,11 @@
-<div class="topbar">
-  <div class="topbar-left">
-    <img src="/assets/logo.png" alt="Logo" />
-    <h1>| La Royale Watches Store</h1>
-  </div>
-  <div class="topbar-links">
-    <a href="#">Profile</a>
-    <a href="#"  >Home</a>
-    <a href="#">Sign Out</a>
-    <a href="tel:+970599999999">+970599999999</a>
-  </div>
-</div>
-
 
 <div class="admin-list">
+   <!-- Go to Control Admins Button -->
+  <div style="margin-bottom: 15px;">
+    <button (click)="goToAddAdmin()" class="control-btn">
+      Go to Add Admin
+    </button>
+  </div>
   <div *ngIf="admins.length > 0">
 
     <div class="data-names">

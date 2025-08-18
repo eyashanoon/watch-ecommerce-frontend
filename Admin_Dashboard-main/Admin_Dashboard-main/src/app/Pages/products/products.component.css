@@ -746,20 +746,63 @@ box-sizing: border-box;
   opacity: 1;
 }
 
-
 .carousel-arrow.left {
+  left: -12px;
+}
+
+ .carousel-arrow.left {
   left: 0;
 }
 
 .carousel-arrow.right {
   right: 0
+  
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+  /* or whatever your expansion style is */
+} 
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+  background: rgba(0,0,0,0.3);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+  user-select: none;
+}
+
+.carousel-arrow.left {
+  left: 5px;
+}
+
+.carousel-arrow.right {
+  right: 5px;
 }
 
 
-
-
-
-
-
-
-
+.product-card.hovered{
+  position: absolute; /* so it floats above others */
+            /* move up */
+  left: 0;
+  z-index: 10;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transform: scaleX(1.15) translateY(-80px);
+  height: 115%;
+}
+.product-card.hovered .image-wrapper {
+  transform: scale(1.15); /* zoom wrapper and image */
+}
+.product-card.hovered .product-content {
+  transform: scaleX(0.87);
+    /* inverse of 1.15 ≈ 1/1.15 */
+}
+.image-wrapper.hovered .carousel-arrow {
+  opacity: 1;
+}
+ 

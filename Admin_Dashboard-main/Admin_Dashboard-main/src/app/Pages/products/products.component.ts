@@ -3,8 +3,10 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { ProductService1} from '../../Service/product1.service';
+ import { ProductService1} from '../../Service/product1.service';
 import { ProductService} from '../../Service/product.service';
+import { AuthService } from '../../Service/auth.service';
+
 
 import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -16,6 +18,7 @@ import {Product , ProductWithImages } from '../../models/product.model';
 import {forkJoin, map, switchMap, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
+ 
 
 type Filters = {
   maxPrice: number;
@@ -58,11 +61,10 @@ export class ProductsComponent implements OnInit {
      private productService: ProductService,
      private productService1: ProductService1,
      private imageService:ImageService,
-     private featuresService:FeaturesService
-    ) {
-  }
-
-
+      private featuresService:FeaturesService,
+     private authService: AuthService
+    ) {}
+ 
 
 
   product: any[] = [];
@@ -73,6 +75,7 @@ export class ProductsComponent implements OnInit {
   originalProduct: any = null;
   showAddForm = false;
   sidebarVisible = false;
+ 
 
   filters: Filters = {
     maxPrice: 1000,
@@ -192,15 +195,16 @@ export class ProductsComponent implements OnInit {
 
 }
 
-
+ 
 
   availableColors: string[] = [];
-  bandColors: string[] = [];
+   bandColors: string[] = [];
 
   handsColors: string[] = [];
 
   backgroundColors  : string[] = [];
 
+ 
   availableBrands  : string[] = [];
 
   bandMaterials: string[] = [];
@@ -210,7 +214,7 @@ export class ProductsComponent implements OnInit {
   numberingTypes: string[] = [];
   shapes: string[] = [];
 
-
+ 
 ngOnInit(): void {
 this.filterChange$
       .pipe(debounceTime(300)) // waits 300ms after last change
@@ -262,17 +266,22 @@ this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
     .subscribe(() => {
       this.loadProducts();
     });
+  const roles = this.authService.getUserRoles(); // Example: ['ADMIN'] or ['CUSTOMER']
+  this.canAddProduct = roles.includes('ADMIN'); // Only admins can add products
+
 }
 
 
 loadProducts() {
+ 
   const backendFilters = this.mapFiltersToBackend1(this.filters);
   console.log(backendFilters)
   this.productMap.clear();
 console.log(this.filters);
   this.productService1.getAllProducts(backendFilters).pipe(
-    switchMap(page => {   // page is the Page<Product> object
+     switchMap(page => {   // page is the Page<Product> object
       const products = page.content;   // <-- extract the array
+ 
       const requests = products.map(product =>
         this.imageService.getAllImagesByProductID(product.id).pipe(
           map(images => ({
@@ -288,6 +297,7 @@ console.log(this.filters);
      results.forEach(({ product, images, currentImageIndex }) => {
       this.productMap.set(product.id, { product, images, currentImageIndex });
     });
+ 
   });
 }
 
@@ -375,20 +385,7 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
   toggleDetails(product: any) {
     product.showDetails = !product.showDetails;
   }
@@ -457,6 +454,20 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
   goToHomePage() {
     this.router.navigate(['/home']);
   }
+goToProductDetails(product: any): void {
+  const encodedName = encodeURIComponent(product.name);
+  const roles = this.authService.getUserRoles();
+  const isLoggedIn = this.authService.isLoggedIn();
+
+  if (isLoggedIn && roles.includes('ADMIN')) {
+    // Admin goes to admin product details
+    this.router.navigate(['/admin-product', encodedName], { state: { product } });
+  } else {
+    // Customer or guest goes to normal product details
+    this.router.navigate(['/product', encodedName], { state: { product } });
+  }
+}
+
 
   toggleSidebar() {
     this.sidebarVisible = !this.sidebarVisible;
@@ -478,16 +489,9 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
       product.carouselInterval = null;
     }
   }
-
-
-   doNothing(event: Event) {
-    event.stopPropagation();
-  }
-goToProductDetails(product: any): void {
-  const encodedName = encodeURIComponent(product.name);
-  this.router.navigate(['/admin-product', encodedName], {
-    state: { product }
-  });
+ 
+doNothing(event: Event) {
+  event.stopPropagation();
 }
 
 
@@ -495,4 +499,8 @@ goToProductDetails(product: any): void {
 
 
 
+
+
 }
+
+ 
