@@ -4,6 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProductService1 } from '../../Service/product1.service';
 import { ProductWithImages } from '../../models/product.model';
+import { AuthService } from '../../Service/auth.service';
+type Filters = {
+ 
+  name: string;
+};
 
 @Component({
   selector: 'app-productsDetails',
@@ -14,10 +19,7 @@ import { ProductWithImages } from '../../models/product.model';
 })
 
 
-type Filters = {
- 
-  name: string;
-};
+
 export class ProductsDetailsComponent implements AfterViewInit {
   @ViewChildren('carouselImg') carouselImages!: QueryList<ElementRef<HTMLImageElement>>;
   currentIndex = 0;
@@ -30,7 +32,7 @@ export class ProductsDetailsComponent implements AfterViewInit {
     }
 // <-- fix strict property initialization
 
-  constructor(private router: Router, private productService: ProductService1) {
+  constructor(private router: Router, private productService: ProductService1,   public authService: AuthService ) {
     const nav = this.router.getCurrentNavigation();
     const stateProduct = nav?.extras?.state?.['product'];
 
@@ -59,7 +61,14 @@ export class ProductsDetailsComponent implements AfterViewInit {
       if (this.is3DViewActive) this.update3DCarousel();
     });
    }
+   hasRole(role: string): boolean {
+    console.log("role:"+this.authService.getUserRoles());
+  const roles = this.authService.getUserRoles();
+  const normalize = (r: string) => r.toUpperCase().replace('-', '_');
+  return roles.some(r => normalize(r) === normalize(role));
 }
+
+
 
 
 
@@ -82,6 +91,9 @@ update3DCarousel() {
 nextImage() {
   this.currentIndex = (this.currentIndex + 1) % this.products.images.length;
   if (this.is3DViewActive) this.update3DCarousel();
+
+
+  console.log(localStorage.getItem('roles'));
 }
 
 prevImage() {
@@ -104,10 +116,10 @@ prevImage() {
   signOut() { console.log('Sign out'); }
   goToHomePage() { this.router.navigate(['/product']); }
 
-  editProduct() {
-    const encoded = encodeURIComponent(this.products.name);
-    this.router.navigate(['/edit-product', encoded]);
-  }
+editProduct() {
+  const encoded = encodeURIComponent(this.products.id);
+  this.router.navigate(['/product/edit', encoded]);   // ✅ correct route
+}
 
   deleteProduct() {
   }

@@ -1,10 +1,11 @@
+// admin.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {environment} from "../environments/environment"
+import { environment } from '../environments/environment';
 
-// Adjust this URL according to your backend endpoint
-const API_URL = environment.apiBaseUrl+'/api/admins';
+// Backend API URL
+const API_URL = environment.apiBaseUrl + '/api/admins';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ const API_URL = environment.apiBaseUrl+'/api/admins';
 export class AdminService {
   constructor(private http: HttpClient) {}
 
-  // Optional: You can include token if your backend requires it
+  // Include token if backend requires it
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
     return new HttpHeaders({
@@ -32,11 +33,16 @@ export class AdminService {
   }
 
   /**
-   * Gets a list of all admins.
+   * Get all admins (paginated).
    */
-  getAllAdmins(): Observable<any[]> {
-    return this.http.get<any[]>(`${API_URL}/${"without-loggedin"}`, {
-      headers: this.getAuthHeaders()
+  getAllAdmins(pageNumber: number = 1, pageSize: number = 20): Observable<{ content: any[]; [key: string]: any }> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
+
+    return this.http.get<{ content: any[]; [key: string]: any }>(API_URL, {
+      headers: this.getAuthHeaders(),
+      params
     });
   }
 
@@ -57,12 +63,15 @@ export class AdminService {
       headers: this.getAuthHeaders()
     });
   }
-  updateAdminPassword(adminId: number, updatedData: any) {
-  // Assuming your backend endpoint for password update
-  return this.http.put(`${API_URL}/changePassword/${adminId}`, updatedData, {
-      headers: this.getAuthHeaders()
-    });}
 
+  /**
+   * Updates an admin's password
+   */
+  updateAdminPassword(adminId: number, updatedData: any): Observable<any> {
+    return this.http.put(`${API_URL}/changePassword/${adminId}`, updatedData, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
   /**
    * Deletes an admin by ID.
@@ -71,5 +80,8 @@ export class AdminService {
     return this.http.delete(`${API_URL}/${id}`, {
       headers: this.getAuthHeaders()
     });
+  }
+  getAllRoles(): Observable<string[]> {
+    return this.http.get<string[]>(`${API_URL}/roles`, { headers: this.getAuthHeaders() });
   }
 }

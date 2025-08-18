@@ -36,9 +36,12 @@ export class AdminDashboardComponent implements AfterViewInit, OnInit {
     console.log('Sidebar toggled:', this.sidebarVisible);
   }
 
-  hasRole(role: string): boolean {
-    return this.authService.hasRole(role);
-  }
+hasRole(role: string): boolean {
+  const roles = this.authService.getUserRoles(); // gets roles from localStorage or service
+  const normalize = (r: string) => r.toUpperCase().replace('-', '_'); 
+  return roles.some(r => normalize(r) === normalize(role));
+}
+
 
   goToProductPage() {
     this.router.navigate(['/product']);

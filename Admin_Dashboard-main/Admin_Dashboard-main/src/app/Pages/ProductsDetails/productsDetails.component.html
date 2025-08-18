@@ -72,10 +72,12 @@
 
 
 
-        <div class="action-buttons">
-          <button (click)="editProduct()">Edit</button>
-          <button (click)="deleteProduct()">Delete</button>
-        </div>
+<div class="action-buttons">
+  <button *ngIf="hasRole('UPDATE_PRODUCT')" (click)="editProduct()">Edit</button>
+  <button *ngIf="hasRole('DELETE_PRODUCT')" (click)="deleteProduct()">Delete</button>
+</div>
+      
+
         <p class="product-short-desc">{{ products.description }}</p>
       </div>
 

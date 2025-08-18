@@ -1,43 +1,49 @@
-
 <div class="admin-list">
-   <!-- Go to Control Admins Button -->
+
+  <!-- Go to Add Admin / Control Admins Button (always visible) -->
   <div style="margin-bottom: 15px;">
     <button (click)="goToAddAdmin()" class="control-btn">
       Go to Add Admin
     </button>
   </div>
-  <div *ngIf="admins.length > 0">
 
-    <div class="data-names">
-      <div><h2>Username</h2></div>
-      <div><h2>Email</h2></div>
-      <div><h2>Phone</h2></div>
-      <div><h2>Roles</h2></div>
-    </div>
-    <div class="admin-card" *ngFor="let a of admins ">
-      <div class="admin-info">
-        <p> {{ a.username }}</p>
-        <p> {{ a.email }}</p>
-        <p> {{ a.phone }}</p>
-        <div>
-          <div>
-          <p> {{a.roles[0]}}...</p>
+  <!-- Admins Table (permission restricted) -->
+  <ng-container *ngIf="hasPermission; else noPermission">
+    <div *ngIf="admins.length > 0">
+      <div class="data-names">
+        <div><h2>Username</h2></div>
+        <div><h2>Email</h2></div>
+        <div><h2>Phone</h2></div>
+        <div><h2>Roles</h2></div>
+      </div>
 
+      <div class="admin-card" *ngFor="let a of admins">
+        <div class="admin-info">
+          <p>{{ a.username }}</p>
+          <p>{{ a.email }}</p>
+          <p>{{ a.phone }}</p>
+          <div class="roles-display">
+            <div class="scrollable-element">
+              <ul>
+                <li *ngFor="let role of a.roles">{{ role }}</li>
+              </ul>
+            </div>
           </div>
-          <div class="scrollable-element">
-            <ul *ngFor="let role of a.roles "  >
-          <li>{{role}}</li>
-         </ul>
-          </div>
+        </div>
 
-
+        <div class="admin-actions">
+          <button class="icon-btn" (click)="editAdmin(a)" title="Edit">✏️</button>
+          <button class="icon-btn" (click)="deleteAdmin(a.id)" title="Delete">🗑️</button>
         </div>
       </div>
-      <div class="admin-actions">
-        <button class="icon-btn" (click)="editAdmin(a)" title="Edit">✏️</button>
-        <button class="icon-btn" (click)="deleteAdmin(a.id)" title="Delete">🗑️</button>
-      </div>
     </div>
-  </div>
-  <p *ngIf="admins.length === 0">No admins added yet.</p>
+
+    <p *ngIf="admins.length === 0">No admins added yet.</p>
+  </ng-container>
+
+  <!-- No permission message -->
+  <ng-template #noPermission>
+    <p>You do not have permission to view admins.</p>
+  </ng-template>
+
 </div>

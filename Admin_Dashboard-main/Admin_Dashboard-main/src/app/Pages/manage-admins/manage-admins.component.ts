@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../../Service/admin.service';
+import { AuthService } from '../../Service/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,16 +14,28 @@ import { Router } from '@angular/router';
 })
 export class ManageAdminsComponent implements OnInit {
   admins: any[] = [];
+  hasPermission = false; // <-- track permission
 
-  constructor(private adminService: AdminService, private router: Router) {}
+  constructor(
+    private adminService: AdminService, 
+    private router: Router,
+    public authService: AuthService // <-- inject AuthService
+  ) {}
 
   ngOnInit() {
-    this.loadAdmins();
+this.hasPermission = this.authService.hasAnyRole(['SEE_ADMIN', 'OWNER']);
+    if (this.hasPermission) {
+      this.loadAdmins();
+    }
   }
 
   loadAdmins() {
+    console.log('Loading admins...');
     this.adminService.getAllAdmins().subscribe({
-      next: (data) => this.admins = data,
+      next: (data) => {
+        this.admins = data.content || [];
+        console.log(this.admins);
+      },
       error: (err) => {
         alert('Failed to load admins');
         console.error(err);
@@ -31,7 +44,6 @@ export class ManageAdminsComponent implements OnInit {
   }
 
   editAdmin(admin: any) {
-    // Use query params or state if needed, here redirecting simply
     this.router.navigate(['/control-admins'], { state: { admin } });
   }
 
@@ -48,17 +60,6 @@ export class ManageAdminsComponent implements OnInit {
         console.error(err);
       }
     });
-  }
-
-  formatRoles(roles: string[]): string {
-    const roleMap: { [key: string]: string } = {
-      'ADMIN': 'admin',
-      'CONTROLADMINS': 'super admin',
-      'CONTROLPRODUCTS': 'products admin',
-      'CONTROLORDERSADMIN': 'orders admin',
-      'CONTROLCUSTOMERS': 'customers admin'
-    };
-    return roles.map(r => roleMap[r] || r.toLowerCase()).join(', ');
   }
 
   goToAddAdmin() {

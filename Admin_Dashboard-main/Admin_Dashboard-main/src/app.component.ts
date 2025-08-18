@@ -30,7 +30,7 @@ constructor(private router: Router, private authService: AuthService) {
   ).subscribe((event: NavigationEnd) => {
     this.isAdminProfilePage = event.url === '/admin-profile';
     this.isHomePage = event.url === '/home' || event.url === '/';
-    this.isAddProductPage = event.url === '/add-product';
+    this.isAddProductPage = event.url.includes('/add-product');
     this.isAdminDashBoard =   event.url === '/admin';
     this.isCustomerDashBoard = event.url === '/customer-dash-board';
     this.isProductsPage = event.url === '/product';

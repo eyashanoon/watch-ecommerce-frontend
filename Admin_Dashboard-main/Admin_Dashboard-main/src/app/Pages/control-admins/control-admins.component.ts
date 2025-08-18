@@ -18,7 +18,7 @@ export class ControlAdminsComponent implements OnInit {
   originalEmail: string | null = null;
   modifyPasswordOnly = false;
   originalAdminData: any = null;
-
+  roless: string[] = [];
   admin = {
     username: '',
     email: '',
@@ -34,12 +34,18 @@ export class ControlAdminsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+     this.adminService.getAllRoles().subscribe({
+      next: (roles) => { this.roless = roles; },
+      error: (err) => {}});
+     
     this.loadAdmins().then(() => {
       const nav = history.state?.admin;
       if (nav) {
         this.editAdminFromState(nav);
       }
+ 
     });
+
   }
 
   // Changed loadAdmins to return a Promise for async sequencing
@@ -47,13 +53,10 @@ export class ControlAdminsComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.adminService.getAllAdmins().subscribe({
         next: (data) => {
-          this.admins = data;
+          this.admins = data.content;
           resolve();
         },
         error: (error) => {
-          alert('Error loading admins');
-          console.error(error);
-          reject(error);
         }
       });
     });

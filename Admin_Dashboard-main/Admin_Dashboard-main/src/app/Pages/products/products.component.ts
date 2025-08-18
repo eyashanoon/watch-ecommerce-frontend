@@ -213,6 +213,7 @@ export class ProductsComponent implements OnInit {
   displayTypes: string[] = [];
   numberingTypes: string[] = [];
   shapes: string[] = [];
+  canAddProduct = false;
 
  
 ngOnInit(): void {

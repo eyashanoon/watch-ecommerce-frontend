@@ -60,22 +60,20 @@
       </div>
 
       <label for="roles">Roles</label>
-      <select
-        id="roles"
-        name="roles"
-        multiple
-        [(ngModel)]="admin.roles"
-        required
-        #roles="ngModel"
-      >
-        <option value="CONTROLADMINS">Super Admin</option>
-        <option value="CONTROLPRODUCTS">Products Admin</option>
-        <option value="CONTROLORDERSADMIN">Orders Admin</option>
-        <option value="CONTROLCUSTOMERS">Customers Admin</option>
-      </select>
-      <div class="error" *ngIf="roles.invalid && (roles.dirty || roles.touched)">
-        <small *ngIf="roles.errors?.['required']">At least one role is required.</small>
-      </div>
+<select
+  id="roles"
+  name="roles"
+  multiple
+  [(ngModel)]="admin.roles"
+  required
+  #rolesModel="ngModel"
+>
+  <option *ngFor="let role of roless" [value]="role">
+    {{ role }}
+  </option>
+</select>
+
+ 
     </ng-container>
 
     <!-- Modify Password Button (only when editing) -->
