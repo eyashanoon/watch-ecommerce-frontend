@@ -14,7 +14,8 @@
   <!-- Search Bar -->
   <div class="search-wrapper">
     <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Search watches..." [(ngModel)]="searchText" class="search-bar-with-icon" />
+    <input type="text" placeholder="Search watches..." [(ngModel)]="filters.name" class="search-bar-with-icon"          (ngModelChange)="onFiltersChanged()"
+/>
   </div>
 
   <div class="product-section">
@@ -24,53 +25,69 @@
 
       <label>
         <span>Price Range</span>
-        <input type="range" min="0" max="1500" [(ngModel)]="filters.maxPrice" />
+        <input type="range" min="0" max="1500" [(ngModel)]="filters.maxPrice"
+         (ngModelChange)="onFiltersChanged()"
+        />
         <small>Max: ${{ filters.maxPrice }}</small>
       </label>
 
       <label>
         <span>Quantity Range</span>
-        <input type="range" min="0" max="100" [(ngModel)]="filters.maxQuantity" />
+        <input type="range" min="0" max="100" [(ngModel)]="filters.maxQuantity"
+         (ngModelChange)="onFiltersChanged()"
+        />
         <small>Max: {{ filters.maxQuantity }}</small>
       </label>
 
       <label>
         <span>Weight Range</span>
-        <input type="range" min="0" max="60" [(ngModel)]="filters.maxWeight" />
+        <input type="range" min="0" max="60" [(ngModel)]="filters.maxWeight"
+         (ngModelChange)="onFiltersChanged()"
+        />
         <small>Max: {{ filters.maxWeight }}</small>
       </label>
 
       <label>
         <span>Size Range</span>
-        <input type="range" min="0" max="45" [(ngModel)]="filters.maxSize" />
+        <input type="range" min="0" max="45" [(ngModel)]="filters.maxSize"
+         (ngModelChange)="onFiltersChanged()"
+        />
         <small>Max: {{ filters.maxSize }}</small>
       </label>
 
       <label class="checkbox-label">
         <span>Waterproof</span>
-        <input type="checkbox" [(ngModel)]="filters.waterProof" />
+        <input type="checkbox" [(ngModel)]="filters.waterProof"
+         (ngModelChange)="onFiltersChanged()"
+        />
       </label>
 
       <label class="checkbox-label">
         <span>Has Date</span>
-        <input type="checkbox" [(ngModel)]="filters.includesDate" />
+        <input type="checkbox" [(ngModel)]="filters.includesDate"
+         (ngModelChange)="onFiltersChanged()"
+        />
       </label>
 
       <label class="checkbox-label">
         <span>All Numbers</span>
-        <input type="checkbox" [(ngModel)]="filters.hasFullNumerals" />
+        <input type="checkbox" [(ngModel)]="filters.hasFullNumerals"
+         (ngModelChange)="onFiltersChanged()"
+          />
       </label>
 
       <label class="checkbox-label">
         <span>No Tick Sound</span>
-        <input type="checkbox" [(ngModel)]="filters.hasTickingSound" />
+        <input type="checkbox" [(ngModel)]="filters.hasTickingSound"
+         (ngModelChange)="onFiltersChanged()"
+        />
       </label>
 
       <!-- Dropdowns -->
       <div class="filter-section">
         <label>
           <span>Display Type</span>
-          <select [(ngModel)]="filters.displayType">
+          <select [(ngModel)]="filters.displayType"   (ngModelChange)="onFiltersChanged()">
             <option value="">Any</option>
             <option *ngFor="let t of displayTypes" [value]="t">{{ t }}</option>
           </select>
@@ -80,7 +97,7 @@
       <div class="filter-section">
         <label>
           <span>Numbering Type</span>
-          <select [(ngModel)]="filters.numberingType">
+          <select [(ngModel)]="filters.numberingType"  (ngModelChange)="onFiltersChanged()">
             <option value="">Any</option>
             <option *ngFor="let n of numberingTypes" [value]="n">{{ n }}</option>
           </select>
@@ -90,7 +107,7 @@
       <div class="filter-section">
         <label>
           <span>Brand Type</span>
-          <select [(ngModel)]="filters.brand">
+          <select [(ngModel)]="filters.brand"  (ngModelChange)="onFiltersChanged()">
             <option value="">Any</option>
             <option *ngFor="let b of availableBrands" [value]="b">{{ b }}</option>
           </select>
@@ -100,7 +117,7 @@
       <div class="filter-section">
         <label>
           <span>Band Color</span>
-          <select [(ngModel)]="filters.bandColor">
+          <select [(ngModel)]="filters.bandColor"  (ngModelChange)="onFiltersChanged()">
             <option value="">Any</option>
             <option *ngFor="let c of bandColors" [value]="c">{{ c }}</option>
           </select>
@@ -110,7 +127,7 @@
       <div class="filter-section">
         <label>
           <span>Hands Color</span>
-          <select [(ngModel)]="filters.handsColor">
+          <select [(ngModel)]="filters.handsColor"  (ngModelChange)="onFiltersChanged()">
             <option value="">Any</option>
             <option *ngFor="let c of handsColors" [value]="c">{{ c }}</option>
           </select>
@@ -120,7 +137,7 @@
       <div class="filter-section">
         <label>
           <span>Background Color</span>
-          <select [(ngModel)]="filters.backgroundColor">
+          <select [(ngModel)]="filters.backgroundColor"  (ngModelChange)="onFiltersChanged()">
             <option value="">Any</option>
             <option *ngFor="let c of backgroundColors" [value]="c">{{ c }}</option>
           </select>
@@ -130,7 +147,7 @@
       <div class="filter-section">
         <label>
           <span>Band Material</span>
-          <select [(ngModel)]="filters.bandMaterial">
+          <select [(ngModel)]="filters.bandMaterial"  (ngModelChange)="onFiltersChanged()">
             <option value="">Any</option>
             <option *ngFor="let m of bandMaterials" [value]="m">{{ m }}</option>
           </select>
@@ -140,7 +157,7 @@
       <div class="filter-section">
         <label>
           <span>Case Material</span>
-          <select [(ngModel)]="filters.caseMaterial">
+          <select [(ngModel)]="filters.caseMaterial"  (ngModelChange)="onFiltersChanged()">
             <option value="">Any</option>
             <option *ngFor="let m of caseMaterials" [value]="m">{{ m }}</option>
           </select>
@@ -150,7 +167,7 @@
       <div class="filter-section">
         <label>
           <span>Shape</span>
-          <select [(ngModel)]="filters.shape">
+          <select [(ngModel)]="filters.shape"  (ngModelChange)="onFiltersChanged()">
             <option value="">Any</option>
             <option *ngFor="let m of shapes" [value]="m">{{ m }}</option>
           </select>
@@ -182,9 +199,12 @@
  
         </div>
 
-        <h3 class="product-name clickable"
+         <h3 class="product-name clickable"
                  (click)="goToProductDetails(product)">{{ product.name }}</h3>
-        <p class="product-price">{{ product.originalPrice | currency }}</p>
+ 
+        <p class="product-price">{{ product.quantity }}  unit </p>
+         <p class="product-price">{{ product.originalPrice | currency }}</p>
+
       </div>
     </div>
   </div>
