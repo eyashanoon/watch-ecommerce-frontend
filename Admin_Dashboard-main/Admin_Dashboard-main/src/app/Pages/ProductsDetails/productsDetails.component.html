@@ -1,4 +1,4 @@
- 
+
 <!-- Product Details Section -->
 <div class="product-detail-container" *ngIf="products">
 
@@ -7,7 +7,7 @@
     <!-- Left: Image Section -->
     <div class="image-wrapper">
       <div class="image-section">
-        <div class="vertical-thumbnails" *ngIf="!is3DViewActive">
+        <div class="vertical-thumbnails scrollable-element" *ngIf="!is3DViewActive">
           <img *ngFor="let img of loadedImages; let i = index"
                [src]="img"
                [class.selected]="i === currentIndex"
@@ -18,7 +18,7 @@
         </div>
 
         <!-- Carousel arrows -->
-        <button class="carousel-arrow left" (click)="prevImage()">&#10094;</button>
+       <!-- <button class="carousel-arrow left" (click)="prevImage()">&#10094;</button>-->
         <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
 
         <!-- 3D View Button -->
@@ -73,12 +73,12 @@
 
 
 <div class="action-buttons">
-  <button *ngIf="hasRole('UPDATE_PRODUCT')" (click)="editProduct()">Edit</button>
-  <button *ngIf="hasRole('DELETE_PRODUCT')" (click)="deleteProduct()">Delete</button>
+  <button *ngIf="hasRole('OWNER')" (click)="editProduct()">Edit</button>
+  <button *ngIf="hasRole('OWNER')" (click)="deleteProduct()">Delete</button>
   <button *ngIf="hasRole('CUSTOMER')" (click)="addToCart(products)">Add TO Cart </button>
   <button *ngIf="hasRole('CUSTOMER')" (click)="addToWishlist(products)">Add TO Wish List</button>
 </div>
-      
+
 
         <p class="product-short-desc">{{ products.description }}</p>
       </div>
@@ -118,7 +118,7 @@
         </div>
       </div>
 
-    
+
 
     </div>
   </div>
@@ -133,7 +133,7 @@
     <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
   </div>
 
-  
+
   <div class="ff"></div>
 
 </div>

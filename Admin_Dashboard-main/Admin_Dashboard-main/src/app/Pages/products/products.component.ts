@@ -18,7 +18,7 @@ import {Product , ProductWithImages } from '../../models/product.model';
 import {forkJoin, map, switchMap, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
- 
+
 
 type Filters = {
   maxPrice: number;
@@ -64,7 +64,7 @@ export class ProductsComponent implements OnInit {
       private featuresService:FeaturesService,
      private authService: AuthService
     ) {}
- 
+
 
 
   product: any[] = [];
@@ -75,7 +75,7 @@ export class ProductsComponent implements OnInit {
   originalProduct: any = null;
   showAddForm = false;
   sidebarVisible = false;
- 
+
 
   filters: Filters = {
     maxPrice: 1000,
@@ -124,7 +124,7 @@ export class ProductsComponent implements OnInit {
     private filterChange$ = new Subject<Filters>();
 
   onFiltersChanged() {
-    this.filterChange$.next({ ...this.filters }); // emit new filters
+   // this.filterChange$.next({ ...this.filters }); // emit new filters
   }
 
   // maps frontend Filters → backend ProductQueryObject
@@ -195,7 +195,7 @@ export class ProductsComponent implements OnInit {
 
 }
 
- 
+
 
   availableColors: string[] = [];
    bandColors: string[] = [];
@@ -204,7 +204,7 @@ export class ProductsComponent implements OnInit {
 
   backgroundColors  : string[] = [];
 
- 
+
   availableBrands  : string[] = [];
 
   bandMaterials: string[] = [];
@@ -215,7 +215,7 @@ export class ProductsComponent implements OnInit {
   shapes: string[] = [];
   canAddProduct = false;
 
- 
+
 ngOnInit(): void {
 this.filterChange$
       .pipe(debounceTime(300)) // waits 300ms after last change
@@ -273,34 +273,45 @@ this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
 }
 
 
+pageIndex: number = 1;
+
 loadProducts() {
- 
-  const backendFilters = this.mapFiltersToBackend1(this.filters);
-  console.log(backendFilters)
+  const backendFilters = {
+    ...this.mapFiltersToBackend1(this.filters),
+    page: this.pageIndex
+  };
+
+  console.log(backendFilters);
   this.productMap.clear();
-console.log(this.filters);
-  this.productService1.getAllProducts(backendFilters).pipe(
-     switchMap(page => {   // page is the Page<Product> object
-      const products = page.content;   // <-- extract the array
- 
-      const requests = products.map(product =>
-        this.imageService.getAllImagesByProductID(product.id).pipe(
-          map(images => ({
-            product,
-            images,
-            currentImageIndex: 0
-          }))
-        )
-      );
-      return forkJoin(requests);
-    })
-  ).subscribe(results => {
-     results.forEach(({ product, images, currentImageIndex }) => {
-      this.productMap.set(product.id, { product, images, currentImageIndex });
+
+  this.productService1.getAllProducts(backendFilters).subscribe(page => {
+    const products = page.content as any[]; // ideally: Product[]
+
+    // ✅ Step 1: Put products immediately into map
+    products.forEach(product => {
+      this.productMap.set(product.id, {
+        product,
+        images: [], // empty at first
+        currentImageIndex: 0
+      });
     });
- 
+
+    // ✅ Step 2: After products are in map, load images async
+    products.forEach(product => {
+      this.imageService.getAllImagesByProductID(product.id).subscribe(images => {
+        const current = this.productMap.get(product.id);
+        if (current) {
+          this.productMap.set(product.id, {
+            ...current,
+            images
+          });
+        }
+      });
+    });
   });
 }
+
+
 
 
 
@@ -386,7 +397,7 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
     });
   }
 
- 
+
   toggleDetails(product: any) {
     product.showDetails = !product.showDetails;
   }
@@ -475,7 +486,7 @@ goToProductDetails(product: any): void {
   }
 
   goToAddProductPage() {
-    this.router.navigate(['/add-product']);
+    this.router.navigate(['product/add']);
   }
 
   goToEdit(productName: string) {
@@ -490,18 +501,39 @@ goToProductDetails(product: any): void {
       product.carouselInterval = null;
     }
   }
- 
+
 doNothing(event: Event) {
   event.stopPropagation();
 }
 
 
+nextPage( ){
 
-
-
-
-
+this.pageIndex++;
+this.loadProducts();
 
 }
 
- 
+prePage( ){
+
+this.pageIndex>0?this.pageIndex--:this.pageIndex=0;
+this.loadProducts();
+
+}
+
+
+trackByProduct(index: number, product: ProductWithImages): number {
+  return product.id; // make sure each product has a unique ID
+}
+
+
+resetFilters(){
+
+}
+FiltrProducts(){
+  this.filterChange$.next({ ...this.filters });
+
+}
+}
+
+
