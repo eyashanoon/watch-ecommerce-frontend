@@ -15,18 +15,24 @@
   gap: 2rem;
   padding: 0;
   max-width: 100%;
+    flex-wrap: wrap;
+
+
 }
 
 .product-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 80px;
-  width: 100%;
+  gap: 150px;
+  width: 80%;
+  min-height: 80vh;
+    justify-content: center;
+
 }
 
 
 .filter-bar {
-  width: 250px;
+  width: 15%;
   margin: 0;
   padding: 1.5rem;
   box-sizing: border-box;
@@ -139,10 +145,11 @@
    ========================= */
 .product-wrapper {
   position: relative;
-  width: 280px;
-  height: 400px;
+  width:310px;
+  height: 450px;
   overflow: visible;
   box-sizing: border-box;
+  box-shadow: 20px;
 }
 
 .product-card {
@@ -167,6 +174,7 @@
   transition: transform 0.3s ease;
   width: 100%;
   height: 100%;
+  position: relative;
 }
 
 .product-name {
@@ -176,12 +184,15 @@
   margin-top: 20px;
   margin-bottom: 10px;
 }
+.Price-quan-con{
+    width: 100%;
 
-.price-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+  height: 20%;
+   position: absolute;
+ bottom:25px;
 }
+
+
 
 .product-price {
   font-size: 1.2rem;
@@ -190,8 +201,7 @@
   background-color: #EDEAE2;
   padding: 6px 12px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  text-align: center;
+   text-align: center;
 }
 
 /* =========================
@@ -276,12 +286,14 @@
    PAGINATION
    ========================= */
 .change-page {
-  width: 90%;
+  width: 30%;
   margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 200px;
+   margin-left: 42%;
+    position: relative;
 }
 
 .carousel-arrowNP {
@@ -294,8 +306,10 @@
   border-radius: 50%;
   user-select: none;
   transition: opacity 0.3s ease;
+  position: absolute;
 }
-
+.carousel-arrowNP.left { left: 5px; }
+.carousel-arrowNP.right { right: 5px; }
 .page-index {
   font-size: 16px;
   font-weight: bold;

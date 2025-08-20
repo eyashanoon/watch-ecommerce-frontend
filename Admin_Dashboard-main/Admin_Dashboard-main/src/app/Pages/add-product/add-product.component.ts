@@ -52,8 +52,8 @@ export class AddProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadFeatures();
-this.productId = this.route.snapshot.paramMap.get('id') 
-  ? Number(this.route.snapshot.paramMap.get('id')) 
+this.productId = this.route.snapshot.paramMap.get('id')
+  ? Number(this.route.snapshot.paramMap.get('id'))
   : undefined;    console.log('Product ID:', this.productId);
     this.initializeForm();
     if (this.productId) {
@@ -226,7 +226,7 @@ this.productId = this.route.snapshot.paramMap.get('id')
         error: err => console.error('Error adding product:', err)
       });
     } else {
-                console.log('Updating product with ID:', formData);
+         console.log('Updating product with ID:', formData);
       this.productService.updateProduct(this.productId!, formData).subscribe({
         next: () => {
           // Upload new images

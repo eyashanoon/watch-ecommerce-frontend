@@ -14,7 +14,7 @@
   <!-- Search Bar -->
   <div class="search-wrapper">
     <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Search watches..." [(ngModel)]="filters.name" class="search-bar-with-icon"          (ngModelChange)="onFiltersChanged()"
+    <input type="text" placeholder="Search watches..." [(ngModel)]="filters.name" class="search-bar-with-icon"    (keydown.enter)="FiltrProducts()"
 />
   </div>
 
@@ -209,16 +209,20 @@
 
         </div>
 
-         <h3 class="product-name clickable"
-                 (click)="goToProductDetails(product)">{{ product.name }}</h3>
+        <h3 class="product-name clickable" (click)="goToProductDetails(product)">{{ product.name }}</h3>
+        <div class="Price-quan-con">
 
-        <p class="product-price">{{ product.quantity }}  unit </p>
-         <p class="product-price">{{ product.originalPrice | currency }}</p>
+          <p class="product-price">{{ product.quantity }}  unit </p>
+          <p class="product-price">{{ product.originalPrice | currency }}</p>
+
+        </div>
 
       </div>
     </div>
   </div>
 
+
+  </div>
 <!-- your grid goes here -->
 
 <div class="change-page">
@@ -230,3 +234,4 @@
 
   <button  class="carousel-arrowNP right" (click)="nextPage()">&#10095;</button>
 </div>
+

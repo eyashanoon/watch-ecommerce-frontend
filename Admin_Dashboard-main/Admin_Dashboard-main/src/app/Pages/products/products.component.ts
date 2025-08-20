@@ -19,7 +19,6 @@ import {forkJoin, map, switchMap, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 
-
 type Filters = {
   maxPrice: number;
   maxQuantity: number;
@@ -275,30 +274,36 @@ this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
 
 pageIndex: number = 1;
 
+
 loadProducts() {
   const backendFilters = {
     ...this.mapFiltersToBackend1(this.filters),
     page: this.pageIndex
   };
 
-  console.log(backendFilters);
   this.productMap.clear();
 
   this.productService1.getAllProducts(backendFilters).subscribe(page => {
-    const products = page.content as any[]; // ideally: Product[]
+    const products = page.content as any[];
 
-    // ✅ Step 1: Put products immediately into map
+    // Step 1: Put products immediately into map
     products.forEach(product => {
       this.productMap.set(product.id, {
         product,
-        images: [], // empty at first
+        images: [],
         currentImageIndex: 0
       });
     });
 
-    // ✅ Step 2: After products are in map, load images async
-    products.forEach(product => {
-      this.imageService.getAllImagesByProductID(product.id).subscribe(images => {
+    // Step 2: Build array of observables for images
+    const imageRequests = products.map(product =>
+      this.imageService.getAllImagesByProductID(product.id)
+    );
+
+    // Step 3: Run all in parallel
+    forkJoin(imageRequests).subscribe(imagesArray => {
+      imagesArray.forEach((images, index) => {
+        const product = products[index];
         const current = this.productMap.get(product.id);
         if (current) {
           this.productMap.set(product.id, {
@@ -310,6 +315,7 @@ loadProducts() {
     });
   });
 }
+
 
 
 
@@ -511,6 +517,7 @@ nextPage( ){
 
 this.pageIndex++;
 this.loadProducts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
 }
 
@@ -518,6 +525,7 @@ prePage( ){
 
 this.pageIndex>0?this.pageIndex--:this.pageIndex=0;
 this.loadProducts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
 }
 
@@ -531,6 +539,7 @@ resetFilters(){
 
 }
 FiltrProducts(){
+  this.pageIndex=1;
   this.filterChange$.next({ ...this.filters });
 
 }
