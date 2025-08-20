@@ -1,9 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { filter, switchMap } from 'rxjs/operators';
 import { AuthService } from './app/Service/auth.service';
-
 
 @Component({
   selector: 'app-root',
@@ -12,88 +11,109 @@ import { AuthService } from './app/Service/auth.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  // Page flags
   isAdminProfilePage = false;
-  isControlAdmins=false;
+  isCustomerProfilePage = false;
+  isControlAdmins = false;
   isHomePage = false;
   isAddProductPage = false;
   isAdminDashBoard = false;
   isCustomerDashBoard = false;
-  isProductsPage= false;
-  isManageAdmins=false;
-  isAdminProductDetails=false;
-  isCustomerProductDetails=false;
+  isProductsPage = false;
+  isManageAdmins = false;
+  isAdminProductDetails = false;
+  isCustomerProductDetails = false;
 
-constructor(private router: Router, private authService: AuthService) {
-  this.router.events.pipe(
-    filter(event => event instanceof NavigationEnd)
-  ).subscribe((event: NavigationEnd) => {
-    this.isAdminProfilePage = event.url === '/admin-profile';
-    this.isHomePage = event.url === '/home' || event.url === '/';
-    this.isAddProductPage = event.url.includes('/add-product');
-    this.isAdminDashBoard =   event.url === '/admin';
-    this.isCustomerDashBoard = event.url === '/customer-dash-board';
-    this.isProductsPage = event.url === '/product';
-    this.isManageAdmins = event.url.includes('admin/manage');
-    this.isAdminProductDetails = event.url.startsWith('/admin-product/');
-this.isCustomerProductDetails = event.url.startsWith('/product/') && !this.isProductsPage;
-    this.isControlAdmins = event.url === ('/control-admins');
+  // User info
+  userName: string = '';
+  userEmail: string = '';
+  userRole: string = '';
 
+  constructor(private router: Router, private authService: AuthService) {}
 
-  });
-}
+  ngOnInit(): void {
+    // Load user info initially
+    this.loadUserInfo();
 
-  goToHome() {
-    this.router.navigate(['/home']);
+    // Update page flags and user info on route change
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.updatePageFlags(event.url);
+      this.loadUserInfo();
+    });
   }
 
-  goToProducts() {
-    this.router.navigate(['/product']);
+  loadUserInfo() {
+    if (!this.authService.isLoggedIn()) {
+      this.userName = this.userEmail = this.userRole = '';
+      return;
+    }
+
+    this.userEmail = this.authService.getEmailFromToken() || '';
+    const roles = this.authService.getUserRoles();
+    this.userRole = roles.includes('ADMIN') ? 'Admin' : 'Customer';
+    const userId = this.authService.getUserId();
+
+    if (!userId) return;
+
+    // Fetch user profile from backend to get name
+    if (roles.includes('ADMIN')) {
+      this.authService.getAdminById(userId).subscribe({
+        next: (res: any) => this.userName = res.name || res.username || 'Admin',
+        error: () => this.userName = 'Admin'
+      });
+    } else {
+      this.authService.getCustomerById(userId).subscribe({
+        next: (res: any) => this.userName = res.name || res.username || 'Customer',
+        error: () => this.userName = 'Customer'
+      });
+    }
   }
 
-  goToAdminPanel() {
-    this.router.navigate(['/admin']);
+  updatePageFlags(url: string) {
+    this.isAdminProfilePage = url === '/admin-profile';
+    this.isCustomerProfilePage = url === '/customer-profile';
+    this.isHomePage = url === '/home' || url === '/';
+    this.isAddProductPage = url.includes('/add-product');
+    this.isAdminDashBoard = url === '/admin';
+    this.isCustomerDashBoard = url === '/customer-dash-board';
+    this.isProductsPage = url === '/product';
+    this.isManageAdmins = url.includes('admin/manage');
+    this.isAdminProductDetails = url.startsWith('/admin-product/');
+    this.isCustomerProductDetails = url.startsWith('/product/') && !this.isProductsPage;
+    this.isControlAdmins = url === '/control-admins';
   }
+
+  goToHome() { this.router.navigate(['/home']); }
+  goToProducts() { this.router.navigate(['/product']); }
+  goToAdminPanel() { this.router.navigate(['/admin']); }
+  goToCustomerPanel() { this.router.navigate(['/customer-dash-board']); }
+  goToSignInPage() { this.router.navigate(['/sign-in']); }
+  goToSignUpPage() { this.router.navigate(['/sign-up']); }
 
   scrollToAbout(event: Event) {
     event.preventDefault();
-
     if (this.isHomePage) {
       const el = document.querySelector('#about');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     } else {
       this.router.navigate(['/home'], { fragment: 'about' });
     }
   }
 
-  goToSignInPage() {
-    this.router.navigate(['/sign-in']);
+  goToPanel() {
+    const roles = this.authService.getUserRoles();
+    if (roles.includes('CUSTOMER')) this.router.navigate(['/customer-dash-board']);
+    else if (roles.includes('ADMIN')) this.router.navigate(['/admin']);
+    else this.router.navigate(['/home']);
   }
 
-  goToSignUpPage() {
-    this.router.navigate(['/sign-up']);
-  }
-goToPanel() {
-  const userRoles = this.authService.getUserRoles(); // e.g. ['ADMIN'] or ['CUSTOMER']
-  const isLoggedIn = this.authService.isLoggedIn();  // boolean
-
-  if (userRoles.includes('CUSTOMER')) {
-    this.router.navigate(['/customer-dash-board']);
-  } 
-  else if (userRoles.includes('ADMIN')) {
-    this.router.navigate(['/admin']);
-  } 
-  else {
-    this.router.navigate(['/home']);
-  }
-}
-
-  
   signOut(event: Event) {
     event.preventDefault();
     this.authService.logout();
     this.router.navigate(['/']);
+    this.userName = this.userEmail = this.userRole = '';
   }
 }

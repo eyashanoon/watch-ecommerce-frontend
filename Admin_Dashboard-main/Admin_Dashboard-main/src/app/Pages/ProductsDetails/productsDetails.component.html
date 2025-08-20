@@ -39,19 +39,10 @@
   <strong>Price:</strong> ${{ products.originalPrice }}
 </div>
 
-<!-- Discount (only if user has role) -->
-<div class="product-discount" *ngIf="hasRole('SEE_DISCOUNT') || hasRole('OWNER') || hasRole('REMOVE_DISCOUNT')">
-  <strong>Discount:</strong> {{ products.discount}}%
-  
-  <!-- Remove discount button for authorized users -->
-  <button *ngIf="hasRole('REMOVE_DISCOUNT')" (click)="removeDiscount()">Remove</button>
-</div>
-
 
         <div class="product-qty"><strong>Quantity:</strong> {{ products.selectedQty }}</div>
 
 
-<!-- Color Combinations Section -->
 <!-- Color Combinations Section -->
 <div class="color-combinations" *ngIf="products?.colorCombinations">
   <h3>Color Combinations</h3>

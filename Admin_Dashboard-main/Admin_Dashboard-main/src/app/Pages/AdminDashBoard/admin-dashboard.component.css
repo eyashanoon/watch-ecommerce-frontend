@@ -1,332 +1,217 @@
-
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-body {
-  background-color: #F9F8F4;
-  font-family: 'Segoe UI', sans-serif;
+/* =========================
+   Global Reset & Base Styles
+========================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
 }
+
 html, body {
-      margin-bottom: 100px;
-      height: 100%;
-      overflow: hidden;
-      position: relative;
-    }
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-
-
-    body {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      /* Remove old static background */
-      /* background-image: url('/assets/background.png'); */
-      position: relative;
-      color: #232526;
-    }
-
-    /* Video background styling */
-    .video-background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      min-width: 100%;
-      min-height: 100%;
-      object-fit: cover;
-      z-index: -1;
-      pointer-events: none;
-    }
-
-
-    /* Removed body::before overlay to avoid clutter over video */
-.topbar {
-  width: 95%;
-  height: 80px;
-  margin: 30px auto 0;
-  background-color: #B6B09F;
+  height: 100%;
+  overflow: auto;
+  background-color: #F9F8F4;
   color: #232526;
+}
+
+/* =========================
+   Body Layout
+========================= */
+body {
   display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* =========================
+   Video Background
+========================= */
+.video-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* =========================
+   Sidebar
+========================= */
+.sidebar {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+  background: transparent;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+.sidebar img {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+.menu-toggle {
+  background: transparent;
+  border: none;
+  color: #e0e0e0;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px 20px;
+  border-radius: 4px;
+  margin: 10px 0;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.3s;
+  z-index: 1000;
+}
+
+.menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 0 28px;
-  border-radius: 14px;
-
-  /* Brighter and stronger shadow for dark background */
-  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2), 
-              0 4px 8px rgba(255, 255, 255, 0.1);
-}
-
-
-
-
-
-
-    .topbar h1 {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: #232526;
-      text-shadow: 0 1px 8px #cccccc44;
-    }
-
-    .admin {
-      font-size: 15px;
-      color: #232526;
-      font-weight: 500;
-      background: rgba(255,255,255,0.18);
-      padding: 4px 14px;
-      border-radius: 8px;
-      border: 1px solid #bdbdbd;
-      box-shadow: 0 1px 4px #cccccc22;
-    }
-
-    .menu-toggle {
-      background: transparent;
-      border: none;
-      color: #e0e0e0;
-      font-size: 24px;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 4px;
-      transition: background-color 0.3s;
-      margin: 10px 0;
-      width: 100%;
-      text-align: left;
-      padding-left: 20px;
-    }
-
-    .menu-toggle:hover {
-      background: rgba(255,255,255,0.1);
-    }
-
-    .sidebar-content {
-      width: 100%;
-      transition: all 0.3s ease-in-out;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end; /* Move buttons further down */
-      height: 100%; /* Ensure full height for alignment */
-      gap: 20px;
-      padding: 20px;
-      height: auto;
-      opacity: 1;
-    }
-
-    .sidebar-content.hidden {
-      display: none;
-    }
-
-    /* Container for sidebar + main content */
-    .container {
-      background-color: transparent;
-      display: flex;
-      height: calc(100vh - 60px);
-      position: relative;
-      z-index: 1;
-    }
-
-    .sidebar {
-      width: 220px;
-      background: transparent; /* No background color */
-      padding: 20px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: stretch;
-      height: 100%;
-      border-right: none; /* Remove right border */
-    }
-
-    .sidebar img {
-      width: 100px;
-      margin-bottom: 20px;
-    }
-
-    .sidebar button:not(.menu-toggle) {
-      width: 200px;
-      height: 60px;
-      margin: 5px 0;
-      background: linear-gradient(90deg, #2b2b2b 0%, #4a4a4a 100%);
-      color: #f0f0f0;
-      cursor: pointer;
-      border: 1px solid #8f8f8f;
-      font-weight: bold;
-      font-size: 16px;
-      transition: background 0.2s, transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-      box-shadow: 0 1px 4px rgba(44,62,80,0.07);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      letter-spacing: 0.5px;
-    }
-
-    .sidebar button:hover,
-    .sidebar button:focus {
-      background: linear-gradient(90deg, #4a4a4a 0%, #6f6f6f 100%);
-      color: #ffffff;
-      border: 1.5px solid #9ca3af;
-      transform: translateY(-2px) scale(1.04);
-      box-shadow: 0 4px 12px rgba(44,62,80,0.13);
-    }
-
-    .sidebar button:active {
-      background: #6f6f6f;
-      color: #ffffff;
-      border: 1.5px solid #9ca3af;
-    }
-
-    .sidebar button {
-      /* Sidebar text color for readability */
-      color: #e0e0e0;
-    }
-
-.topbar {
-  position: relative;   /* create stacking context */
-  z-index: 1000;        /* make sure it’s above all other layout layers */
-}
-
-.container {
-  position: relative;
-  z-index: 0;           /* keep the main content underneath the topbar */
-}
-
-.main {
-  position: relative;
-  z-index: 0;           /* prevent it from sitting on top of the nav bar */
-}
-
-
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 15px; /* Space between logo and heading */
-}
-
-.topbar-left img {
-  width: 90px;
-  display: block;
-}
-
-.topbar-left h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #232526;
-  margin: 0;
-  text-shadow: 0 1px 8px #cccccc44;
-}
-
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* Right side: links */
-.topbar-links {
-  position: relative;
-  margin-left: auto;
-  display: flex;
-  align-items: right;
   gap: 20px;
-  z-index: 10
+  padding: 20px;
+  width: 100%;
+  transition: max-height 0.3s ease;
 }
 
-.topbar-links a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
+.sidebar-content.hidden {
+  max-height: 0;
+  overflow: hidden;
 }
 
-.topbar-links a:hover {
-  background-color: #ddd;
+.sidebar button:not(.menu-toggle) {
+  width: 200px;
+  height: 60px;
+  margin: 5px 0;
+  background: linear-gradient(90deg, #2b2b2b 0%, #4a4a4a 100%);
+  color: #e0e0e0;
+  cursor: pointer;
+  border: 1px solid #8f8f8f;
+  font-weight: bold;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.5px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(44,62,80,0.07);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.sidebar button:hover,
+.sidebar button:focus {
+  background: linear-gradient(90deg, #4a4a4a 0%, #6f6f6f 100%);
+  color: #ffffff;
+  border: 1.5px solid #9ca3af;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 12px rgba(44,62,80,0.13);
+}
+
+.sidebar button:active {
+  background: #6f6f6f;
+  color: #ffffff;
+  border: 1.5px solid #9ca3af;
+}
+
+/* =========================
+   Admin Badge
+========================= */
+.admin {
+  font-size: 15px;
+  font-weight: 500;
+  color: #232526;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 4px 14px;
+  border-radius: 8px;
+  border: 1px solid #bdbdbd;
+  box-shadow: 0 1px 4px #cccccc22;
+}
+
+/* =========================
+   Container & Main Content
+========================= */
+.container {
+  display: flex;
+  flex: 1;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
 .main {
-  width: 1500px;
-  height: 830px;
-  margin: 20px 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  flex: 1;
+  margin: 20px;
   padding: 20px;
-  overflow: hidden;
   border-radius: 12px;
-
-  /* Transparent styling */
-  background-color: transparent;
-  backdrop-filter: blur(10px); /* Optional: creates a soft glassy effect */
-}
-
-    .card-row {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 40px;
-  margin-top: auto;
-  padding-bottom: 20px;
-  flex-wrap: wrap; /* allow wrapping on smaller screens */
-}
-
-    .section-title {
-      font-size: 18px;
-      color: #2c3e50;
-      font-weight: bold;
-    }
-.page-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh; /* Full screen */
-  padding: 20px;
-}
-
-
-
-    .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 24px;
-    justify-items: stretch;
-    margin-bottom: 30px;
-    }
-.card {
-  width: 400px;
-  max-width: 400px;
-  height: 350px;
-  min-height: 120px;
-  
-  color: #0f0a0a;
-padding: 20px 35px;
   display: flex;
   flex-direction: column;
-  align-items:top;
-  justify-content: top;
+  justify-content: flex-start;
+  background-color: transparent;
+  backdrop-filter: blur(10px);
+  overflow-y: auto;
+  width: 100%;
+}
 
-  background-color: rgba(255, 255, 255, 0.05); /* ultra-transparent */
+/* =========================
+   Scrollable Page Content
+========================= */
+.page-content {
+  overflow: auto;
+}
+
+/* =========================
+   Card Grid
+========================= */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  justify-items: stretch;
+  margin-bottom: 30px;
+}
+
+.card-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding-bottom: 20px;
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  min-height: 150px;
+  padding: 20px 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background-color: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   backdrop-filter: blur(12px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-
-  /* Optional: Interactive hover effect */
   cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
+
 .card:hover {
   transform: scale(1.03);
   box-shadow:
@@ -334,41 +219,106 @@ padding: 20px 35px;
     0 0 0 2px rgba(255, 255, 255, 0.2) inset;
 }
 
+.card figure {
+  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  color: #000000;
+}
 
-    .card figure {
-    margin-bottom: 12px;
-    color: #000000;
+.card img {
+  width: 70px;
+  margin-bottom: 12px;
+  filter: brightness(0) invert(1);
+}
+
+.card p {
+  font-size: 14px;
+  font-weight: 400;
+  text-align: center;
+  max-width: 280px;
+  margin: 0 auto;
+  color: #000000;
+}
+
+/* =========================
+   Analytics Cards
+========================= */
+.analytics {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.analytics .card {
+  flex: 1;
+  min-width: 200px;
+  height: 100px;
+}
+
+/* =========================
+   Section Titles
+========================= */
+.section-title {
+  font-size: 18px;
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+/* =========================
+   Centering Pages
+========================= */
+.page-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* =========================
+   Responsive Styles
+========================= */
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    justify-content: space-around;
+    padding: 10px 0;
+    transform: translateY(0);
+  }
+
+  .sidebar img {
+    width: 60px;
+    margin-bottom: 0;
+  }
+
+  .menu-toggle {
     font-size: 20px;
-    font-weight: 600;
-    text-align: center;
+    padding: 6px 12px;
+  }
 
-    }
+  .sidebar-content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+}
 
-    .card img {
-    width: 70px;
-    margin-bottom: 12px;
-    filter: brightness(0) invert(1); /* for dark mode compatibility */
-    }
-
-    .card p {
-    color: #000000;
-    font-weight: 400;
-    font-size: 14px;
-    text-align: center;
-    max-width: 280px;
+@media (max-width: 768px) {
+  .card {
+    max-width: 90%;
     margin: 0 auto;
-    }
+  }
 
-
-    .analytics {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .analytics .card {
-      flex: 1;
-      min-width: 200px;
-      height: 100px;
-    }
-    
+  .sidebar-content.hidden {
+    display: none; /* hide sidebar buttons when collapsed */
+  }
+}

@@ -14,7 +14,7 @@
     <div class="field-with-title horizontal"
          [ngClass]="{'shake': watchForm.get('name')?.invalid && (watchForm.get('name')?.touched || submitted)}">
       <label class="field-title" for="name">Watch Name</label>
-      <input id="name" type="text" maxlength="15" placeholder="Watch Name" formControlName="name" class="form-input" />
+      <input id="name" type="text" maxlength="50" placeholder="Watch Name" formControlName="name" class="form-input" />
       <div *ngIf="watchForm.get('name')?.invalid && (watchForm.get('name')?.touched || submitted)" class="error">
         Name is required
       </div>
@@ -59,43 +59,6 @@
         Invalid weight
       </div>
     </div>
-    <!-- Discount -->
-<div class="field-with-title horizontal"
-     [ngClass]="{
-       'shake': watchForm.get('discount')?.invalid &&
-                (watchForm.get('discount')?.touched || submitted)
-     }">
-
-  <label class="field-title" for="discount">Discount (%)</label>
-
-  <!-- If user HAS permission -->
-  <input *ngIf="canAddDiscount"
-         id="discount"
-         type="number"
-         min="0" max="100"
-         placeholder="Enter discount"
-         formControlName="discount"
-         class="form-input" />
-
-  <!-- If user does NOT have permission -->
-  <div *ngIf="!canAddDiscount" class="no-permission">
-    <span class="form-input disabled-input">0</span>
-    <div class="error">❌ You don’t have permission to set a discount.</div>
-  </div>
-</div>
-
-<!-- ✅ Error messages -->
-<div class="error" *ngIf="watchForm.get('discount')?.hasError('required') && (watchForm.get('discount')?.touched || submitted)">
-  Discount is required.
-</div>
-<div class="error" *ngIf="watchForm.get('discount')?.hasError('min') && (watchForm.get('discount')?.touched || submitted)">
-  Discount cannot be less than 0%.
-</div>
-<div class="error" *ngIf="watchForm.get('discount')?.hasError('max') && (watchForm.get('discount')?.touched || submitted)">
-  Discount cannot exceed 100%.
-</div>
-
-
 
     <!-- Images -->
     <div class="field-with-title vertical"

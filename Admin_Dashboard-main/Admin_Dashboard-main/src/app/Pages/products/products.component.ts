@@ -276,31 +276,42 @@ this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
 
 
 loadProducts() {
- 
-  const backendFilters = this.mapFiltersToBackend1(this.filters);
-  console.log(backendFilters)
+  const backendFilters = {
+    ...this.mapFiltersToBackend1(this.filters)
+   };
+
   this.productMap.clear();
-console.log(this.filters);
-  this.productService1.getAllProducts(backendFilters).pipe(
-     switchMap(page => {   // page is the Page<Product> object
-      const products = page.content;   // <-- extract the array
- 
-      const requests = products.map(product =>
-        this.imageService.getAllImagesByProductID(product.id).pipe(
-          map(images => ({
-            product,
-            images,
-            currentImageIndex: 0
-          }))
-        )
-      );
-      return forkJoin(requests);
-    })
-  ).subscribe(results => {
-     results.forEach(({ product, images, currentImageIndex }) => {
-      this.productMap.set(product.id, { product, images, currentImageIndex });
+
+  this.productService1.getAllProducts(backendFilters).subscribe(page => {
+    const products = page.content as any[];
+
+    // Step 1: Put products immediately into map
+    products.forEach(product => {
+      this.productMap.set(product.id, {
+        product,
+        images: [],
+        currentImageIndex: 0
+      });
     });
- 
+
+    // Step 2: Build array of observables for images
+    const imageRequests = products.map(product =>
+      this.imageService.getAllImagesByProductID(product.id)
+    );
+
+    // Step 3: Run all in parallel
+    forkJoin(imageRequests).subscribe(imagesArray => {
+      imagesArray.forEach((images, index) => {
+        const product = products[index];
+        const current = this.productMap.get(product.id);
+        if (current) {
+          this.productMap.set(product.id, {
+            ...current,
+            images
+          });
+        }
+      });
+    });
   });
 }
 
@@ -425,6 +436,10 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
     product.editMode = false;
     this.productService.saveProducts(this.product);
   }
+  trackByProduct(index: number, product: ProductWithImages): number {
+  return product.id; // make sure each product has a unique ID
+}
+
 
   cancelEdit(product: any) {
     Object.assign(product, this.originalProduct);

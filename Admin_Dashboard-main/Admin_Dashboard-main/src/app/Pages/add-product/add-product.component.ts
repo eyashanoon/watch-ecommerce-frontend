@@ -6,7 +6,6 @@ import { ProductService1 } from '../../Service/product1.service';
 import { ImageService } from '../../Service/image.service';
 import { FeaturesService, ColorsResponse } from '../../Service/features.service';
 import { Image } from '../../models/Image.model';
-import { AuthService } from '../../Service/auth.service';
 
 // Validator: at least one image
 export const atLeastOneImage: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -27,7 +26,7 @@ export class AddProductComponent implements OnInit {
   loadedImages: Image[] = [];        // URLs loaded from server
   deletedImageIds: number[] = [];    // track images marked for deletion
   mode: 'add' | 'edit' = 'add';
-  productId?: string;
+  productId?: number;
 
   availableColors: string[] = [];
   bandColors: string[] = [];
@@ -48,19 +47,14 @@ export class AddProductComponent implements OnInit {
     private route: ActivatedRoute,
     private productService: ProductService1,
     private featuresService: FeaturesService,
-    private imageService: ImageService,
-    public authService: AuthService
-  
+    private imageService: ImageService
   ) {}
-canAddDiscount: boolean = false;
+
   ngOnInit(): void {
-     this.canAddDiscount = this.authService.hasAnyRole([
-    'ADD_DISCOUNT',
-    'OWNER'
-  ]);
     this.loadFeatures();
-    this.productId = this.route.snapshot.paramMap.get('id') ?? undefined;
-    console.log('Product ID:', this.productId);
+this.productId = this.route.snapshot.paramMap.get('id') 
+  ? Number(this.route.snapshot.paramMap.get('id')) 
+  : undefined;    console.log('Product ID:', this.productId);
     this.initializeForm();
     if (this.productId) {
       this.mode = 'edit';
@@ -70,7 +64,7 @@ canAddDiscount: boolean = false;
 
   initializeForm(): void {
     this.watchForm = this.fb.group({
-      name: ['', [Validators.required, Validators.maxLength(15)]],
+      name: ['', [Validators.required, Validators.maxLength(50)]],
       price: [0, [Validators.required, Validators.min(0.01)]],
       quantity: [0, [Validators.required, Validators.pattern(/^\d{1,15}$/)]],
       size: [0, [Validators.required, Validators.min(0.01)]],
@@ -91,15 +85,8 @@ canAddDiscount: boolean = false;
       changeableBand: [null, Validators.required],
       hasTickingSound: [null, Validators.required],
       images: this.fb.array([], atLeastOneImage),
-discount: [
-    0, // default value
-    [
-      Validators.required,  // must not be empty
-      Validators.min(0),    // cannot be negative
-      Validators.max(100)   // cannot exceed 100
-    ]
-  ] ,
-       discountPrice: [0]
+      discount: [0],
+      discountPrice: [0]
     });
   }
 
@@ -147,7 +134,6 @@ discount: [
     this.featuresService.getAllShapes().subscribe(shapes => this.shapes = shapes);
   }
 
-
   loadProductImages(productId: number): void {
     this.imageService.getAllImagesByProductID(productId).subscribe({
       next: (images: Image[]) => {
@@ -162,7 +148,7 @@ discount: [
     });
   }
 
-  loadProductForEdit(id: string): void {
+  loadProductForEdit(id: number): void {
     this.productService.getProductById(id).subscribe({
       next: (product: any) => {
         this.watchForm.patchValue({
@@ -240,7 +226,7 @@ discount: [
         error: err => console.error('Error adding product:', err)
       });
     } else {
-                console.log('Updating product with ID:', formData);
+      console.log('Updating product with ID:', formData);
       this.productService.updateProduct(this.productId!, formData).subscribe({
         next: () => {
           // Upload new images
@@ -256,16 +242,19 @@ discount: [
           });
 
           // Delete images marked for deletion
-          this.deletedImageIds.forEach(id => {
+          /*this.deletedImageIds.forEach(id => {
             this.imageService.deleteImage(id).subscribe({
               next: () => console.log('Deleted image', id),
               error: err => console.error('Failed to delete image', err)
             });
-          });
+          });*/
 
           this.imageFiles = [];
           this.deletedImageIds = [];
           this.loadProductForEdit(this.productId!);
+          alert('Product updated successfully!');
+          this.resetForm();
+          this.router.navigate(['/product']);
         },
         error: err => {
           console.error('Error updating product:', err);

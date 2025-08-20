@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
- 
+
 import { HttpClient, HttpHeaders ,HttpParams  } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
  import { environment } from "../../app/environments/environment";
 import { Product } from '../models/product.model';
- 
+
 
 const API_URL = environment.apiBaseUrl + '/api/products';
 
@@ -23,7 +23,7 @@ export class ProductService1 {
   }
 
   // Return the Page object directly
- 
+
 getAllProducts(filters: any): Observable<{ content: Product[]; [key: string]: any }> {
   let params = new HttpParams();
   Object.entries(filters).forEach(([key, value]) => {
@@ -37,10 +37,15 @@ getAllProducts(filters: any): Observable<{ content: Product[]; [key: string]: an
     params: params
   });
 }
-  getProductById(id: string): Observable<any> {
+  getProductById(id: number): Observable<any> {
     return this.http.get<any>(`${API_URL}/${id}`, { headers: this.getAuthHeaders() });
   }
-    updateProduct(id: string, productData: any): Observable<any> {
+    getProductByName(name: String): Observable<any[]> {
+    return this.http.get<any[]>(`${API_URL}/products/name/${name}`, { headers: this.getAuthHeaders() });
+  }
+    updateProduct(id: number, productData: any): Observable<any> {
+        console.log(productData);
+
     return this.http.put<any>(`${API_URL}/${id}`, productData, { headers: this.getAuthHeaders() });
   }
  addProduct(productData: any): Observable<any> {
@@ -49,12 +54,6 @@ getAllProducts(filters: any): Observable<{ content: Product[]; [key: string]: an
     headers: this.getAuthHeaders()
   });
 }
- 
- 
+
+
 }
-
- 
- 
-
-
- 
