@@ -95,7 +95,7 @@ export class SignUpComponent implements AfterViewInit {
       return null;
     };
   }
- 
+
  goToHomePage() {
     this.router.navigate(['/home']);
   }
@@ -167,6 +167,7 @@ export class SignUpComponent implements AfterViewInit {
   onSubmit() {
     if (this.SignUpForm.invalid) {
             console.log(this.SignUpForm)
+            
 
       this.checkAndShowFieldError();
       return;

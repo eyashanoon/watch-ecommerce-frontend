@@ -279,11 +279,11 @@ pageIndex: number = 1;
 
 loadProducts() {
   const backendFilters = {
- 
+
     ...this.mapFiltersToBackend1(this.filters),
     page: this.pageIndex
   };
- 
+
   this.productMap.clear();
 
   this.productService1.getAllProducts(backendFilters).subscribe(page => {
@@ -500,7 +500,7 @@ goToProductDetails(product: any): void {
 
   goToAddProductPage() {
      this.router.navigate(['/product/add']);
- 
+
   }
 
   goToEdit(productName: string) {
@@ -538,13 +538,14 @@ this.loadProducts();
 }
 
 
-trackByProduct(index: number, product: ProductWithImages): number {
-  return product.id; // make sure each product has a unique ID
-}
+
 
 
 resetFilters(){
-
+  this.filters = { ...this.defaultFilters };
+  this.pageIndex = 1;
+  this.filterChange$.next({ ...this.filters });
+  this.loadProducts();
 }
 FiltrProducts(){
   this.pageIndex=1;
