@@ -14,7 +14,7 @@
     <div class="field-with-title horizontal"
          [ngClass]="{'shake': watchForm.get('name')?.invalid && (watchForm.get('name')?.touched || submitted)}">
       <label class="field-title" for="name">Watch Name</label>
-      <input id="name" type="text" maxlength="15" placeholder="Watch Name" formControlName="name" class="form-input" />
+      <input id="name" type="text" maxlength="50" placeholder="Watch Name" formControlName="name" class="form-input" />
       <div *ngIf="watchForm.get('name')?.invalid && (watchForm.get('name')?.touched || submitted)" class="error">
         Name is required
       </div>

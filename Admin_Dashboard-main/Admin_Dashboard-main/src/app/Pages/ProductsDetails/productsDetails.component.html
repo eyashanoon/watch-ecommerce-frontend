@@ -34,11 +34,11 @@
       <!-- Top: Most important info -->
       <div class="main-info">
         <h1 class="product-name">{{ products.name }}</h1>
+ 
         <div class="product-price"><strong>Price:</strong> ${{ products.originalPrice }}</div>
         <div class="product-qty"><strong>Quantity:</strong> {{ products.quantity }}</div>
+ 
 
-
-<!-- Color Combinations Section -->
 <!-- Color Combinations Section -->
 <div class="color-combinations" *ngIf="products?.colorCombinations">
   <h3>Color Combinations</h3>
@@ -73,11 +73,12 @@
 
 
 <div class="action-buttons">
-  <button *ngIf="hasRole('OWNER')" (click)="editProduct()">Edit</button>
-  <button *ngIf="hasRole('OWNER')" (click)="deleteProduct()">Delete</button>
+   <button *ngIf="hasRole('UPDATE_PRODUCT') || hasRole('OWNER')" (click)="editProduct()">Edit</button>
+  <button *ngIf="hasRole('DELETE_PRODUCT') || hasRole('OWNER')" (click)="deleteProduct()">Delete</button>
+ 
   <button *ngIf="hasRole('CUSTOMER')" (click)="addToCart(products)">Add TO Cart </button>
   <button *ngIf="hasRole('CUSTOMER')" (click)="addToWishlist(products)">Add TO Wish List</button>
-</div>
+ </div>
 
 
         <p class="product-short-desc">{{ products.description }}</p>

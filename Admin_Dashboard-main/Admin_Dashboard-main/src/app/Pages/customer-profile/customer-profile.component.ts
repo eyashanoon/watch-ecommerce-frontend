@@ -47,9 +47,8 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
     this.loading = true;
 
-
     this.authService.getCustomerById(idNum).subscribe({
-       next: (profile) => {
+      next: (profile) => {
         this.user = profile;
         this.loading = false;
       },
@@ -109,7 +108,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
       return;
     }
 
-    if (this.editingPassword) {
+    if (false && this.editingPassword) {
       if (!this.editableUser.password || !this.editableUser.confirmPassword) {
         alert('Password and Confirm Password are required.');
         return;
@@ -137,9 +136,9 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
       password:this.editableUser.password
 
     }
- 
+
     this.authService.updateCustomerPassword(idNum, data).subscribe({
-       next: () => {
+      next: () => {
         this.user = { ...this.editableUser };
         this.editMode = false;
         this.editingPassword = false;
@@ -158,7 +157,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
 
 
-    } else {
+    } else if(false ) {
       // If not editing password, keep old password fields (or clear if needed)
       this.editableUser.password = this.user.password || '';
       this.editableUser.confirmPassword = this.user.confirmPassword || '';
@@ -176,9 +175,8 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
     this.loading = true;
 
- 
-    this.authService.updateCustomerProfile(idNum, this.editableUser).subscribe({
-       next: () => {
+    this.authService.updateCustomerProfile(idNum, {...this.editableUser,newPassword:this.editableUser.password}).subscribe({
+      next: () => {
         this.user = { ...this.editableUser };
         this.editMode = false;
         this.editingPassword = false;
@@ -223,9 +221,9 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
       }
 
       this.loading = true;
- 
+
       this.authService.deleteCustomerProfile(idNum).subscribe({
-         next: () => {
+        next: () => {
           alert('Account deleted successfully.');
           this.authService.logout();
           this.router.navigate(['/home']);
@@ -240,7 +238,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
   }
 
   goToProducts() {
-    this.router.navigate(['/customer-product'], { state: { source: 'dashboard' } });
+    this.router.navigate(['/product'], { state: { source: 'dashboard' } });
   }
 
   goToDashBoard() {

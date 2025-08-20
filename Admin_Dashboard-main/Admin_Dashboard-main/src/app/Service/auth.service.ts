@@ -60,6 +60,23 @@ export class AuthService {
     const storedRoles = localStorage.getItem('roles');
     return storedRoles ? JSON.parse(storedRoles) : [];
   }
+  // --- JWT Helper ---
+getUserId(): number | null {
+  const id = localStorage.getItem('id');
+  return id ? +id : null;
+}
+
+getUsernameFromToken(): string | null {
+  const token = this.getToken();
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.username || payload.name || null;
+  } catch {
+    return null;
+  }
+}
+
 
   hasRole(role: string): boolean {
     return this.getUserRoles().includes(role);
@@ -117,13 +134,14 @@ export class AuthService {
 
   // --- Customer API ---
   getCustomerById(id: number): Observable<any> {
-    return this.http.get(`${environment.apiBaseUrl}/api/customers/${id}`, {
+    return this.http.get(`${environment.apiBaseUrl}/api/customers/me`, {
       headers: this.getAuthHeaders()
     });
   }
 
   updateCustomerProfile(id: number, data: any): Observable<any> {
-    return this.http.put(`${environment.apiBaseUrl}/api/customers/${id}`, data, {
+    console.log(data);
+    return this.http.put(`${environment.apiBaseUrl}/api/customers`, data, {
       headers: this.getAuthHeaders()
     });
   }

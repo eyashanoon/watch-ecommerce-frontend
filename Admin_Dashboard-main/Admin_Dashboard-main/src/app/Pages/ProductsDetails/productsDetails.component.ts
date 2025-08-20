@@ -243,6 +243,7 @@ editProduct() {
   deleteProduct() {
   }
 
+ 
 addToCart(products:any){
 
 }
@@ -251,4 +252,4 @@ addToWishlist(products:any){
 }
 
  
-}
+ }

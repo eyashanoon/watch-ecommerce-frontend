@@ -267,8 +267,10 @@ this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
       this.loadProducts();
     });
   const roles = this.authService.getUserRoles(); // Example: ['ADMIN'] or ['CUSTOMER']
-  this.canAddProduct = roles.includes('ADMIN'); // Only admins can add products
-
+  this.canAddProduct = this.authService.hasAnyRole([
+    'CREATE_PRODUCT',
+    'OWNER'
+  ]);
 }
 
 
@@ -277,10 +279,11 @@ pageIndex: number = 1;
 
 loadProducts() {
   const backendFilters = {
+ 
     ...this.mapFiltersToBackend1(this.filters),
     page: this.pageIndex
   };
-
+ 
   this.productMap.clear();
 
   this.productService1.getAllProducts(backendFilters).subscribe(page => {
@@ -440,6 +443,10 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
     product.editMode = false;
     this.productService.saveProducts(this.product);
   }
+  trackByProduct(index: number, product: ProductWithImages): number {
+  return product.id; // make sure each product has a unique ID
+}
+
 
   cancelEdit(product: any) {
     Object.assign(product, this.originalProduct);
@@ -492,7 +499,8 @@ goToProductDetails(product: any): void {
   }
 
   goToAddProductPage() {
-    this.router.navigate(['product/add']);
+     this.router.navigate(['/product/add']);
+ 
   }
 
   goToEdit(productName: string) {

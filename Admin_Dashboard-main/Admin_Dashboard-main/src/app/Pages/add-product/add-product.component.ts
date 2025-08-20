@@ -52,8 +52,9 @@ export class AddProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadFeatures();
-this.productId = this.route.snapshot.paramMap.get('id')
-  ? Number(this.route.snapshot.paramMap.get('id'))
+ this.productId = this.route.snapshot.paramMap.get('id') 
+  ? Number(this.route.snapshot.paramMap.get('id')) 
+ 
   : undefined;    console.log('Product ID:', this.productId);
     this.initializeForm();
     if (this.productId) {
@@ -64,7 +65,7 @@ this.productId = this.route.snapshot.paramMap.get('id')
 
   initializeForm(): void {
     this.watchForm = this.fb.group({
-      name: ['', [Validators.required, Validators.maxLength(15)]],
+      name: ['', [Validators.required, Validators.maxLength(50)]],
       price: [0, [Validators.required, Validators.min(0.01)]],
       quantity: [0, [Validators.required, Validators.pattern(/^\d{1,15}$/)]],
       size: [0, [Validators.required, Validators.min(0.01)]],
@@ -226,7 +227,8 @@ this.productId = this.route.snapshot.paramMap.get('id')
         error: err => console.error('Error adding product:', err)
       });
     } else {
-         console.log('Updating product with ID:', formData);
+       console.log('Updating product with ID:', formData);
+ 
       this.productService.updateProduct(this.productId!, formData).subscribe({
         next: () => {
           // Upload new images
@@ -252,6 +254,9 @@ this.productId = this.route.snapshot.paramMap.get('id')
           this.imageFiles = [];
           this.deletedImageIds = [];
           this.loadProductForEdit(this.productId!);
+          alert('Product updated successfully!');
+          this.resetForm();
+          this.router.navigate(['/product']);
         },
         error: err => {
           console.error('Error updating product:', err);

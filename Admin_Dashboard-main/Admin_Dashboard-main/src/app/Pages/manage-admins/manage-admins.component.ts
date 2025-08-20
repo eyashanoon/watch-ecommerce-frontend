@@ -14,19 +14,26 @@ import { Router } from '@angular/router';
 })
 export class ManageAdminsComponent implements OnInit {
   admins: any[] = [];
-  hasPermission = false; // <-- track permission
 
   constructor(
     private adminService: AdminService, 
     private router: Router,
-    public authService: AuthService // <-- inject AuthService
+    public authService: AuthService
   ) {}
-
+canSeeAdmins: boolean = false;
   ngOnInit() {
-this.hasPermission = this.authService.hasAnyRole(['SEE_ADMIN', 'OWNER']);
-    if (this.hasPermission) {
-      this.loadAdmins();
-    }
+  this.canSeeAdmins = this.authService.hasAnyRole([
+    'SEE_ADMIN',
+    'UPDATE_ADMIN',
+    'REMOVE_ADMIN', 
+    'OWNER'
+  ]);
+
+  // Load admins only if permitted
+  if (this.canSeeAdmins) {
+    this.loadAdmins();
+  }
+
   }
 
   loadAdmins() {
