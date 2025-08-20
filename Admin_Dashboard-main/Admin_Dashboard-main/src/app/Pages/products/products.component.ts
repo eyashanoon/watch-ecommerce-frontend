@@ -18,7 +18,6 @@ import {Product , ProductWithImages } from '../../models/product.model';
 import {forkJoin, map, switchMap, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
- 
 
 type Filters = {
   maxPrice: number;
@@ -64,7 +63,7 @@ export class ProductsComponent implements OnInit {
       private featuresService:FeaturesService,
      private authService: AuthService
     ) {}
- 
+
 
 
   product: any[] = [];
@@ -75,7 +74,7 @@ export class ProductsComponent implements OnInit {
   originalProduct: any = null;
   showAddForm = false;
   sidebarVisible = false;
- 
+
 
   filters: Filters = {
     maxPrice: 1000,
@@ -124,7 +123,7 @@ export class ProductsComponent implements OnInit {
     private filterChange$ = new Subject<Filters>();
 
   onFiltersChanged() {
-    this.filterChange$.next({ ...this.filters }); // emit new filters
+   // this.filterChange$.next({ ...this.filters }); // emit new filters
   }
 
   // maps frontend Filters → backend ProductQueryObject
@@ -195,7 +194,7 @@ export class ProductsComponent implements OnInit {
 
 }
 
- 
+
 
   availableColors: string[] = [];
    bandColors: string[] = [];
@@ -204,7 +203,7 @@ export class ProductsComponent implements OnInit {
 
   backgroundColors  : string[] = [];
 
- 
+
   availableBrands  : string[] = [];
 
   bandMaterials: string[] = [];
@@ -215,7 +214,7 @@ export class ProductsComponent implements OnInit {
   shapes: string[] = [];
   canAddProduct = false;
 
- 
+
 ngOnInit(): void {
 this.filterChange$
       .pipe(debounceTime(300)) // waits 300ms after last change
@@ -275,11 +274,16 @@ this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
 }
 
 
+pageIndex: number = 1;
+
+
 loadProducts() {
   const backendFilters = {
-    ...this.mapFiltersToBackend1(this.filters)
-   };
-
+ 
+    ...this.mapFiltersToBackend1(this.filters),
+    page: this.pageIndex
+  };
+ 
   this.productMap.clear();
 
   this.productService1.getAllProducts(backendFilters).subscribe(page => {
@@ -314,6 +318,9 @@ loadProducts() {
     });
   });
 }
+
+
+
 
 
 
@@ -399,7 +406,7 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
     });
   }
 
- 
+
   toggleDetails(product: any) {
     product.showDetails = !product.showDetails;
   }
@@ -477,7 +484,7 @@ goToProductDetails(product: any): void {
   const roles = this.authService.getUserRoles();
   const isLoggedIn = this.authService.isLoggedIn();
 
-  if (isLoggedIn && roles.includes('ADMIN')) {
+  if (isLoggedIn && (roles.includes('ADMIN')|| roles.includes('CUSTOMER'))) {
     // Admin goes to admin product details
     this.router.navigate(['/admin-product', encodedName], { state: { product } });
   } else {
@@ -492,7 +499,8 @@ goToProductDetails(product: any): void {
   }
 
   goToAddProductPage() {
-    this.router.navigate(['/product/add']);
+     this.router.navigate(['/product/add']);
+ 
   }
 
   goToEdit(productName: string) {
@@ -507,18 +515,42 @@ goToProductDetails(product: any): void {
       product.carouselInterval = null;
     }
   }
- 
+
 doNothing(event: Event) {
   event.stopPropagation();
 }
 
 
+nextPage( ){
 
-
-
-
-
+this.pageIndex++;
+this.loadProducts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
 }
 
- 
+prePage( ){
+
+this.pageIndex>0?this.pageIndex--:this.pageIndex=0;
+this.loadProducts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+}
+
+
+trackByProduct(index: number, product: ProductWithImages): number {
+  return product.id; // make sure each product has a unique ID
+}
+
+
+resetFilters(){
+
+}
+FiltrProducts(){
+  this.pageIndex=1;
+  this.filterChange$.next({ ...this.filters });
+
+}
+}
+
+

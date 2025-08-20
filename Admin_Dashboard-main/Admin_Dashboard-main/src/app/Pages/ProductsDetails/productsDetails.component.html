@@ -1,4 +1,4 @@
- 
+
 <!-- Product Details Section -->
 <div class="product-detail-container" *ngIf="products">
 
@@ -7,18 +7,18 @@
     <!-- Left: Image Section -->
     <div class="image-wrapper">
       <div class="image-section">
-        <div class="vertical-thumbnails" *ngIf="!is3DViewActive">
-          <img *ngFor="let img of products.images; let i = index"
+        <div class="vertical-thumbnails scrollable-element" *ngIf="!is3DViewActive">
+          <img *ngFor="let img of loadedImages; let i = index"
                [src]="img"
                [class.selected]="i === currentIndex"
                (click)="selectImage(i)" />
         </div>
         <div class="main-image-container" *ngIf="!is3DViewActive">
-          <img [src]="products.images[currentIndex]" class="main-image" />
+          <img [src]="loadedImages[currentIndex]" class="main-image" />
         </div>
 
         <!-- Carousel arrows -->
-        <button class="carousel-arrow left" (click)="prevImage()">&#10094;</button>
+       <!-- <button class="carousel-arrow left" (click)="prevImage()">&#10094;</button>-->
         <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
 
         <!-- 3D View Button -->
@@ -34,14 +34,10 @@
       <!-- Top: Most important info -->
       <div class="main-info">
         <h1 class="product-name">{{ products.name }}</h1>
-<!-- Product Price / Discount -->
-<div class="product-price">
-  <strong>Price:</strong> ${{ products.originalPrice }}
-</div>
-
-
-        <div class="product-qty"><strong>Quantity:</strong> {{ products.selectedQty }}</div>
-
+ 
+        <div class="product-price"><strong>Price:</strong> ${{ products.originalPrice }}</div>
+        <div class="product-qty"><strong>Quantity:</strong> {{ products.quantity }}</div>
+ 
 
 <!-- Color Combinations Section -->
 <div class="color-combinations" *ngIf="products?.colorCombinations">
@@ -49,7 +45,7 @@
 
   <div class="combo-grid">
     <div *ngFor="let combo of products.colorCombinations; let i = index" class="watch-combo">
-      <div class="watch-template">
+      <div class="watch-template" (click)="changeWatchColor(combo)">
         <!-- Band Top -->
         <div class="watch-band" [style.backgroundColor]="combo.band"></div>
 
@@ -77,10 +73,13 @@
 
 
 <div class="action-buttons">
-  <button *ngIf="hasRole('UPDATE_PRODUCT') || hasRole('OWNER')" (click)="editProduct()">Edit</button>
+   <button *ngIf="hasRole('UPDATE_PRODUCT') || hasRole('OWNER')" (click)="editProduct()">Edit</button>
   <button *ngIf="hasRole('DELETE_PRODUCT') || hasRole('OWNER')" (click)="deleteProduct()">Delete</button>
-</div>
-      
+ 
+  <button *ngIf="hasRole('CUSTOMER')" (click)="addToCart(products)">Add TO Cart </button>
+  <button *ngIf="hasRole('CUSTOMER')" (click)="addToWishlist(products)">Add TO Wish List</button>
+ </div>
+
 
         <p class="product-short-desc">{{ products.description }}</p>
       </div>
@@ -120,6 +119,8 @@
         </div>
       </div>
 
+
+
     </div>
   </div>
 
@@ -128,10 +129,12 @@
     <button class="close-btn" (click)="toggle3DView()">✕</button>
     <button class="carousel-arrow left" (click)="prevImage()">&#10094;</button>
     <div class="carousel">
-      <img #carouselImg *ngFor="let img of products.images" [src]="img" />
+      <img #carouselImg *ngFor="let img of loadedImages" [src]="img" />
     </div>
     <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
   </div>
+
+
   <div class="ff"></div>
 
 </div>

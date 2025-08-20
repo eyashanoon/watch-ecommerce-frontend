@@ -54,6 +54,7 @@ getAllProducts(filters: any): Observable<{ content: Product[]; [key: string]: an
     headers: this.getAuthHeaders()
   });
 }
-
+ 
 
 }
+ 

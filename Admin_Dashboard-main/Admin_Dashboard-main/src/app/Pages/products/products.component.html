@@ -1,9 +1,9 @@
 <!-- Floating Add Button -->
 <!-- Floating Add Button -->
-<button 
+<button
   *ngIf="canAddProduct"
-  class="floating-add-button" 
-  (click)="goToAddProductPage()" 
+  class="floating-add-button"
+  (click)="goToAddProductPage()"
   title="Add New Product">
   ➕
 </button>
@@ -14,7 +14,7 @@
   <!-- Search Bar -->
   <div class="search-wrapper">
     <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Search watches..." [(ngModel)]="filters.name" class="search-bar-with-icon"          (ngModelChange)="onFiltersChanged()"
+    <input type="text" placeholder="Search watches..." [(ngModel)]="filters.name" class="search-bar-with-icon"    (keydown.enter)="FiltrProducts()"
 />
   </div>
 
@@ -173,43 +173,66 @@
           </select>
         </label>
       </div>
+
+
+
+<div class="filter-buttons">
+  <button class="reset-btn" (click)="resetFilters()">Reset</button>
+  <button class="apply-btn" (click)="FiltrProducts()">Apply Filter</button>
+</div>
+
     </div>
 
 <!-- Product Grid -->
 <div class="product-grid">
-<div class="product-wrapper" *ngFor="let product of productsWithImages; trackBy: trackByProduct">
-    <div class="product-card"  >
-      <div class="product-content">
  
+      <div class="product-wrapper" *ngFor="let product of productsWithImages; trackBy: trackByProduct">    <div class="product-card"  >
+       <div class="product-content">
+
         <div class="image-wrapper" #imageContainer>
           <div
             class="image-strip"
             [style.transform]="'translateX(' + (positions[product.id] || 0) + '%)'"
+
           >
-            <img *ngFor="let img of product.images"
+          <img
+            *ngFor="let img of product.images"
                  [src]="img"
                  alt="{{ product.name }}"
                  class="clickable"
                  (click)="goToProductDetails(product)"
             />
+
           </div>
 
           <button class="carousel-arrow left" (click)="scrollLeft(product, $event)">&#10094;</button>
           <button class="carousel-arrow right" (click)="scrollRight(product , $event)">&#10095;</button>
- 
+
         </div>
 
-         <h3 class="product-name clickable"
-                 (click)="goToProductDetails(product)">{{ product.name }}</h3>
- 
-        <p class="product-price">{{ product.quantity }}  unit </p>
-         <p class="product-price">{{ product.originalPrice | currency }}</p>
+        <h3 class="product-name clickable" (click)="goToProductDetails(product)">{{ product.name }}</h3>
+        <div class="Price-quan-con">
+
+          <p class="product-price">{{ product.quantity }}  unit </p>
+          <p class="product-price">{{ product.originalPrice | currency }}</p>
+
+        </div>
 
       </div>
     </div>
   </div>
-</div>
- 
+
 
   </div>
+<!-- your grid goes here -->
+
+<div class="change-page">
+  <button *ngIf="pageIndex != 1"  class="carousel-arrowNP left" (click)="prePage()">&#10094;</button>
+
+  <div class="page-index">
+    {{ pageIndex}}
+  </div>
+
+  <button  class="carousel-arrowNP right" (click)="nextPage()">&#10095;</button>
 </div>
+

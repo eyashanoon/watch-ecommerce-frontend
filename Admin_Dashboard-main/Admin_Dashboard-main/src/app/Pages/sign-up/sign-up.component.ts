@@ -166,6 +166,8 @@ export class SignUpComponent implements AfterViewInit {
 
   onSubmit() {
     if (this.SignUpForm.invalid) {
+            console.log(this.SignUpForm)
+
       this.checkAndShowFieldError();
       return;
     }
