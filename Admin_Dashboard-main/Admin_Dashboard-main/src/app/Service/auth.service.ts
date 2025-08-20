@@ -115,7 +115,8 @@ getUsernameFromToken(): string | null {
   }
 
   updateAdminProfile(id: number, data: any): Observable<any> {
-    return this.http.put(`${environment.apiBaseUrl}/api/admins/${id}`, data, {
+    console.log( data);
+    return this.http.put(`${environment.apiBaseUrl}/api/admins/gg`, data, {
       headers: this.getAuthHeaders()
     });
   }
@@ -140,7 +141,10 @@ getUsernameFromToken(): string | null {
   }
 
   updateCustomerProfile(id: number, data: any): Observable<any> {
+    console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
     console.log(data);
+        console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+
     return this.http.put(`${environment.apiBaseUrl}/api/customers`, data, {
       headers: this.getAuthHeaders()
     });

@@ -303,14 +303,17 @@ select option {
 
 .video-background {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  opacity: 0.6; /* semi-transparent video */
+  object-fit: contain;   /* show the full video */
+  transform: translate(-50%, -50%);
+  background: black;     /* add letterbox/pillarbox background */
+  opacity: 0.9;          /* optional: keep some transparency */
   z-index: 0;
 }
+
 
 .overlay {
   position: relative; /* stay above video */
@@ -348,17 +351,6 @@ select option {
   justify-content: center;
 }
 
-/* Video fills the entire left panel */
-.video-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* cover entire container */
-  opacity: 0.6; /* semi-transparent */
-  z-index: 0;
-}
 
 /* Overlay text above video */
 .overlay {

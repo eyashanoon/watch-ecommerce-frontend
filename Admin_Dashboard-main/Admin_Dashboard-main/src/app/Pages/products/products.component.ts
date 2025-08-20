@@ -538,14 +538,15 @@ this.loadProducts();
 }
 
 
-trackByProduct(index: number, product: ProductWithImages): number {
-  return product.id; // make sure each product has a unique ID
+ 
+
+resetFilters() {
+  this.filters = { ...this.defaultFilters };
+  this.pageIndex = 1;
+  this.filterChange$.next({ ...this.filters });
+  this.loadProducts();
 }
 
-
-resetFilters(){
-
-}
 FiltrProducts(){
   this.pageIndex=1;
   this.filterChange$.next({ ...this.filters });

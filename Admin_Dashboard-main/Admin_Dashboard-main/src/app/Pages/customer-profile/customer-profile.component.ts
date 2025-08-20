@@ -53,7 +53,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Failed to get user profile:', err);
+        console.error(  err);
         this.errorMsg = 'Failed to load user profile. Please log in again.';
         this.loading = false;
       }
@@ -176,13 +176,13 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
     this.loading = true;
 
     this.authService.updateCustomerProfile(idNum, {...this.editableUser,newPassword:this.editableUser.password}).subscribe({
-      next: () => {
+      next: (customer:any) => {
+        alert('Profile updated successfully.');
         this.user = { ...this.editableUser };
         this.editMode = false;
         this.editingPassword = false;
         this.showPassword = false;
         this.showConfirmPassword = false;
-        alert('Profile updated successfully.');
         this.loading = false;
       },
       error: (err) => {
