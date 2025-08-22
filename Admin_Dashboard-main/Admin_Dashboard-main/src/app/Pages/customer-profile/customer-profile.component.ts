@@ -244,4 +244,53 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
   goToDashBoard() {
     this.router.navigate(['/customer-dash-board'], { state: { source: 'dashboard' } });
   }
+
+  myCard: any = {
+    cardType: '',
+    cardHolderName: '',
+    cardNumber: '',
+    expirationDate: '',
+     cvv: '',
+    billingAddress: '',
+    postalCode: '',
+    expiryDate:'',
+    isDefault:false,
+    defaultCard: false
+  };   
+  createNewCard() {
+    const newCard = {
+      cardType: this.myCard.cardType,            // must match backend enum (CardType)
+      cardHolderName: this.myCard.cardHolderName,
+      cardNumber: this.myCard.cardNumber,
+      expirationDate: this.myCard.expirationDate,
+      expiryDate: this.myCard.expirationDate,
+
+      cvv: this.myCard.cvv,
+      billingAddress: ' ',
+      postalCode: ' ',
+      defaultCard: true
+    };
+    
+    this.authService.createCard(newCard).subscribe({
+      next: (response) => {
+
+        console.log('Card created successfully:', response);
+      },
+      error: (error) => {
+        console.error('Error creating card:', error);
+      }
+    });
+  }
+     getCardInfo() {
+    this.authService.getMyCard().subscribe({
+      next: (response) => {
+        this.myCard = response;
+        this.myCard.expirationDate=this.myCard.expiryDate;
+        console.log('My card info:', this.myCard);
+      },
+      error: (error) => {
+        console.error('Error fetching card info:', error);
+      }
+    });
+  }
 }
