@@ -10,6 +10,7 @@ import {
   ValidatorFn,
 } from '@angular/forms';
 import { CommonModule, NgIf } from '@angular/common';
+import { AuthService } from '../../Service/auth.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -23,43 +24,36 @@ export class SignUpComponent implements AfterViewInit {
   toastMessage: string = '';
   showToast = false;
 
-  existingUsers = [
-    { username: 'john123', email: 'john@example.com' },
-    { username: 'alice', email: 'alice@example.com' },
-  ];
-
   @ViewChild('backgroundVideo') backgroundVideo!: ElementRef<HTMLVideoElement>;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.SignUpForm = this.fb.group(
-  {
-    fullName: ['', [Validators.required, Validators.minLength(3)]],
-
-    email: ['', [Validators.required, Validators.email]],
-
-    phoneNumber: ['', [Validators.required, Validators.pattern(/^\+?\d{7,14}$/)]],
-
-    password: ['', [
-      Validators.required,
-      Validators.minLength(6),
-      Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).{6,}$/)
-    ]],
-
-    confirmPassword: ['', Validators.required]
-  },
-  { validators: this.passwordMatchValidator }
-);
-
+      {
+        username: ['', [Validators.required, Validators.minLength(3)]],
+        email: ['', [Validators.required, Validators.email]],
+        phone: ['', [Validators.required, Validators.pattern(/^\+?\d{7,14}$/)]],
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(6),
+            Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).{6,}$/),
+          ],
+        ],
+        confirmPassword: ['', Validators.required],
+      },
+      { validators: this.passwordMatchValidator }
+    );
   }
 
   ngAfterViewInit() {
     const video = this.backgroundVideo.nativeElement;
     video.muted = true;
     video.play().catch((e) => console.warn('Video play error:', e));
-  }
-
-  selectUserType(type: 'customer' | 'admin') {
-    this.SignUpForm.get('userType')?.setValue(type);
   }
 
   showToastMessage(message: string) {
@@ -70,35 +64,14 @@ export class SignUpComponent implements AfterViewInit {
     }, 3000);
   }
 
-  passwordMatchValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
+  passwordMatchValidator: ValidatorFn = (
+    group: AbstractControl
+  ): ValidationErrors | null => {
     const password = group.get('password')?.value;
     const confirm = group.get('confirmPassword')?.value;
     return password === confirm ? null : { mismatch: true };
   };
 
-  usernameTakenValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const username = control.value?.toLowerCase();
-      if (this.existingUsers.some((u) => u.username.toLowerCase() === username)) {
-        return { usernameTaken: true };
-      }
-      return null;
-    };
-  }
-
-  emailTakenValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const email = control.value?.toLowerCase();
-      if (this.existingUsers.some((u) => u.email.toLowerCase() === email)) {
-        return { emailTaken: true };
-      }
-      return null;
-    };
-  }
- 
- goToHomePage() {
-    this.router.navigate(['/home']);
-  }
   checkAndShowFieldError() {
     const controls = this.SignUpForm.controls;
 
@@ -107,8 +80,6 @@ export class SignUpComponent implements AfterViewInit {
         this.showToastMessage('Username is required.');
       } else if (controls['username'].errors?.['minlength']) {
         this.showToastMessage('Username must be at least 3 characters.');
-      } else if (controls['username'].errors?.['usernameTaken']) {
-        this.showToastMessage('Username already taken.');
       }
       return;
     }
@@ -118,8 +89,6 @@ export class SignUpComponent implements AfterViewInit {
         this.showToastMessage('Email is required.');
       } else if (controls['email'].errors?.['email']) {
         this.showToastMessage('Email format is invalid.');
-      } else if (controls['email'].errors?.['emailTaken']) {
-        this.showToastMessage('Email already registered.');
       }
       return;
     }
@@ -156,21 +125,35 @@ export class SignUpComponent implements AfterViewInit {
       return;
     }
 
-    if (controls['userType'].invalid) {
-      this.showToastMessage('Please select a user type.');
-      return;
-    }
-
     this.showToastMessage('Please fill out all required fields correctly.');
   }
 
   onSubmit() {
     if (this.SignUpForm.invalid) {
-            console.log(this.SignUpForm)
-
       this.checkAndShowFieldError();
       return;
     }
+
+    // Prepare object for backend (matches CreateCustomerDTO)
+    const newCustomer = {
+      username: this.SignUpForm.value.username,
+      email: this.SignUpForm.value.email,
+      password: this.SignUpForm.value.password,
+      phone: this.SignUpForm.value.phone,
+    };
+
+    this.authService.registerCustomer(newCustomer).subscribe({
+      next: (response) => {
+        console.log('Registration successful:', response);
+        localStorage.setItem('token', response.token);
+        alert('Account created & logged in!');
+        this.router.navigate(['/home']);
+      },
+      error: (error) => {
+        console.error('Registration failed:', error);
+        alert('Failed to register.');
+      },
+    });
   }
 
   goToSignInPage() {

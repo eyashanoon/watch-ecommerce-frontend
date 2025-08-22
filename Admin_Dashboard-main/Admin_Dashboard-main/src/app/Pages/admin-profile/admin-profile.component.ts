@@ -124,6 +124,11 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
     const idStr = localStorage.getItem("id");
     const idNum = idStr ? Number(idStr) : NaN;
 
+
+
+
+
+    
     if (!idStr || isNaN(idNum)) {
       this.errorMsg = 'User ID not found. Please log in again.';
       this.loading = false;
