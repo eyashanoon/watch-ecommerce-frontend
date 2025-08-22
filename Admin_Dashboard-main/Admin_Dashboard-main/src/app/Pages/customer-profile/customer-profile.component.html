@@ -1,5 +1,5 @@
 <!-- Background video -->
-<video #videoRef autoplay loop playsinline muted class="background-video">
+<video #videoRef autoplay loop playsinline [attr.muted]="" class="background-video">
   <source src="/assets/ad.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
@@ -125,3 +125,32 @@
     <p>No user information available.</p>
   </div>
 </div>
+<!-- Payment Card Section -->
+<div class="card-container" style="margin-top: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9;">
+  <h3>Payment Information</h3>
+
+  <!-- Card Details -->
+  <div *ngIf="myCard && myCard.cardNumber">
+    <p><strong>Card Type:</strong> {{ myCard.cardType }}</p>
+    <p><strong>Card Holder:</strong> {{ myCard.cardHolderName }}</p>
+    <p><strong>Card Number:</strong> {{ myCard.cardNumber}}</p>
+    <p><strong>Expiration Date:</strong> {{ myCard.expirationDate }}</p>
+    <p><strong>CVV:</strong> {{myCard.cvv}}</p>
+<p><strong>Default Card:</strong> {{ myCard.default ? 'Yes' : 'No' }}</p>
+    <!--<button (click)="updateCardInfo()">Update Card</button>-->
+  </div>
+
+  <!-- Create New Card Form -->
+<div *ngIf="!createdCrd" style="margin-top: 15px;">
+  <h4>Add a New Card</h4>
+  <label>Card Type: <input [(ngModel)]="myCard.cardType" /></label><br />
+  <label>Card Holder Name: <input [(ngModel)]="myCard.cardHolderName" /></label><br />
+  <label>Card Number: <input [(ngModel)]="myCard.cardNumber" /></label><br />
+  <label>Expiration Date: <input [(ngModel)]="myCard.expirationDate" placeholder="MM/YY" /></label><br />
+  <label>CVV: <input [(ngModel)]="myCard.cvv" /></label><br />
+  <label>Billing Address: <input [(ngModel)]="myCard.billingAddress" /></label><br />
+  <label>Postal Code: <input [(ngModel)]="myCard.postalCode" /></label><br />
+  <button (click)="createNewCard()">Create Card</button>
+</div>
+</div>
+
