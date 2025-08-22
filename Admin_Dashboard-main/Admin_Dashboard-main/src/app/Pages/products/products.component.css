@@ -23,7 +23,7 @@
 .product-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 150px;
+  gap: 5%;
   width: 80%;
   min-height: 80vh;
     justify-content: center;
@@ -145,7 +145,7 @@
    ========================= */
 .product-wrapper {
   position: relative;
-  width:310px;
+  width:25%;
   height: 450px;
   overflow: visible;
   box-sizing: border-box;

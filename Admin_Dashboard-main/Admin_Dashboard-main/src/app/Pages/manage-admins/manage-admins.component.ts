@@ -41,6 +41,9 @@ canSeeAdmins: boolean = false;
     this.adminService.getAllAdmins().subscribe({
       next: (data) => {
         this.admins = data.content || [];
+ 
+        const currentId = Number(localStorage.getItem('id')); 
+        this.admins = this.admins.filter(admin => admin.id !== currentId);
         console.log(this.admins);
       },
       error: (err) => {

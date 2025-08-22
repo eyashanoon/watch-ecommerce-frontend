@@ -1,76 +1,5 @@
 /* Make topbar fixed at top, full width */
-.topbar {
-  position: fixed;
-    top: 20px; /* Pushes it 20px from the top of the screen */
-  left: 0;
-  right: 0;
-  height: 80px;
-  background-color: #B6B09F;
-  color: #232526;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2),
-              0 4px 8px rgba(255, 255, 255, 0.1);
-  z-index: 1000; /* on top */
-}
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #fff; /* or your color */
-  padding: 0 20px; /* <-- this adds space on left & right */
-  box-sizing: border-box;
-}
 
-/* Push container down below topbar */
-.container {
-  height: calc(100vh - 80px); /* full viewport height minus topbar */
-  margin-top: 80px; /* optional - safer for scroll */
-  display: flex;
-  overflow: hidden;
-}
-
-/* Optional: style inside topbar same as before */
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.topbar-left img {
-  width: 90px;
-  display: block;
-}
-
-.topbar-left h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #232526;
-  margin: 0;
-  text-shadow: 0 1px 8px #cccccc44;
-}
-
-.topbar-links {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-
-.topbar-links a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
-}
-
-.topbar-links a:hover {
-  background-color: #ddd;
-}
 
 .left-panel {
   flex: 1;
@@ -177,22 +106,6 @@ select option {
   display: flex;
   flex-direction: column;
   height: 100vh;
-}
-
-/* Top bar stays at the top */
-.topbar {
-  flex-shrink: 0;
-  height: 80px;
-  margin: 0;
-  width: 100%;
-  background-color: #B6B09F;
-  color: #232526;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2),
-              0 4px 8px rgba(255, 255, 255, 0.1);
 }
 
 /* Make container fill the remaining space */
@@ -302,14 +215,17 @@ select option {
 
 .video-background {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  opacity: 0.6; /* semi-transparent video */
+  object-fit: contain;   /* show the full video */
+  transform: translate(-50%, -50%);
+  background: black;     /* add letterbox/pillarbox background */
+  opacity: 0.9;          /* optional: keep some transparency */
   z-index: 0;
 }
+
 
 .overlay {
   position: relative; /* stay above video */
@@ -345,18 +261,6 @@ select option {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* Video fills the entire left panel */
-.video-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* cover entire container */
-  opacity: 0.6; /* semi-transparent */
-  z-index: 0;
 }
 
 /* Overlay text above video */

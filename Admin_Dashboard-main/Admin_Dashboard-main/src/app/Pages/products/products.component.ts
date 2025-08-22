@@ -538,15 +538,19 @@ this.loadProducts();
 }
 
 
+  
 
+resetFilters() {
+ 
 
 
 resetFilters(){
-  this.filters = { ...this.defaultFilters };
+   this.filters = { ...this.defaultFilters };
   this.pageIndex = 1;
   this.filterChange$.next({ ...this.filters });
   this.loadProducts();
 }
+
 FiltrProducts(){
   this.pageIndex=1;
   this.filterChange$.next({ ...this.filters });

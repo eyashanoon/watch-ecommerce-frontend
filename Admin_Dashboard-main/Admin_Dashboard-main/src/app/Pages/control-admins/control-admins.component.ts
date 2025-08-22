@@ -35,7 +35,10 @@ export class ControlAdminsComponent implements OnInit {
 
   ngOnInit() {
      this.adminService.getAllRoles().subscribe({
-      next: (roles) => { this.roless = roles; },
+      next: (roles) => { this.roless = roles;
+          this.roless= this.roless.filter(role => (role !== 'CUSTOMER' && role !== 'ADMIN' )); // Exclude 'ADMIN' from the list
+
+       },
       error: (err) => {}});
      
     this.loadAdmins().then(() => {
@@ -142,6 +145,8 @@ onSubmit() {
           alert('Admin updated successfully');
           this.loadAdmins();
           this.resetForm();
+                  this.goToManagePage();
+
         }
       },
       error: (err) => {
@@ -171,7 +176,9 @@ onSubmit() {
       next: () => {
         alert('Admin added successfully');
         this.loadAdmins();
+        this.router.navigate(['/admin/manage']);
         this.resetForm();
+        this.goToManagePage();
       },
       error: (err) => {
         alert('Failed to add admin');

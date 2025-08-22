@@ -115,7 +115,8 @@ getUsernameFromToken(): string | null {
   }
 
   updateAdminProfile(id: number, data: any): Observable<any> {
-    return this.http.put(`${environment.apiBaseUrl}/api/admins/${id}`, data, {
+    console.log( data);
+    return this.http.put(`${environment.apiBaseUrl}/api/admins/gg`, data, {
       headers: this.getAuthHeaders()
     });
   }
@@ -140,7 +141,10 @@ getUsernameFromToken(): string | null {
   }
 
   updateCustomerProfile(id: number, data: any): Observable<any> {
+    console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
     console.log(data);
+        console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+
     return this.http.put(`${environment.apiBaseUrl}/api/customers`, data, {
       headers: this.getAuthHeaders()
     });
@@ -148,6 +152,41 @@ getUsernameFromToken(): string | null {
 
   updateCustomerPassword(id: number, data: any): Observable<any> {
     return this.http.put(`${environment.apiBaseUrl}/api/customers/changePassword/${id}`, data, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  getCard(): Observable<any> {
+    return this.http.get(`${environment.apiBaseUrl}/api/cards/me`,{
+      headers:this.getAuthHeaders()
+    });
+  }
+
+    createCard(cardData: any): Observable<any> {
+    return this.http.post(`${environment.apiBaseUrl}/api/cards`, cardData, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+   getCardByCustomerID(id: number): Observable<any> {
+    return this.http.get(`${environment.apiBaseUrl}/api/cards/customer/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+   getMyCard(): Observable<any> {
+    return this.http.get(`${environment.apiBaseUrl}/api/cards/me`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+   updateCard(cardData: any): Observable<any> {
+    return this.http.put(`${environment.apiBaseUrl}/api/cards`, cardData, {
+      headers: this.getAuthHeaders()
+    });
+  }
+  updateCustomerPayment(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiBaseUrl}/api/customers/${id}/payment`, data, {
       headers: this.getAuthHeaders()
     });
   }

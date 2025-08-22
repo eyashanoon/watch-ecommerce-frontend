@@ -8,6 +8,7 @@
 <div class="overlay"></div>
 
 
+ 
 <div style="height: 100px;"></div> <!-- spacer -->
 
 <div class="profile-container">
@@ -39,11 +40,7 @@
     </label>
     <br />
 
-    <label>
-      <strong>Email:</strong>
-      <input [(ngModel)]="editableUser.email" />
-    </label>
-    <br />
+
 
     <label>
       <strong>Phone Number:</strong>
@@ -118,12 +115,6 @@
         Cancel Password Change
       </button>
     </div>
-
-    <label>
-      <strong>Role:</strong>
-      <input [value]="editableUser.roles" disabled />
-    </label>
-    <br />
 
     <button (click)="saveChanges()">💾 Save</button>
     <button (click)="cancelEdit()">❌ Cancel</button>

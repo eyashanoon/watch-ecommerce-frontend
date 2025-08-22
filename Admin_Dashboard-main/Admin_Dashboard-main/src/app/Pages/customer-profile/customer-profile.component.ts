@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../Service/auth.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-customer-profile',
@@ -25,17 +26,103 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
   editMode = false;
   editableUser: any = {};
 
+  // ------------------- CARD MANAGEMENT -------------------
+myCard: any = {
+    cardType: '',
+    cardHolderName: '',
+    cardNumber: '',
+    expirationDate: '',
+    cvv: '',
+    billingAddress: '',
+    postalCode: '',
+    expiryDate:"",
+    isDefault:false,
+    defaultCard: false
+  };   
+  createdCrd=false;
+  createNewCard() {
+    const newCard = {
+      cardType: this.myCard.cardType,            // must match backend enum (CardType)
+      cardHolderName: this.myCard.cardHolderName,
+      cardNumber: this.myCard.cardNumber,
+      expirationDate: this.myCard.expirationDate,
+      expiryDate: this.myCard.expirationDate,
+
+      cvv: this.myCard.cvv,
+      billingAddress: '??',
+      postalCode: '??',
+      defaultCard: true
+    };
+    console.log('Creating new card:', newCard);
+    
+    this.authService.createCard(newCard).subscribe({
+      next: (response) => {
+
+        console.log('Card created successfully:', response);
+        this.createdCrd=true;
+      },
+      error: (error) => {
+        console.error('Error creating card:', error);
+      }
+    });
+  }
+getCardInfo() {
+  this.authService.getMyCard().subscribe({
+    next: (response) => {
+      if (response) {
+        this.myCard = response;
+        this.myCard.expirationDate = this.myCard.expiryDate;
+        this.createdCrd = true; // card exists
+      } else {
+        // fallback for no card
+        this.myCard = {
+          cardType: '',
+          cardHolderName: '',
+          cardNumber: '',
+          expirationDate: '',
+          cvv: '',
+          billingAddress: '',
+          postalCode: '',
+          expiryDate: "",
+          isDefault: false,
+          defaultCard: false
+        };
+        this.createdCrd = false; // no card
+      }
+      console.log('My card info:', this.myCard, 'Card exists:', this.createdCrd);
+    },
+    error: (error) => {
+      console.error('Error fetching card info:', error);
+      // fallback to empty card
+      this.myCard = {
+        cardType: '',
+        cardHolderName: '',
+        cardNumber: '',
+        expirationDate: '',
+        cvv: '',
+        billingAddress: '',
+        postalCode: '',
+        expiryDate: "",
+        isDefault: false,
+        defaultCard: false
+      };
+      this.createdCrd = false; // treat as no card
+    }
+  });
+}
+
   constructor(private authService: AuthService, private router: Router) {}
 
-  ngAfterViewInit() {
-    if (this.videoRef) {
-      const video = this.videoRef.nativeElement;
-      video.muted = true;
-      video.play().catch(err => console.warn('Video play failed:', err));
-    }
-  }
+ngAfterViewInit() {
+  const video = this.videoRef.nativeElement;
+  video.muted = true;
+  video.setAttribute('muted', ''); // force attribute in DOM
+  video.play().catch(err => console.warn('Video play failed:', err));
+}
+
 
   ngOnInit() {
+    this.createdCrd = false
     const idStr = localStorage.getItem("id");
     const idNum = idStr ? Number(idStr) : NaN;
 
@@ -47,32 +134,23 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
     this.loading = true;
 
+    // Load user profile
     this.authService.getCustomerById(idNum).subscribe({
       next: (profile) => {
         this.user = profile;
         this.loading = false;
       },
       error: (err) => {
-        console.error('Failed to get user profile:', err);
+        console.error(err);
         this.errorMsg = 'Failed to load user profile. Please log in again.';
         this.loading = false;
       }
     });
-  }
 
-  enterEditMode(): void {
-    if (this.user) {
-      this.editableUser = { ...this.user };
-      this.editMode = true;
-      this.editingPassword = false;
-      this.showPassword = false;
-      this.showConfirmPassword = false;
-      this.editableUser.password = '';
-      this.editableUser.confirmPassword = '';
-    }
+    // Load user's card
+    this.getCardInfo();
   }
-
-  // New reusable validators for email and phone number:
+    // New reusable validators for email and phone number:
   private isValidEmail(email: string): boolean {
     // Simple email regex similar to Validators.email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -91,6 +169,34 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
     return passwordRegex.test(password);
   }
 
+  // ------------------- CARD METHODS -------------------
+
+  /*updateCardInfo() {
+    this.authService.updateCard(this.myCard).subscribe({
+      next: (response) => {
+        console.log('Card updated successfully:', response);
+        alert('Card updated successfully.');
+        this.getCardInfo();
+      },
+      error: (error) => {
+        console.error('Error updating card:', error);
+        alert('Failed to update card. Please try again.');
+      }
+    });
+  }*/
+
+  // ------------------- PROFILE METHODS -------------------
+  enterEditMode(): void {
+    if (this.user) {
+      this.editableUser = { ...this.user };
+      this.editMode = true;
+      this.editingPassword = false;
+      this.showPassword = false;
+      this.showConfirmPassword = false;
+      this.editableUser.password = '';
+      this.editableUser.confirmPassword = '';
+    }
+  }  
   saveChanges(): void {
     // Validate required fields first
     if (!this.editableUser.username || this.editableUser.username.trim().length < 3) {
@@ -176,13 +282,13 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
     this.loading = true;
 
     this.authService.updateCustomerProfile(idNum, {...this.editableUser,newPassword:this.editableUser.password}).subscribe({
-      next: () => {
+      next: (customer:any) => {
+        alert('Profile updated successfully.');
         this.user = { ...this.editableUser };
         this.editMode = false;
         this.editingPassword = false;
         this.showPassword = false;
         this.showConfirmPassword = false;
-        alert('Profile updated successfully.');
         this.loading = false;
       },
       error: (err) => {
@@ -191,23 +297,20 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
         this.loading = false;
       }
     });
-  }
-
+  }  
   cancelEdit(): void {
     this.editMode = false;
     this.editingPassword = false;
     this.showPassword = false;
     this.showConfirmPassword = false;
   }
-
   cancelPasswordEdit(): void {
     this.editingPassword = false;
     this.editableUser.password = '';
     this.editableUser.confirmPassword = '';
     this.showPassword = false;
     this.showConfirmPassword = false;
-  }
-
+  }  
   deleteAccount(): void {
     if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
 
@@ -235,9 +338,8 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
         }
       });
     }
-  }
-
-  goToProducts() {
+  } 
+   goToProducts() {
     this.router.navigate(['/product'], { state: { source: 'dashboard' } });
   }
 

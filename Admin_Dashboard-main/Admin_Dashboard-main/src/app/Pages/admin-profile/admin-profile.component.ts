@@ -53,7 +53,7 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Failed to get user profile:', err);
+        console.error(  err);
         this.errorMsg = 'Failed to load user profile. Please log in again.';
         this.loading = false;
       }
@@ -108,7 +108,7 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
       return;
     }
 
-    if (this.editingPassword) {
+    if (false && this.editingPassword) {
       if (!this.editableUser.password || !this.editableUser.confirmPassword) {
         alert('Password and Confirm Password are required.');
         return;
@@ -162,7 +162,7 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
 
 
 
-    } else {
+    } else if(false ) {
       // If not editing password, keep old password fields (or clear if needed)
       this.editableUser.password = this.user.password || '';
       this.editableUser.confirmPassword = this.user.confirmPassword || '';
@@ -180,14 +180,14 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
 
     this.loading = true;
 
-    this.authService.updateAdminProfile(idNum, this.editableUser).subscribe({
-      next: () => {
+    this.authService.updateAdminProfile(idNum, {...this.editableUser,newPassword:this.editableUser.password}).subscribe({
+      next: (admin:any) => {
+        alert('Profile updated successfully.');
         this.user = { ...this.editableUser };
         this.editMode = false;
         this.editingPassword = false;
         this.showPassword = false;
         this.showConfirmPassword = false;
-        alert('Profile updated successfully.');
         this.loading = false;
       },
       error: (err) => {
@@ -240,13 +240,5 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
         }
       });
     }
-  }
-
-  goToProducts() {
-    this.router.navigate(['/product'], { state: { source: 'dashboard' } });
-  }
-
-  goToDashBoard() {
-    this.router.navigate(['/admin'], { state: { source: 'dashboard' } });
   }
 }
