@@ -182,6 +182,7 @@ onSubmit() {
       },
       error: (err) => {
         alert('Failed to add admin');
+        console.log(adminPayload);
         console.error(err);
       }
     });

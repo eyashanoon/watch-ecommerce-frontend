@@ -75,5 +75,19 @@ export const routes: Routes = [
   { 
     path: 'admin/manage',
     loadComponent: () => import('./Pages/manage-admins/manage-admins.component').then(m => m.ManageAdminsComponent) 
-  }
+  },
+  
+{
+  path: 'wishlist',
+  loadComponent: () =>
+    import('./Pages/wishlist/wishlist.component').then(m => m.WishlistComponent)
+}
+
+,
+{
+  path: 'cart',
+  loadComponent: () => import('./Pages/cart/cart.component').then(m => m.CartComponent)
+}
+
+
 ];

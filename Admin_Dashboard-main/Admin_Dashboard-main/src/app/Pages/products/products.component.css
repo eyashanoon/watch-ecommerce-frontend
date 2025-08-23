@@ -23,7 +23,8 @@
 .product-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 5%;
+  row-gap: 50px;
+  column-gap:5%;
   width: 80%;
   min-height: 80vh;
     justify-content: center;
