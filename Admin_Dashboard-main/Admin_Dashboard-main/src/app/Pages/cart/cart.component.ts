@@ -215,8 +215,25 @@ export class CartComponent implements OnInit {
 
   private finalizeOrder() {
     // Call API to place order here
-    alert('✅ Order placed successfully!');
-    this.showOrderModal = false;
-    this.loadCart();
+    if(this.cartItems.length>0){
+      const mapCart = new Map<number, number>(
+      this.cartItems.map(cartItem => [cartItem.productId, cartItem.quantity ?? 1])
+    );
+    this.orderService.createOrder(mapCart).subscribe({
+      next:()=>{
+            alert('✅ Order placed successfully!');
+            this.showOrderModal = false;
+            this.loadCart();
+      },
+      error: (err) => {
+        alert('Failed to placed Order');
+         console.error(err);
+      }
+
+    });
+
+
+    }
+
   }
 }
