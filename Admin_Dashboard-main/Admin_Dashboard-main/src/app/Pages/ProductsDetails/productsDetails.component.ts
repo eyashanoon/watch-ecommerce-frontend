@@ -8,7 +8,11 @@ import { AuthService } from '../../Service/auth.service';
 import { ImageService } from '../../Service/image.service';
 import { Image } from '../../models/Image.model';
 import { switchMap, map } from 'rxjs/operators';
-
+ import { WishlistService } from '../../Service/wishlist.service';
+ import { CartService } from '../../Service/cart.service';
+import { CartDto } from '../../models/cart.model';
+import { WishlistDto } from '../../models/wishlist.model';
+ 
 
 type Filters = {
   maxPrice: number;
@@ -61,13 +65,27 @@ export class ProductsDetailsComponent implements AfterViewInit {
   loadedImages:any[]=[] ;
   productID:number=0;
   colorCombinations!:ClorCombinations[];
+  myWishlistIds!:Set<number>;
  
-   constructor(private router: Router, private productService: ProductService1,   public authService: AuthService ,private imageService:ImageService ) {
+   constructor(private router: Router, private productService: ProductService1,   public authService: AuthService ,private imageService:ImageService, private wishlistService: WishlistService,
+      private cartService: CartService) {
     const nav = this.router.getCurrentNavigation();
     const stateProduct = nav?.extras?.state?.['product'];
     this.productID=stateProduct.id;
     this.loadProduct(this.productID);
-    this.loadProductImages(this.productID)
+    this.loadProductImages(this.productID);
+        if (this.authService.isLoggedIn()) {
+      this.wishlistService.getMyWishlist().subscribe({
+        next: res => {
+          if (res?.items) {
+            this.myWishlistIds = new Set(
+              res.items.map(it => Number(it.productId)).filter(id => !isNaN(id))
+            );
+          }
+        },
+        error: err => console.error('Failed to load wishlist', err)
+      });
+    }
 
     if (!stateProduct) {
       this.router.navigate(['/']);
@@ -244,12 +262,68 @@ editProduct() {
   }
 
  
-addToCart(products:any){
+ 
+addToCart(product: ProductWithImages & { selectedQty: number }) {
+  product.selectedQty =1;
+  if (!product.selectedQty || product.selectedQty < 1) {
+    alert('Please select a quantity of at least 1.');
+    return;
+  }
 
+
+  this.cartService.addToCart([{ productId: product.id, quantity: product.selectedQty }])
+    .subscribe({
+      next: res => {
+        console.log('[Cart Debug] Added to cart:', res);
+        alert(`${product.name} added to cart (Qty: ${product.selectedQty})`);
+        product.selectedQty = 1;
+      },
+      error: err => {
+        console.error('[Cart Debug] Failed to add to cart:', err);
+        alert('Failed to add product to cart. See console for details.');
+      }
+    });
 }
 addToWishlist(products:any){
 
 }
 
+isInWishlist(): boolean {
+  if (!this.products?.id) return false;
+  return this.myWishlistIds.has(Number(this.products.id));
+}
+
+toggleWishlist() {
+  if (!this.products?.id || !this.authService.isLoggedIn()) return;
+
+  const pid = Number(this.products.id);
+  const inList = this.myWishlistIds.has(pid);
+
+  const obs = inList
+    ? this.wishlistService.removeFromWishlist([pid])
+    : this.wishlistService.addToWishlist([pid]);
+
+  obs.subscribe({
+    next: () => {
+      // Reload wishlist directly from database
+      this.wishlistService.getMyWishlist().subscribe({
+        next: res => {
+          this.myWishlistIds = new Set(
+            res.items?.map(it => Number(it.productId)).filter(id => !isNaN(id)) || []
+          );
+        },
+        error: err => console.error('Failed to reload wishlist', err)
+      });
+
+      alert(`${this.products?.name} ${inList ? 'removed from' : 'added to'} wishlist.`);
+    },
+    error: err => {
+      console.error('Wishlist operation failed', err);
+      alert('Wishlist operation failed.');
+    }
+  });
+}
+
  
  }
+ 

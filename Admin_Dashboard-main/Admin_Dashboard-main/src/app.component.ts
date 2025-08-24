@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
-import { filter, switchMap } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { AuthService } from './app/Service/auth.service';
 
 @Component({
@@ -24,13 +24,14 @@ export class AppComponent implements OnInit {
   isManageAdmins = false;
   isAdminProductDetails = false;
   isCustomerProductDetails = false;
+  isWishlistPage = false;   // ✅ new
 
   // User info
   userName: string = '';
   userEmail: string = '';
   userRole: string = '';
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, public authService: AuthService) {} // made public so template can access
 
   ngOnInit(): void {
     // Load user info initially
@@ -58,7 +59,6 @@ export class AppComponent implements OnInit {
 
     if (!userId) return;
 
-    // Fetch user profile from backend to get name
     if (roles.includes('ADMIN')) {
       this.authService.getAdminById(userId).subscribe({
         next: (res: any) => this.userName = res.name || res.username || 'Admin',
@@ -84,15 +84,34 @@ export class AppComponent implements OnInit {
     this.isAdminProductDetails = url.startsWith('/admin-product/');
     this.isCustomerProductDetails = url.startsWith('/product/') && !this.isProductsPage;
     this.isControlAdmins = url === '/control-admins';
+    this.isWishlistPage = url === '/wishlist'; // ✅ new
   }
 
+  // 🔹 Navigation
   goToHome() { this.router.navigate(['/home']); }
   goToProducts() { this.router.navigate(['/product']); }
+  goToCart() { this.router.navigate(['/cart']); }           // ✅ new
+  goToWishlist() { this.router.navigate(['/wishlist']); }   // ✅ new
   goToAdminPanel() { this.router.navigate(['/admin']); }
   goToCustomerPanel() { this.router.navigate(['/customer-dash-board']); }
+  goToCustomerDashboard() { this.router.navigate(['/customer-dash-board']); } // ✅ new
   goToSignInPage() { this.router.navigate(['/sign-in']); }
   goToSignUpPage() { this.router.navigate(['/sign-up']); }
 
+  // 🔹 Cart count
+  get cartCount(): number {   // ✅ new
+    try {
+      const raw = localStorage.getItem('cart') || '[]';
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed)
+        ? parsed.reduce((sum, item) => sum + (Number(item.selectedQty || 1)), 0)
+        : 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  // 🔹 Utility
   scrollToAbout(event: Event) {
     event.preventDefault();
     if (this.isHomePage) {

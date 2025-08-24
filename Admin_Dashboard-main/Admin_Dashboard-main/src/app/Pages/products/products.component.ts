@@ -540,9 +540,7 @@ this.loadProducts();
 
   
 
-resetFilters() {
  
-
 
 resetFilters(){
    this.filters = { ...this.defaultFilters };

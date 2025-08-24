@@ -1,0 +1,56 @@
+<div class="home-wrapper">
+  <video autoplay muted loop class="video-background">
+    <source src="assets/customer_background.mp4" type="video/mp4" />
+  </video>
+
+  <div class="product-section">
+    <div class="product-container">
+
+      <!-- Empty Wishlist -->
+      <div *ngIf="wishlistItems.length === 0" class="empty-wishlist">
+        <h2>Your wishlist is empty</h2>
+        <p>Add items to your wishlist to keep track of products you love!</p>
+        <button class="browse-btn" routerLink="/product">Browse Products</button>
+      </div>
+
+      <!-- Wishlist List -->
+      <div *ngIf="wishlistItems.length > 0" class="wishlist-list">
+
+     
+
+        <!-- List Items -->
+        <div *ngFor="let item of wishlistItems" class="wishlist-item">
+
+          <input type="checkbox" [(ngModel)]="item.selected" />
+
+          <img
+            [src]="item.images[0] || 'assets/logo.png'"
+            [alt]="item.productName"
+            class="product-image clickable"
+            (click)="navigateToProduct(item)"
+          />
+
+          <div class="item-info">
+            <h3 class="product-name clickable" (click)="navigateToProduct(item)">
+              {{ item.productName }}
+            </h3>
+            <p class="product-brand">Brand: {{ item.brand || 'Unknown' }}</p>
+            <p class="product-price">Price: {{ item.discountPrice | currency:'USD':'symbol':'1.0-2' }}</p>
+          </div>
+
+          <div class="item-actions">
+            <button class="view-btn" (click)="addToCart(item)">Add to cart</button>
+            <button class="remove-btn" (click)="removeFromWishlist(item)">Remove</button>
+          </div>
+        </div>
+
+      </div>
+         <!-- Top Controls -->
+        <div class="wishlist-controls">
+          <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" /> Select All
+          <button class="remove-btn" (click)="removeSelected()">Remove Selected</button>
+          <button class="view-btn" (click)="addSelectedToCart()">Add Selected to Cart</button>
+        </div>
+    </div>
+  </div>
+</div>

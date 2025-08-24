@@ -225,37 +225,7 @@ getUsernameFromToken(): string | null {
       headers:this.getAuthHeaders()
     });
   }
-
-  getCard(): Observable<any> {
-    return this.http.get(`${environment.apiBaseUrl}/api/cards/me`,{
-      headers:this.getAuthHeaders()
-    });
-  }
-
-    createCard(cardData: any): Observable<any> {
-    return this.http.post(`${environment.apiBaseUrl}/api/cards`, cardData, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-   getCardByCustomerID(id: number): Observable<any> {
-    return this.http.get(`${environment.apiBaseUrl}/api/cards/customer/${id}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-   getMyCard(): Observable<any> {
-    return this.http.get(`${environment.apiBaseUrl}/api/cards/me`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-   updateCard(cardData: any): Observable<any> {
-    return this.http.put(`${environment.apiBaseUrl}/api/cards`, cardData, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
+ 
 
 
     registerCustomer(customerData: any): Observable<any> {
