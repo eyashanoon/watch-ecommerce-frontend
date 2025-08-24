@@ -159,4 +159,5 @@ export class SignUpComponent implements AfterViewInit {
   goToSignInPage() {
     this.router.navigate(['/sign-in']);
   }
+  
 }

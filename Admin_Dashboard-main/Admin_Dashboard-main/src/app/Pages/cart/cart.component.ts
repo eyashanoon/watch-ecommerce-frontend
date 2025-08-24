@@ -15,6 +15,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { OrderService } from '../../Service/order.service';
 
 export interface CartItemWithImages extends CartItem {
   images: string[];
@@ -43,7 +44,9 @@ export class CartComponent implements OnInit {
     private productService1: ProductService1,
     private imageService: ImageService,
     private authService: AuthService,
-    private cartService: CartService // ✅ needed for addToCart
+    private cartService: CartService ,
+    private orderService: OrderService // ✅ needed for addToCart
+// ✅ needed for addToCart
   ) {}
 selectAll: boolean = false;
 toggleSelectAll() {
@@ -123,7 +126,7 @@ private initializecartItems(items: any[]) {
     images: [],
     currentImageIndex: 0,
     selected: false,
-    brand: '',       
+    brand: '',
     discountPrice: 0,
       quantity: it.quantity ?? 1 // default quantity
   }));
@@ -226,7 +229,7 @@ goToProductDetails(product: any): void {
   const encodedName = encodeURIComponent(product.name);
   const roles = this.authService.getUserRoles();
   const isLoggedIn = this.authService.isLoggedIn();
-    this.router.navigate(['/admin-product', encodedName], { state: { product } });
+  this.router.navigate(['/admin-product', encodedName], { state: { product } });
 
 }
 
@@ -295,6 +298,9 @@ removeAllItemsFromCart() {
       console.error('Error removing items:', err);
     }
   });
+}
+placeOrderSelected(){
+
 }
 
 }

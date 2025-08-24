@@ -38,7 +38,7 @@ myCard: any = {
     expiryDate:"",
     isDefault:false,
     defaultCard: false
-  };   
+  };
   createdCrd=false;
   createNewCard() {
     const newCard = {
@@ -49,12 +49,12 @@ myCard: any = {
       expiryDate: this.myCard.expirationDate,
 
       cvv: this.myCard.cvv,
-      billingAddress: '??',
-      postalCode: '??',
+      billingAddress: '1',
+      postalCode: '1',
       defaultCard: true
     };
     console.log('Creating new card:', newCard);
-    
+
     this.authService.createCard(newCard).subscribe({
       next: (response) => {
 
@@ -196,7 +196,7 @@ ngAfterViewInit() {
       this.editableUser.password = '';
       this.editableUser.confirmPassword = '';
     }
-  }  
+  }
   saveChanges(): void {
     // Validate required fields first
     if (!this.editableUser.username || this.editableUser.username.trim().length < 3) {
@@ -297,7 +297,7 @@ ngAfterViewInit() {
         this.loading = false;
       }
     });
-  }  
+  }
   cancelEdit(): void {
     this.editMode = false;
     this.editingPassword = false;
@@ -310,7 +310,7 @@ ngAfterViewInit() {
     this.editableUser.confirmPassword = '';
     this.showPassword = false;
     this.showConfirmPassword = false;
-  }  
+  }
   deleteAccount(): void {
     if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
 
@@ -338,7 +338,7 @@ ngAfterViewInit() {
         }
       });
     }
-  } 
+  }
    goToProducts() {
     this.router.navigate(['/product'], { state: { source: 'dashboard' } });
   }
@@ -347,5 +347,5 @@ ngAfterViewInit() {
     this.router.navigate(['/customer-dash-board'], { state: { source: 'dashboard' } });
   }
 
- 
+
 }
