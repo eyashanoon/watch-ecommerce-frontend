@@ -7,6 +7,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { CartItemWithImages } from '../Pages/cart/cart.component';
 import { throwError, catchError } from 'rxjs';
 import { map } from 'rxjs/operators';
+ import { environment } from "../../app/environments/environment";
 
 
 @Injectable({
@@ -14,7 +15,7 @@ import { map } from 'rxjs/operators';
 })
 
 export class CartService {
-  private apiUrl = 'http://localhost:8080/api/carts';
+  private apiUrl = environment.apiBaseUrl +'/api/carts';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

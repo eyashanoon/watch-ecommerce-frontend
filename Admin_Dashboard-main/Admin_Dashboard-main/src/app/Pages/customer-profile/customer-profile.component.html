@@ -29,7 +29,7 @@
     <p><strong>Role:</strong> {{ user.roles }}</p>
 
     <button (click)="enterEditMode()">✏️ Edit</button>
-    <button (click)="deleteAccount()">🗑️ Delete Account</button>
+<button (click)="deleteAccount()" style="margin-left: 10px;">🗑️ Delete Account</button>
   </div>
 
   <!-- Edit Mode -->
@@ -118,7 +118,8 @@
 
      <button (click)="saveChanges()">💾 Save</button>
  
-    <button (click)="cancelEdit()">❌ Cancel</button>
+    <button (click)="cancelEdit()" style="margin-left: 10px;">❌ Cancel</button>
+
   </div>
 
   <!-- Fallback -->
@@ -126,9 +127,12 @@
     <p>No user information available.</p>
   </div>
 </div>
+<button (click)="showPaymentInfo = !showPaymentInfo">
+  {{ showPaymentInfo ? 'Hide Payment Info' : 'Show Payment Info' }}
+</button>
 <!-- Payment Card Section -->
-<div class="card-container" style="margin-top: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9;">
-  <h3>Payment Information</h3>
+<div class="card-container" *ngIf="showPaymentInfo">
+  <h2>Payment Information</h2>
 
   <!-- Card Details -->
   <div *ngIf="myCard && myCard.cardNumber">
@@ -137,14 +141,18 @@
     <p><strong>Card Number:</strong> {{ myCard.cardNumber}}</p>
     <p><strong>Expiration Date:</strong> {{ myCard.expirationDate }}</p>
     <p><strong>CVV:</strong> {{myCard.cvv}}</p>
-<p><strong>Default Card:</strong> {{ myCard.default ? 'Yes' : 'No' }}</p>
     <!--<button (click)="updateCardInfo()">Update Card</button>-->
   </div>
 
   <!-- Create New Card Form -->
 <div *ngIf="!createdCrd" style="margin-top: 15px;">
   <h4>Add a New Card</h4>
-  <label>Card Type: <input [(ngModel)]="myCard.cardType" /></label><br />
+<label>Card Type:
+  <select [(ngModel)]="myCard.cardType">
+    <option value="">-- Select Card Type --</option>
+    <option *ngFor="let type of cardTypes" [value]="type">{{ type }}</option>
+  </select>
+</label><br />
   <label>Card Holder Name: <input [(ngModel)]="myCard.cardHolderName" /></label><br />
   <label>Card Number: <input [(ngModel)]="myCard.cardNumber" /></label><br />
   <label>Expiration Date: <input [(ngModel)]="myCard.expirationDate" placeholder="MM/YY" /></label><br />

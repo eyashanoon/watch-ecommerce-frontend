@@ -33,7 +33,8 @@ getAllProducts(filters: any): Observable<{ content: Product[]; [key: string]: an
   });
 
   return this.http.get<{content: Product[]; [key: string]: any}>(API_URL, {
-   // headers: this.getAuthHeaders(),
+     //headers: this.getAuthHeaders(),
+ 
     params: params
   });
 }
@@ -41,17 +42,18 @@ getAllProducts(filters: any): Observable<{ content: Product[]; [key: string]: an
     return this.http.get<any>(`${API_URL}/${id}`, {  });
   }
     getProductByName(name: String): Observable<any[]> {
-    return this.http.get<any[]>(`${API_URL}/products/name/${name}`, { });
+     return this.http.get<any[]>(`${API_URL}/products/name/${name}` );
+ 
   }
     updateProduct(id: number, productData: any): Observable<any> {
         console.log(productData);
 
-    return this.http.put<any>(`${API_URL}/${id}`, productData, { headers: this.getAuthHeaders() });
+    return this.http.put<any>(`${API_URL}/${id}`, productData, { });
   }
  addProduct(productData: any): Observable<any> {
   console.log(productData);
   return this.http.post<any>(API_URL, productData, {
-    headers: this.getAuthHeaders()
+    //headers: this.getAuthHeaders()
   });
 }
 

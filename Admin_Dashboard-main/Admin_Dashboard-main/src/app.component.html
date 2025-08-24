@@ -37,7 +37,7 @@
     <div class="topbar-links" *ngIf="isCustomerDashBoard">
       <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
       <a routerLink="/customer-profile" href="/customer-profile">Profile</a>
-      <a href="#" (click)="goToCart(); $event.preventDefault()">Cart ({{ cartCount }})</a>
+      <a href="#" (click)="goToCart(); $event.preventDefault()">Cart</a>
       <a href="#" (click)="goToWishlist(); $event.preventDefault()">Wishlist</a>
       <a href="#" (click)="signOut($event)">Sign Out</a>
     </div>
@@ -45,18 +45,22 @@
     <!-- Products page -->
     <div class="topbar-links" *ngIf="isProductsPage">
       <a href="#" (click)="goToPanel(); $event.preventDefault()">Go to dashboard</a>
-      <a href="#" (click)="goToCart(); $event.preventDefault()">Cart ({{ cartCount }})</a>
-      <a href="#" (click)="goToWishlist(); $event.preventDefault()">Wishlist</a>
+<a *ngIf="isCustomer" href="#" (click)="goToCart(); $event.preventDefault()">Cart</a>
+  <a *ngIf="isCustomer" href="#" (click)="goToWishlist(); $event.preventDefault()">Wishlist</a>
     </div>
 
     <!-- Manage Admins / Control Admins -->
     <div class="topbar-links" *ngIf="isManageAdmins || isControlAdmins">
       <a href="#" (click)="goToAdminPanel(); $event.preventDefault()">Go to Admin Panel</a>
     </div>
+    <div class="topbar-links" *ngIf="isOrdersPage">
+      <a href="#" (click)="goToAdminPanel(); $event.preventDefault()">Go to Admin Panel</a>
+    </div>
 
     <!-- Product details pages -->
     <div class="topbar-links" *ngIf="isAdminProductDetails || isCustomerProductDetails">
       <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
+      <a href="#" (click)="goToPanel(); $event.preventDefault()">Go to dashboard</a>
     </div>
 
     <!-- Wishlist page -->

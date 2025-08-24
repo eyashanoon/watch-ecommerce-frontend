@@ -1,1 +1,51 @@
-<p>orders works!</p>
+<div class="orders-container" *ngIf="canViewOrders">
+  <h2>Customer Orders</h2>
+
+  <div class="customer-card" *ngFor="let order of orders">
+    <!-- Customer Info -->
+    <div class="customer-info">
+      <h3>Customer Information</h3>
+      <div class="info-row">
+        <span><strong>Name:</strong> {{ order.customerName }}</span>
+        <span><strong>Email:</strong> {{ order.email }}</span>
+        <span><strong>Phone:</strong> {{ order.phone }}</span>
+      </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="products-info">
+      <h4>Products Ordered</h4>
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ order.productName }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.date | date:'mediumDate' }}</td>
+            <td>
+              <select
+                *ngIf="canEditStatus"
+                [(ngModel)]="order.status"
+                (change)="updateStatus(order)"
+              >
+                <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+              </select>
+              <span *ngIf="!canEditStatus">{{ order.status }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!canViewOrders">
+  <p>You do not have permission to view orders.</p>
+</div>

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../Service/auth.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-customer-profile',
@@ -27,7 +26,9 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
   editableUser: any = {};
 
   // ------------------- CARD MANAGEMENT -------------------
-myCard: any = {
+  cardTypes: string[] = ['VISA', 'MasterCard'];
+
+  myCard: any = {
     cardType: '',
     cardHolderName: '',
     cardNumber: '',
@@ -35,46 +36,147 @@ myCard: any = {
     cvv: '',
     billingAddress: '',
     postalCode: '',
-    expiryDate:"",
-    isDefault:false,
-    defaultCard: false
+    expiryDate: '',
   };
-  createdCrd=false;
+  createdCrd = false;
+  showPaymentInfo = false;
+
+
+  // ------------------- CARD VALIDATORS -------------------
+  private isValidCardType(type: string): boolean {
+    return !!type && this.cardTypes.includes(type);
+  }
+
+  private isValidCardHolderName(name: string): boolean {
+    const nameRegex = /^[A-Za-z\s]{3,}$/;
+    return nameRegex.test(name || '');
+  }
+
+  private isValidCardNumber(num: string, type: string): boolean {
+    if (!num) return false;
+
+    if (type === 'Visa') return /^4\d{15}$/.test(num);
+    if (type === 'MasterCard')
+      return /^(5[1-5]\d{14}|2(2[2-9]\d{12}|[3-6]\d{13}|7[01]\d{12}|720\d{12}))$/.test(num);
+
+    return /^\d{13,19}$/.test(num);
+  }
+
+  private isValidExpiryDate(date: string): boolean {
+    const expiryRegex = /^(0[1-9]|1[0-2])\/(\d{2}|\d{4})$/;
+    if (!expiryRegex.test(date)) return false;
+
+    const [month, year] = date.split('/');
+    const expMonth = parseInt(month, 10);
+    const expYear = year.length === 2 ? 2000 + parseInt(year, 10) : parseInt(year, 10);
+
+    const now = new Date();
+    const thisMonth = now.getMonth() + 1;
+    const thisYear = now.getFullYear();
+
+    return expYear > thisYear || (expYear === thisYear && expMonth >= thisMonth);
+  }
+
+  private isValidCVV(cvv: string, type: string): boolean {
+    if (type === 'American Express') return /^\d{4}$/.test(cvv);
+    return /^\d{3}$/.test(cvv);
+  }
+
+  private isValidBillingAddress(address: string): boolean {
+    return !!address && address.trim().length >= 5;
+  }
+
+  private isValidPostalCode(code: string): boolean {
+    const postalRegex = /^[A-Za-z0-9]{3,10}$/;
+    return postalRegex.test(code || '');
+  }
+
+  // ------------------- CARD METHODS -------------------
   createNewCard() {
+    if (!this.isValidCardType(this.myCard.cardType)) {
+      alert('Please select a valid card type.');
+      return;
+    }
+    if (!this.isValidCardHolderName(this.myCard.cardHolderName)) {
+      alert('Card holder name is required (letters only, min 3 characters).');
+      return;
+    }
+    if (!this.isValidCardNumber(this.myCard.cardNumber, this.myCard.cardType)) {
+      alert(`Invalid ${this.myCard.cardType} card number.`);
+      return;
+    }
+    if (!this.isValidExpiryDate(this.myCard.expirationDate)) {
+      alert('Please enter a valid expiry date (MM/YY or MM/YYYY, not expired).');
+      return;
+    }
+    if (!this.isValidCVV(this.myCard.cvv, this.myCard.cardType)) {
+      alert(
+        `${this.myCard.cardType} requires a ${
+          this.myCard.cardType === 'American Express' ? '4-digit' : '3-digit'
+        } CVV.`
+      );
+      return;
+    }
+    if (!this.isValidBillingAddress(this.myCard.billingAddress)) {
+      alert('Billing address must be at least 5 characters.');
+      return;
+    }
+    if (!this.isValidPostalCode(this.myCard.postalCode)) {
+      alert('Postal code must be 3–10 alphanumeric characters.');
+      return;
+    }
+
     const newCard = {
-      cardType: this.myCard.cardType,            // must match backend enum (CardType)
+      cardType: this.myCard.cardType,
       cardHolderName: this.myCard.cardHolderName,
       cardNumber: this.myCard.cardNumber,
       expirationDate: this.myCard.expirationDate,
       expiryDate: this.myCard.expirationDate,
-
       cvv: this.myCard.cvv,
-      billingAddress: '1',
-      postalCode: '1',
-      defaultCard: true
+      billingAddress: this.myCard.billingAddress,
+      postalCode: this.myCard.postalCode,
     };
+
     console.log('Creating new card:', newCard);
 
     this.authService.createCard(newCard).subscribe({
       next: (response) => {
-
         console.log('Card created successfully:', response);
-        this.createdCrd=true;
+        this.createdCrd = true;
       },
       error: (error) => {
         console.error('Error creating card:', error);
       }
     });
   }
-getCardInfo() {
-  this.authService.getMyCard().subscribe({
-    next: (response) => {
-      if (response) {
-        this.myCard = response;
-        this.myCard.expirationDate = this.myCard.expiryDate;
-        this.createdCrd = true; // card exists
-      } else {
-        // fallback for no card
+
+  getCardInfo() {
+    this.authService.getMyCard().subscribe({
+      next: (response) => {
+        if (response) {
+          this.myCard = response;
+          this.myCard.expirationDate = this.myCard.expiryDate;
+          this.createdCrd = true;
+          this.myCard.billingAddress = 'abcdefg';
+          this.myCard.postalCode = '12345';
+        } else {
+          this.myCard = {
+            cardType: '',
+            cardHolderName: '',
+            cardNumber: '',
+            expirationDate: '',
+            cvv: '',
+            billingAddress: '',
+            postalCode: '',
+            expiryDate: '',
+
+          };
+          this.createdCrd = false;
+        }
+        console.log('My card info:', this.myCard, 'Card exists:', this.createdCrd);
+      },
+      error: (error) => {
+        console.error('Error fetching card info:', error);
         this.myCard = {
           cardType: '',
           cardHolderName: '',
@@ -83,47 +185,25 @@ getCardInfo() {
           cvv: '',
           billingAddress: '',
           postalCode: '',
-          expiryDate: "",
-          isDefault: false,
-          defaultCard: false
+          expiryDate: '',
         };
-        this.createdCrd = false; // no card
+        this.createdCrd = false;
       }
-      console.log('My card info:', this.myCard, 'Card exists:', this.createdCrd);
-    },
-    error: (error) => {
-      console.error('Error fetching card info:', error);
-      // fallback to empty card
-      this.myCard = {
-        cardType: '',
-        cardHolderName: '',
-        cardNumber: '',
-        expirationDate: '',
-        cvv: '',
-        billingAddress: '',
-        postalCode: '',
-        expiryDate: "",
-        isDefault: false,
-        defaultCard: false
-      };
-      this.createdCrd = false; // treat as no card
-    }
-  });
-}
+    });
+  }
 
   constructor(private authService: AuthService, private router: Router) {}
 
-ngAfterViewInit() {
-  const video = this.videoRef.nativeElement;
-  video.muted = true;
-  video.setAttribute('muted', ''); // force attribute in DOM
-  video.play().catch(err => console.warn('Video play failed:', err));
-}
-
+  ngAfterViewInit() {
+    const video = this.videoRef.nativeElement;
+    video.muted = true;
+    video.setAttribute('muted', '');
+    video.play().catch((err) => console.warn('Video play failed:', err));
+  }
 
   ngOnInit() {
-    this.createdCrd = false
-    const idStr = localStorage.getItem("id");
+    this.createdCrd = false;
+    const idStr = localStorage.getItem('id');
     const idNum = idStr ? Number(idStr) : NaN;
 
     if (!idStr || isNaN(idNum)) {
@@ -134,7 +214,6 @@ ngAfterViewInit() {
 
     this.loading = true;
 
-    // Load user profile
     this.authService.getCustomerById(idNum).subscribe({
       next: (profile) => {
         this.user = profile;
@@ -147,43 +226,24 @@ ngAfterViewInit() {
       }
     });
 
-    // Load user's card
     this.getCardInfo();
   }
-    // New reusable validators for email and phone number:
+
+  // ------------------- PROFILE VALIDATORS -------------------
   private isValidEmail(email: string): boolean {
-    // Simple email regex similar to Validators.email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
   private isValidPhone(phone: string): boolean {
-    // For example: exactly 10 digits, only numbers
     const phoneRegex = /^\d{10}$/;
     return phoneRegex.test(phone);
   }
 
   private isValidPassword(password: string): boolean {
-    // At least 6 chars, at least one letter and one digit
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
     return passwordRegex.test(password);
   }
-
-  // ------------------- CARD METHODS -------------------
-
-  /*updateCardInfo() {
-    this.authService.updateCard(this.myCard).subscribe({
-      next: (response) => {
-        console.log('Card updated successfully:', response);
-        alert('Card updated successfully.');
-        this.getCardInfo();
-      },
-      error: (error) => {
-        console.error('Error updating card:', error);
-        alert('Failed to update card. Please try again.');
-      }
-    });
-  }*/
 
   // ------------------- PROFILE METHODS -------------------
   enterEditMode(): void {
@@ -197,8 +257,8 @@ ngAfterViewInit() {
       this.editableUser.confirmPassword = '';
     }
   }
+
   saveChanges(): void {
-    // Validate required fields first
     if (!this.editableUser.username || this.editableUser.username.trim().length < 3) {
       alert('Full Name is required and must be at least 3 characters.');
       return;
@@ -227,50 +287,43 @@ ngAfterViewInit() {
         alert('Password and Confirm Password do not match.');
         return;
       }
-    const idStr = localStorage.getItem("id");
-    const idNum = idStr ? Number(idStr) : NaN;
+      const idStr = localStorage.getItem('id');
+      const idNum = idStr ? Number(idStr) : NaN;
 
-    if (!idStr || isNaN(idNum)) {
-      this.errorMsg = 'User ID not found. Please log in again.';
-      this.loading = false;
-      return;
-    }
-
-    this.loading = true;
-
-    const data={
-      password:this.editableUser.password
-
-    }
-
-    this.authService.updateCustomerPassword(idNum, data).subscribe({
-      next: () => {
-        this.user = { ...this.editableUser };
-        this.editMode = false;
-        this.editingPassword = false;
-        this.showPassword = false;
-        this.showConfirmPassword = false;
-        alert('Profile updated successfully.');
+      if (!idStr || isNaN(idNum)) {
+        this.errorMsg = 'User ID not found. Please log in again.';
         this.loading = false;
-      },
-      error: (err) => {
-        console.error('Update failed:', err);
-        alert('Failed to update profile. Please try again.');
-        this.loading = false;
+        return;
       }
-    });
 
+      this.loading = true;
 
+      const data = {
+        password: this.editableUser.password
+      };
 
-
-    } else if(false ) {
-      // If not editing password, keep old password fields (or clear if needed)
+      this.authService.updateCustomerPassword(idNum, data).subscribe({
+        next: () => {
+          this.user = { ...this.editableUser };
+          this.editMode = false;
+          this.editingPassword = false;
+          this.showPassword = false;
+          this.showConfirmPassword = false;
+          alert('Profile updated successfully.');
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Update failed:', err);
+          alert('Failed to update profile. Please try again.');
+          this.loading = false;
+        }
+      });
+    } else if (false) {
       this.editableUser.password = this.user.password || '';
       this.editableUser.confirmPassword = this.user.confirmPassword || '';
     }
 
-    // Proceed with update API call
-    const idStr = localStorage.getItem("id");
+    const idStr = localStorage.getItem('id');
     const idNum = idStr ? Number(idStr) : NaN;
 
     if (!idStr || isNaN(idNum)) {
@@ -281,8 +334,11 @@ ngAfterViewInit() {
 
     this.loading = true;
 
-    this.authService.updateCustomerProfile(idNum, {...this.editableUser,newPassword:this.editableUser.password}).subscribe({
-      next: (customer:any) => {
+    this.authService.updateCustomerProfile(idNum, {
+      ...this.editableUser,
+      newPassword: this.editableUser.password
+    }).subscribe({
+      next: (customer: any) => {
         alert('Profile updated successfully.');
         this.user = { ...this.editableUser };
         this.editMode = false;
@@ -298,12 +354,14 @@ ngAfterViewInit() {
       }
     });
   }
+
   cancelEdit(): void {
     this.editMode = false;
     this.editingPassword = false;
     this.showPassword = false;
     this.showConfirmPassword = false;
   }
+
   cancelPasswordEdit(): void {
     this.editingPassword = false;
     this.editableUser.password = '';
@@ -311,10 +369,10 @@ ngAfterViewInit() {
     this.showPassword = false;
     this.showConfirmPassword = false;
   }
+
   deleteAccount(): void {
     if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-
-      const idStr = localStorage.getItem("id");
+      const idStr = localStorage.getItem('id');
       const idNum = idStr ? Number(idStr) : NaN;
 
       if (!idStr || isNaN(idNum)) {
@@ -339,13 +397,12 @@ ngAfterViewInit() {
       });
     }
   }
-   goToProducts() {
+
+  goToProducts() {
     this.router.navigate(['/product'], { state: { source: 'dashboard' } });
   }
 
   goToDashBoard() {
     this.router.navigate(['/customer-dash-board'], { state: { source: 'dashboard' } });
   }
-
-
 }
