@@ -1,29 +1,21 @@
 <div class="home-wrapper">
-  <!-- Background Video -->
   <video autoplay muted loop class="video-background">
     <source src="assets/customer_background.mp4" type="video/mp4" />
   </video>
 
   <div class="product-section">
     <div class="product-container">
-
       <h1 class="page-title animated-slide">🛒 My Cart</h1>
 
-      <!-- Empty Cart -->
       <div *ngIf="cartItems.length === 0" class="empty-cart animated-fade">
         <h2>Your cart is empty 😔</h2>
         <p>Add items to your cart to keep track of products you love!</p>
         <button class="browse-btn" routerLink="/product">Browse Products</button>
       </div>
 
-      <!-- Cart List -->
       <div *ngIf="cartItems.length > 0" class="cart-list">
-
         <div *ngFor="let item of cartItems" class="cart-item animated-hover">
-          <!-- Select Checkbox -->
           <input type="checkbox" [(ngModel)]="item.selected" class="select-checkbox" />
-
-          <!-- Product Image -->
           <div class="cart-item-image">
             <img
               [src]="item.images[item.currentImageIndex] || 'assets/logo.png'"
@@ -31,50 +23,68 @@
               class="product-image clickable"
               (click)="navigateToProduct(item)"
             />
-            <div class="carousel-controls" *ngIf="item.images.length > 1">
-
-            </div>
           </div>
-
-          <!-- Product Info -->
           <div class="cart-item-info">
             <h3 class="product-name clickable" (click)="navigateToProduct(item)">
               {{ item.productName }}
             </h3>
-
             <p class="product-brand">Brand: {{ item.brand || 'Unknown' }}</p>
-            <p class="product-quantity">Quantity: {{ item.quantity || 1 }}</p>
+            <p class="product-quantity">Quantity: {{ item.quantity ?? 1 }}</p>
             <p class="product-total">
-              Price: {{ item.discountPrice > 0 ? ('$' + item.discountPrice) : ('$' + item.productPrice) }}
+              Price: ${{ (item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0) }}
             </p>
             <p class="product-price">
-              Total: ${{ ((item.discountPrice > 0 ? item.discountPrice : item.productPrice) * (item.quantity || 1)) | number:'1.2-2' }}
+              Total: ${{ ((item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0)) * (item.quantity ?? 1) | number:'1.2-2' }}
             </p>
           </div>
-
-          <!-- Remove Button -->
           <div class="cart-item-actions">
-            <button class="remove-btn" (click)="removeItemFromCart(item)">Remove</button>
+            <button class="remove-btn" (click)="removeItemFromCart(item)">
+              <i class="fa-solid fa-trash"></i> Remove
+            </button>
           </div>
         </div>
 
-        <!-- Cart Total -->
         <div class="cart-summary animated-slide">
           <p class="total-text">Total Cart: <strong>${{ getCartTotal() | number:'1.2-2' }}</strong></p>
         </div>
 
-        <!-- Bottom Controls -->
         <div class="cart-controls-bottom">
           <label>
             <input type="checkbox" [(ngModel)]="selectAll" (change)="removeAllItemsFromCart()" />
             Select All
           </label>
           <button class="remove-btn" (click)="removeSelected()">Remove Selected</button>
-          <button class="remove-btn" (click)="placeOrderSelected()">Remove Selected</button>
-
+          <button class="place-btn" (click)="placeOrderSelected()">Place Order Selected</button>
         </div>
-
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="modal-backdrop" *ngIf="showOrderModal">
+  <div class="order-modal fancy-modal">
+    <h2><i class="fa-solid fa-bag-shopping"></i> Confirm Your Order</h2>
+    <p>Order Time: <strong>{{ orderTime }}</strong></p>
+
+    <div class="order-items">
+      <div *ngFor="let item of selectedItemsForOrder" class="order-item">
+        {{ item.productName }} (x{{ item.quantity ?? 1 }}) - ${{ ((item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0)) * (item.quantity ?? 1) | number:'1.2-2' }}
+      </div>
+    </div>
+
+    <p class="order-summary">
+      Total: ${{ getSelectedItemsTotal() | number:'1.2-2' }}
+    </p>
+
+    <div *ngIf="!orderConfirmed" class="modal-buttons">
+      <button class="place-btn" (click)="confirmPayment()">Confirm Payment</button>
+      <button class="remove-btn" (click)="cancelOrder()">Cancel</button>
+    </div>
+
+    <div *ngIf="orderConfirmed" class="modal-buttons">
+      <p class="countdown-text">✅ Order confirmed! ⏳ You have {{ countdown }} seconds to cancel.</p>
+      <button class="remove-btn" (click)="cancelOrder()">Cancel Order</button>
     </div>
   </div>
 </div>
