@@ -480,17 +480,12 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
     this.router.navigate(['/home']);
   }
 goToProductDetails(product: any): void {
-  const encodedName = encodeURIComponent(product.name);
-  const roles = this.authService.getUserRoles();
-  const isLoggedIn = this.authService.isLoggedIn();
+   const encodedName = encodeURIComponent(product.name);
+  //const roles = this.authService.getUserRoles();
+  //const isLoggedIn = this.authService.isLoggedIn();
 
-  if (isLoggedIn && (roles.includes('ADMIN')|| roles.includes('CUSTOMER'))) {
-    // Admin goes to admin product details
-    this.router.navigate(['/admin-product', encodedName], { state: { product } });
-  } else {
-    // Customer or guest goes to normal product details
-    this.router.navigate(['/product', encodedName], { state: { product } });
-  }
+  this.router.navigate(['/admin-product', encodedName], { state: { product } });
+
 }
 
 

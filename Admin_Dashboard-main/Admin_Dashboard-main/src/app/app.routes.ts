@@ -47,10 +47,6 @@ export const routes: Routes = [
     loadComponent: () => import('./Pages/home/home.component').then(m => m.HomeComponent) 
   },
 
-  { 
-    path: 'product/:name',
-    loadComponent: () => import('./Pages/product_details/product-details.component').then(m => m.ProductDetailsComponent) 
-  },
 
   { 
     path: 'customer-product',

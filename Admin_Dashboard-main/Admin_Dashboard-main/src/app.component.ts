@@ -14,6 +14,7 @@ import { AuthService } from './app/Service/auth.service';
 export class AppComponent implements OnInit {
   // Page flags
   isAdminProfilePage = false;
+  isCustomer = false;
   isCustomerProfilePage = false;
   isControlAdmins = false;
   isHomePage = false;
@@ -24,7 +25,8 @@ export class AppComponent implements OnInit {
   isManageAdmins = false;
   isAdminProductDetails = false;
   isCustomerProductDetails = false;
-  isWishlistPage = false;   // ✅ new
+  isWishlistPage = false; 
+  isOrdersPage = false;
 
   // User info
   userName: string = '';
@@ -36,6 +38,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // Load user info initially
     this.loadUserInfo();
+    this.isCustomer = this.authService.hasRole('CUSTOMER');
 
     // Update page flags and user info on route change
     this.router.events.pipe(
@@ -84,7 +87,8 @@ export class AppComponent implements OnInit {
     this.isAdminProductDetails = url.startsWith('/admin-product/');
     this.isCustomerProductDetails = url.startsWith('/product/') && !this.isProductsPage;
     this.isControlAdmins = url === '/control-admins';
-    this.isWishlistPage = url === '/wishlist'; // ✅ new
+    this.isWishlistPage = url === '/wishlist'; 
+    this.isOrdersPage = url === '/orders';  
   }
 
   // 🔹 Navigation
@@ -98,18 +102,6 @@ export class AppComponent implements OnInit {
   goToSignInPage() { this.router.navigate(['/sign-in']); }
   goToSignUpPage() { this.router.navigate(['/sign-up']); }
 
-  // 🔹 Cart count
-  get cartCount(): number {   // ✅ new
-    try {
-      const raw = localStorage.getItem('cart') || '[]';
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed)
-        ? parsed.reduce((sum, item) => sum + (Number(item.selectedQty || 1)), 0)
-        : 0;
-    } catch {
-      return 0;
-    }
-  }
 
   // 🔹 Utility
   scrollToAbout(event: Event) {
