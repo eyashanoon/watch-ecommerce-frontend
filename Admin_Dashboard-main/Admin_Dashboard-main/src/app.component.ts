@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
   isManageAdmins = false;
   isAdminProductDetails = false;
   isCustomerProductDetails = false;
-  isWishlistPage = false; 
+  isWishlistPage = false;
   isOrdersPage = false;
 
   // User info
@@ -87,8 +87,8 @@ export class AppComponent implements OnInit {
     this.isAdminProductDetails = url.startsWith('/admin-product/');
     this.isCustomerProductDetails = url.startsWith('/product/') && !this.isProductsPage;
     this.isControlAdmins = url === '/control-admins';
-    this.isWishlistPage = url === '/wishlist'; 
-    this.isOrdersPage = url === '/orders';  
+    this.isWishlistPage = url === '/wishlist';
+    this.isOrdersPage = url === '/orders';
   }
 
   // 🔹 Navigation
@@ -101,6 +101,7 @@ export class AppComponent implements OnInit {
   goToCustomerDashboard() { this.router.navigate(['/customer-dash-board']); } // ✅ new
   goToSignInPage() { this.router.navigate(['/sign-in']); }
   goToSignUpPage() { this.router.navigate(['/sign-up']); }
+goToCustomerOrders() { this.router.navigate(['/customer/orders']); }
 
 
   // 🔹 Utility

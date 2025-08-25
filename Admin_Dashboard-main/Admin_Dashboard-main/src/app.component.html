@@ -39,14 +39,18 @@
       <a routerLink="/customer-profile" href="/customer-profile">Profile</a>
       <a href="#" (click)="goToCart(); $event.preventDefault()">Cart</a>
       <a href="#" (click)="goToWishlist(); $event.preventDefault()">Wishlist</a>
+      <!-- ✅ New: Customer Orders link -->
+      <a href="#" *ngIf="isCustomer" (click)="goToCustomerOrders(); $event.preventDefault()">Orders</a>
       <a href="#" (click)="signOut($event)">Sign Out</a>
     </div>
 
     <!-- Products page -->
     <div class="topbar-links" *ngIf="isProductsPage">
       <a href="#" (click)="goToPanel(); $event.preventDefault()">Go to dashboard</a>
-<a *ngIf="isCustomer" href="#" (click)="goToCart(); $event.preventDefault()">Cart</a>
-  <a *ngIf="isCustomer" href="#" (click)="goToWishlist(); $event.preventDefault()">Wishlist</a>
+      <a *ngIf="isCustomer" href="#" (click)="goToCart(); $event.preventDefault()">Cart</a>
+      <a *ngIf="isCustomer" href="#" (click)="goToWishlist(); $event.preventDefault()">Wishlist</a>
+      <!-- ✅ Customer Orders also here -->
+      <a *ngIf="isCustomer" href="#" (click)="goToCustomerOrders(); $event.preventDefault()">Orders</a>
     </div>
 
     <!-- Manage Admins / Control Admins -->
@@ -69,6 +73,8 @@
       <a href="#" (click)="goToCustomerDashboard(); $event.preventDefault()">Dashboard</a>
       <a routerLink="/customer-profile" href="/customer-profile">Profile</a>
       <a href="#" (click)="signOut($event)">Sign Out</a>
+      <!-- ✅ Customer Orders -->
+      <a *ngIf="isCustomer" href="#" (click)="goToCustomerOrders(); $event.preventDefault()">Orders</a>
     </div>
   </div>
 

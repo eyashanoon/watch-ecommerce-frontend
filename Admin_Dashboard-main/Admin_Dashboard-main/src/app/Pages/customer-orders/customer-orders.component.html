@@ -1,0 +1,45 @@
+<div class="orders-wrapper">
+  <h1 class="page-title">📦 My Orders</h1>
+
+  <!-- Empty orders -->
+  <div *ngIf="orders.length === 0" class="empty-orders">
+    <h2>You have no orders yet 😔</h2>
+    <p>Browse products and place your first order!</p>
+    <button class="browse-btn" routerLink="/product">Browse Products</button>
+  </div>
+
+  <!-- Orders list -->
+  <div *ngIf="orders.length > 0" class="orders-list">
+    <div *ngFor="let order of orders" class="order-card">
+
+      <!-- Order Header -->
+      <div class="order-header" (click)="toggleOrder(order.orderId)">
+        <div>
+          <h3>Order #{{ order.orderId }}</h3>
+          <p>Placed on: {{ order.orderTime | date:'medium' }}</p>
+          <p>Total Amount: ${{ order.totalAmount | number:'1.2-2' }}</p>
+          <p>Status: <strong [ngClass]="getStatusClass(order.status)">{{ order.status }}</strong></p>
+        </div>
+        <button class="toggle-btn">{{ expandedOrderId === order.orderId ? 'Hide Items' : 'View Items' }}</button>
+      </div>
+
+      <!-- Items -->
+      <div *ngIf="expandedOrderId === order.orderId" class="order-items">
+        <div *ngFor="let item of order.items" class="order-item-card">
+
+          <!-- Product Image -->
+          <img [src]="item.images[0]" alt="{{ item.productName }}" class="order-item-image" />
+
+          <!-- Product Details -->
+          <div class="order-item-details">
+            <h4>{{ item.productName }}</h4>
+            <p>Brand: {{ item.brand }}</p>
+            <p class="quantity">Quantity: <strong>{{ item.quantity }}</strong></p>
+            <p class="unit-price">Unit Price: ${{ (item.discountPrice ?? item.unitPrice) | number:'1.2-2' }}</p>
+            <p class="total-price">Total: ${{ getItemTotal(item) | number:'1.2-2' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

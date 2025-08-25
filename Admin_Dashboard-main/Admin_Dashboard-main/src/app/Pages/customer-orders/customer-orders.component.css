@@ -1,0 +1,136 @@
+.orders-wrapper {
+  padding: 40px 20px;
+  font-family: 'Poppins', sans-serif;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 2.8rem;
+  margin-bottom: 30px;
+  color: #222;
+}
+
+.empty-orders {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.order-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+.order-card:hover {
+  transform: translateY(-5px);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.order-header h3 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #968c75, #a79f88);
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.toggle-btn:hover {
+  background: linear-gradient(135deg, #a79f88, #968c75);
+}
+
+.order-items {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.order-item-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 15px;
+  border-radius: 18px;
+  background: #f9f9f9;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  transition: background 0.2s;
+}
+.order-item-card:hover {
+  background: #f1f1f1;
+}
+
+.order-item-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+}
+
+.order-item-details {
+  flex: 1;
+  text-align: left;
+}
+.order-item-details h4 {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+}
+.order-item-details p {
+  margin: 2px 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+.status-pending {
+  color: #ff6b6b;
+  font-weight: 700;
+}
+.status-completed {
+  color: #06d6a0;
+  font-weight: 700;
+}
+.status-cancelled {
+  color: #ff9f1c;
+  font-weight: 700;
+}
+
+.browse-btn {
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, #a79f88, #968c75);
+  color: #fff;
+  transition: background 0.3s;
+}
+.browse-btn:hover {
+  background: linear-gradient(135deg, #968c75, #a79f88);
+}
