@@ -140,7 +140,7 @@ export class CustomerProductsComponent implements OnInit {
 
   addToCart(product: Product) {
     if (!product.selectedQty || product.selectedQty < 1) {
-      alert('Please select a quantity of at least 1.');
+      this.showToastMessage('Please select a quantity of at least 1.');
       return;
     }
 
@@ -151,7 +151,7 @@ export class CustomerProductsComponent implements OnInit {
       this.cart.push({ product, qty: product.selectedQty });
     }
 
-    alert(`${product.name} added to cart (Qty: ${product.selectedQty})`);
+    this.showToastMessage(`${product.name} added to cart (Qty: ${product.selectedQty})`);
     product.selectedQty = 1;
   }
 
@@ -174,9 +174,9 @@ export class CustomerProductsComponent implements OnInit {
     if (!alreadyExists) {
       wishlist.push(product);
       localStorage.setItem('wishlist', JSON.stringify(wishlist));
-      alert(`${product.name} added to wishlist`);
+      this.showToastMessage(`${product.name} added to wishlist`);
     } else {
-      alert(`${product.name} is already in your wishlist`);
+      this.showToastMessage(`${product.name} is already in your wishlist`);
     }
   }
 

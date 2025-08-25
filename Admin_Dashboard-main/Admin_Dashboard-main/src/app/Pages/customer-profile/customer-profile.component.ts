@@ -94,23 +94,23 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
   // ------------------- CARD METHODS -------------------
   createNewCard() {
     if (!this.isValidCardType(this.myCard.cardType)) {
-      alert('Please select a valid card type.');
+      this.showToastMessage('Please select a valid card type.');
       return;
     }
     if (!this.isValidCardHolderName(this.myCard.cardHolderName)) {
-      alert('Card holder name is required (letters only, min 3 characters).');
+      this.showToastMessage('Card holder name is required (letters only, min 3 characters).');
       return;
     }
     if (!this.isValidCardNumber(this.myCard.cardNumber, this.myCard.cardType)) {
-      alert(`Invalid ${this.myCard.cardType} card number.`);
+      this.showToastMessage(`Invalid ${this.myCard.cardType} card number.`);
       return;
     }
     if (!this.isValidExpiryDate(this.myCard.expirationDate)) {
-      alert('Please enter a valid expiry date (MM/YY or MM/YYYY, not expired).');
+      this.showToastMessage('Please enter a valid expiry date (MM/YY or MM/YYYY, not expired).');
       return;
     }
     if (!this.isValidCVV(this.myCard.cvv, this.myCard.cardType)) {
-      alert(
+      this.showToastMessage(
         `${this.myCard.cardType} requires a ${
           this.myCard.cardType === 'American Express' ? '4-digit' : '3-digit'
         } CVV.`
@@ -118,11 +118,11 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
       return;
     }
     if (!this.isValidBillingAddress(this.myCard.billingAddress)) {
-      alert('Billing address must be at least 5 characters.');
+      this.showToastMessage('Billing address must be at least 5 characters.');
       return;
     }
     if (!this.isValidPostalCode(this.myCard.postalCode)) {
-      alert('Postal code must be 3–10 alphanumeric characters.');
+      this.showToastMessage('Postal code must be 3–10 alphanumeric characters.');
       return;
     }
 
@@ -193,7 +193,13 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
   }
 
   constructor(private authService: AuthService, private router: Router) {}
-
+  toastMessage = '';
+  showToast = false;
+ showToastMessage(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => this.showToast = false, 5000);
+  }
   ngAfterViewInit() {
     const video = this.videoRef.nativeElement;
     video.muted = true;
@@ -260,31 +266,31 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
   saveChanges(): void {
     if (!this.editableUser.username || this.editableUser.username.trim().length < 3) {
-      alert('Full Name is required and must be at least 3 characters.');
+      this.showToastMessage('Full Name is required and must be at least 3 characters.');
       return;
     }
 
     if (!this.editableUser.email || !this.isValidEmail(this.editableUser.email)) {
-      alert('A valid Email is required.');
+      this.showToastMessage('A valid Email is required.');
       return;
     }
 
     if (!this.editableUser.phone || !this.isValidPhone(this.editableUser.phone)) {
-      alert('Phone number is required and must be exactly 10 digits.');
+      this.showToastMessage('Phone number is required and must be exactly 10 digits.');
       return;
     }
 
     if (false && this.editingPassword) {
       if (!this.editableUser.password || !this.editableUser.confirmPassword) {
-        alert('Password and Confirm Password are required.');
+        this.showToastMessage('Password and Confirm Password are required.');
         return;
       }
       if (!this.isValidPassword(this.editableUser.password)) {
-        alert('Password must be at least 6 characters and contain at least one letter and one digit.');
+        this.showToastMessage('Password must be at least 6 characters and contain at least one letter and one digit.');
         return;
       }
       if (this.editableUser.password !== this.editableUser.confirmPassword) {
-        alert('Password and Confirm Password do not match.');
+        this.showToastMessage('Password and Confirm Password do not match.');
         return;
       }
       const idStr = localStorage.getItem('id');
@@ -309,12 +315,12 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
           this.editingPassword = false;
           this.showPassword = false;
           this.showConfirmPassword = false;
-          alert('Profile updated successfully.');
+          this.showToastMessage('Profile updated successfully.');
           this.loading = false;
         },
         error: (err) => {
           console.error('Update failed:', err);
-          alert('Failed to update profile. Please try again.');
+          this.showToastMessage('Failed to update profile. Please try again.');
           this.loading = false;
         }
       });
@@ -339,7 +345,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
       newPassword: this.editableUser.password
     }).subscribe({
       next: (customer: any) => {
-        alert('Profile updated successfully.');
+        this.showToastMessage('Profile updated successfully.');
         this.user = { ...this.editableUser };
         this.editMode = false;
         this.editingPassword = false;
@@ -349,7 +355,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
       },
       error: (err) => {
         console.error('Update failed:', err);
-        alert('Failed to update profile. Please try again.');
+        this.showToastMessage('Failed to update profile. Please try again.');
         this.loading = false;
       }
     });
@@ -385,13 +391,13 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
       this.authService.deleteCustomerProfile(idNum).subscribe({
         next: () => {
-          alert('Account deleted successfully.');
+          this.showToastMessage('Account deleted successfully.');
           this.authService.logout();
           this.router.navigate(['/home']);
         },
         error: (err) => {
           console.error('Delete failed:', err);
-          alert('Failed to delete account. Please try again.');
+          this.showToastMessage('Failed to delete account. Please try again.');
           this.loading = false;
         }
       });

@@ -17,13 +17,17 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
   editingPassword = false;
   showPassword = false;
   showConfirmPassword = false;
+// at the top of AdminProfileComponent
+errorMsg: string = '';
 
   loading = true;
-  errorMsg = '';
-
   user: any = null; // profile data
   editMode = false;
   editableUser: any = {};
+
+  // Toast state
+  toastMessage: string = '';
+  showToast: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -40,7 +44,7 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
     const idNum = idStr ? Number(idStr) : NaN;
 
     if (!idStr || isNaN(idNum)) {
-      this.errorMsg = 'User ID not found. Please log in again.';
+      this.showToastMessage('⚠️ User ID not found. Please log in again.');
       this.loading = false;
       return;
     }
@@ -53,8 +57,8 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error(  err);
-        this.errorMsg = 'Failed to load user profile. Please log in again.';
+        console.error(err);
+        this.showToastMessage('❌ Failed to load user profile. Please log in again.');
         this.loading = false;
       }
     });
@@ -72,117 +76,53 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
     }
   }
 
-  // New reusable validators for email and phone number:
   private isValidEmail(email: string): boolean {
-    // Simple email regex similar to Validators.email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
   private isValidPhone(phone: string): boolean {
-    // For example: exactly 10 digits, only numbers
     const phoneRegex = /^\d{10}$/;
     return phoneRegex.test(phone);
   }
 
   private isValidPassword(password: string): boolean {
-    // At least 6 chars, at least one letter and one digit
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
     return passwordRegex.test(password);
   }
 
   saveChanges(): void {
-    // Validate required fields first
+    // Validate required fields
     if (!this.editableUser.username || this.editableUser.username.trim().length < 3) {
-      alert('Full Name is required and must be at least 3 characters.');
+      this.showToastMessage('⚠️ Full Name is required and must be at least 3 characters.');
       return;
     }
 
     if (!this.editableUser.email || !this.isValidEmail(this.editableUser.email)) {
-      alert('A valid Email is required.');
+      this.showToastMessage('⚠️ A valid Email is required.');
       return;
     }
 
     if (!this.editableUser.phone || !this.isValidPhone(this.editableUser.phone)) {
-      alert('Phone number is required and must be exactly 10 digits.');
+      this.showToastMessage('⚠️ Phone number must be exactly 10 digits.');
       return;
     }
 
-    if (false && this.editingPassword) {
-      if (!this.editableUser.password || !this.editableUser.confirmPassword) {
-        alert('Password and Confirm Password are required.');
-        return;
-      }
-      if (!this.isValidPassword(this.editableUser.password)) {
-        alert('Password must be at least 6 characters and contain at least one letter and one digit.');
-        return;
-      }
-      if (this.editableUser.password !== this.editableUser.confirmPassword) {
-        alert('Password and Confirm Password do not match.');
-        return;
-      }
     const idStr = localStorage.getItem("id");
     const idNum = idStr ? Number(idStr) : NaN;
 
-
-
-
-
-    
     if (!idStr || isNaN(idNum)) {
-      this.errorMsg = 'User ID not found. Please log in again.';
+      this.showToastMessage('⚠️ User ID not found. Please log in again.');
       this.loading = false;
       return;
     }
 
     this.loading = true;
 
-    const data={
-      password:this.editableUser.password
-
-    }
-
-    this.authService.updateAdminProfilePassword(idNum, data).subscribe({
-      next: () => {
-        this.user = { ...this.editableUser };
-        this.editMode = false;
-        this.editingPassword = false;
-        this.showPassword = false;
-        this.showConfirmPassword = false;
-        alert('Profile updated successfully.');
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Update failed:', err);
-        alert('Failed to update profile. Please try again.');
-        this.loading = false;
-      }
-    });
-
-
-
-
-    } else if(false ) {
-      // If not editing password, keep old password fields (or clear if needed)
-      this.editableUser.password = this.user.password || '';
-      this.editableUser.confirmPassword = this.user.confirmPassword || '';
-    }
-
-    // Proceed with update API call
-    const idStr = localStorage.getItem("id");
-    const idNum = idStr ? Number(idStr) : NaN;
-
-    if (!idStr || isNaN(idNum)) {
-      this.errorMsg = 'User ID not found. Please log in again.';
-      this.loading = false;
-      return;
-    }
-
-    this.loading = true;
-
-    this.authService.updateAdminProfile(idNum, {...this.editableUser,newPassword:this.editableUser.password}).subscribe({
-      next: (admin:any) => {
-        alert('Profile updated successfully.');
+    // Update profile
+    this.authService.updateAdminProfile(idNum, {...this.editableUser, newPassword: this.editableUser.password}).subscribe({
+      next: (admin: any) => {
+        this.showToastMessage('✅ Profile updated successfully.');
         this.user = { ...this.editableUser };
         this.editMode = false;
         this.editingPassword = false;
@@ -192,7 +132,7 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
       },
       error: (err) => {
         console.error('Update failed:', err);
-        alert('Failed to update profile. Please try again.');
+        this.showToastMessage('❌ Failed to update profile. Please try again.');
         this.loading = false;
       }
     });
@@ -214,31 +154,39 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
   }
 
   deleteAccount(): void {
-    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+    if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
 
-      const idStr = localStorage.getItem("id");
-      const idNum = idStr ? Number(idStr) : NaN;
+    const idStr = localStorage.getItem("id");
+    const idNum = idStr ? Number(idStr) : NaN;
 
-      if (!idStr || isNaN(idNum)) {
-        this.errorMsg = 'User ID not found. Please log in again.';
-        this.loading = false;
-        return;
-      }
-
-      this.loading = true;
-
-      this.authService.deleteAdminProfile(idNum).subscribe({
-        next: () => {
-          alert('Account deleted successfully.');
-          this.authService.logout();
-          this.router.navigate(['/home']);
-        },
-        error: (err) => {
-          console.error('Delete failed:', err);
-          alert('Failed to delete account. Please try again.');
-          this.loading = false;
-        }
-      });
+    if (!idStr || isNaN(idNum)) {
+      this.showToastMessage('⚠️ User ID not found. Please log in again.');
+      this.loading = false;
+      return;
     }
+
+    this.loading = true;
+
+    this.authService.deleteAdminProfile(idNum).subscribe({
+      next: () => {
+        this.showToastMessage('✅ Account deleted successfully.');
+        this.authService.logout();
+        setTimeout(() => this.router.navigate(['/home']), 1000);
+      },
+      error: (err) => {
+        console.error('Delete failed:', err);
+        this.showToastMessage('❌ Failed to delete account. Please try again.');
+        this.loading = false;
+      }
+    });
+  }
+
+  /** TOAST UTILITY */
+  showToastMessage(message: string, duration: number = 5000) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, duration);
   }
 }

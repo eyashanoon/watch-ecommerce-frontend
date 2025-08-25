@@ -32,6 +32,10 @@ export class CartComponent implements OnInit {
   mycartIds: Set<number> = new Set();
   selectAll: boolean = false;
 
+  // Toast state
+  toastMessage: string = '';
+  showToast: boolean = false;
+
   // Modal state
   showOrderModal: boolean = false;
   orderConfirmed: boolean = false;
@@ -39,8 +43,6 @@ export class CartComponent implements OnInit {
   countdownInterval: any;
   selectedItemsForOrder: CartItemWithImages[] = [];
   orderTime: string = '';
-
-  // NEW STATE
   confirmEnabled: boolean = false;
   confirmTimeout: any;
 
@@ -60,8 +62,16 @@ export class CartComponent implements OnInit {
     }
     this.loadCart();
   }
+  /** TOAST UTILITY */
+  showToastMessage(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 5000);
+  }
 
-  loadCart() {
+ loadCart() {
     this.cartService.getMyCart().subscribe({
       next: (res) => {
         const items = res.items ?? [];
@@ -73,12 +83,12 @@ export class CartComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to fetch cart:', err);
+        this.showToastMessage('Failed to load cart.');
         this.cartItems = [];
         this.mycartIds.clear();
       }
     });
   }
-
   private initializecartItems(items: any[]) {
     this.cartItems = items.map(it => ({
       productId: Number(it.productId ?? 0),
@@ -141,43 +151,74 @@ export class CartComponent implements OnInit {
     item.currentImageIndex = i >= 0 ? i : item.images.length - 1;
   }
 
-  navigateToProduct(item: CartItemWithImages) {
-    if (!item?.productId) return;
-    this.productService1.getProductById(item.productId).subscribe({
-      next: fullProduct => {
-        if (!fullProduct) { alert('Product details not available.'); return; }
-        fullProduct.images = fullProduct.images || [fullProduct.image || 'assets/logo.png'];
-        fullProduct.currentImageIndex = 0;
-        fullProduct.selectedQty = 1;
-        this.router.navigate(['/product', encodeURIComponent(fullProduct.name)], { state: { product: fullProduct } });
-      },
-      error: err => { console.error('Failed to fetch product details', err); alert('Cannot load product details.'); }
-    });
-  }
+ navigateToProduct(item: CartItemWithImages) {
+  if (!item?.productId) return;
 
-  removeItemFromCart(item: CartItemWithImages) {
+  this.productService1.getProductById(item.productId).subscribe({
+    next: fullProduct => {
+      if (!fullProduct) {
+        this.showToastMessage('❌ Product details not available.');
+        return;
+      }
+
+      fullProduct.images = fullProduct.images || [fullProduct.image || 'assets/logo.png'];
+      fullProduct.currentImageIndex = 0;
+      fullProduct.selectedQty = 1;
+
+      this.router.navigate(['/product', encodeURIComponent(fullProduct.name)], { state: { product: fullProduct } });
+    },
+    error: err => {
+      console.error('Failed to fetch product details', err);
+      this.showToastMessage('❌ Cannot load product details.');
+    }
+  });
+}
+
+ removeItemFromCart(item: CartItemWithImages) {
     const payload = [{ productId: item.productId, quantity: item.quantity ?? 1 }];
     this.cartService.removeFromCart(payload).subscribe({
-      next: () => this.loadCart(),
-      error: (err) => console.error('Error removing item:', err)
+      next: () => {
+        this.loadCart();
+        this.showToastMessage('Item removed from cart.');
+      },
+      error: (err) => {
+        console.error('Error removing item:', err);
+        this.showToastMessage('Failed to remove item.');
+      }
     });
   }
 
-  removeAllItemsFromCart() {
+ removeAllItemsFromCart() {
     const items = this.cartItems.map(c => ({ productId: c.productId, quantity: c.quantity ?? 1 }));
     this.cartService.removeFromCart(items).subscribe({
-      next: () => this.loadCart(),
-      error: (err) => console.error('Error removing items:', err)
+      next: () => {
+        this.loadCart();
+        this.showToastMessage('All items removed from cart.');
+      },
+      error: (err) => {
+        console.error('Error removing items:', err);
+        this.showToastMessage('Failed to remove items.');
+      }
     });
   }
 
   removeSelected() {
     const selectedItems = this.cartItems.filter(i => i.selected);
-    if (!selectedItems.length) return alert('No items selected.');
+    if (!selectedItems.length) {
+      this.showToastMessage('No items selected.');
+      return;
+    }
+
     const payload = selectedItems.map(i => ({ productId: i.productId, quantity: i.quantity ?? 1 }));
     this.cartService.removeFromCart(payload).subscribe({
-      next: () => this.loadCart(),
-      error: err => console.error('Error removing selected items', err)
+      next: () => {
+        this.loadCart();
+        this.showToastMessage('Selected items removed.');
+      },
+      error: err => {
+        console.error('Error removing selected items', err);
+        this.showToastMessage('Failed to remove selected items.');
+      }
     });
   }
 
@@ -190,18 +231,22 @@ export class CartComponent implements OnInit {
     this.selectAll = this.cartItems.every(item => item.selected);
   }
 
-  placeOrderSelected() {
-    this.selectedItemsForOrder = this.cartItems.filter(i => i.selected);
-    if (!this.selectedItemsForOrder.length) { alert("Please select at least one item."); return; }
+placeOrderSelected() {
+  this.selectedItemsForOrder = this.cartItems.filter(i => i.selected);
 
-    this.showOrderModal = true;
-    this.orderConfirmed = false;
-    this.countdown = 20;
-    clearInterval(this.countdownInterval);
-
-    const now = new Date();
-    this.orderTime = now.toLocaleString();
+  if (!this.selectedItemsForOrder.length) {
+    this.showToastMessage('⚠️ Please select at least one item.');
+    return;
   }
+
+  this.showOrderModal = true;
+  this.orderConfirmed = false;
+  this.countdown = 20;
+  clearInterval(this.countdownInterval);
+
+  const now = new Date();
+  this.orderTime = now.toLocaleString();
+}
 
   confirmPayment() {
     this.orderConfirmed = true;
@@ -237,45 +282,40 @@ export class CartComponent implements OnInit {
       return acc + price * qty;
     }, 0);
   }
-finalizeOrder() {
-  clearInterval(this.countdownInterval);
-  clearTimeout(this.confirmTimeout);
 
-  if (this.selectedItemsForOrder.length > 0) {
-    // Prepare payload only for selected items
-    const orderData: { [key: number]: number } = {};
-    this.selectedItemsForOrder.forEach(item => {
-      orderData[item.productId] = item.quantity ?? 1;
-    });
 
-    this.orderService.createOrder(orderData).subscribe({
-      next: () => {
-        alert('✅ Order placed successfully!');
+  finalizeOrder() {
+    clearInterval(this.countdownInterval);
+    clearTimeout(this.confirmTimeout);
 
-        // Remove ordered items from cart
-        const removePayload = this.selectedItemsForOrder.map(item => ({
-          productId: item.productId,
-          quantity: item.quantity ?? 1
-        }));
+    if (this.selectedItemsForOrder.length > 0) {
+      const orderData: { [key: number]: number } = {};
+      this.selectedItemsForOrder.forEach(item => orderData[item.productId] = item.quantity ?? 1);
 
-        this.cartService.removeFromCart(removePayload).subscribe({
-          next: () => {
-            this.loadCart();  // reload remaining cart items
-          },
-          error: (err) => {
-            console.error('Failed to remove ordered items from cart:', err);
-            this.loadCart(); // still reload cart
-          }
-        });
+      this.orderService.createOrder(orderData).subscribe({
+        next: () => {
+          this.showToastMessage('✅ Order placed successfully!');
+          const removePayload = this.selectedItemsForOrder.map(item => ({
+            productId: item.productId,
+            quantity: item.quantity ?? 1
+          }));
 
-        this.showOrderModal = false;
-      },
-      error: (err) => {
-        alert('❌ Failed to place order');
-        console.error(err);
-      }
-    });
+          this.cartService.removeFromCart(removePayload).subscribe({
+            next: () => this.loadCart(),
+            error: (err) => {
+              console.error('Failed to remove ordered items:', err);
+              this.loadCart();
+            }
+          });
+
+          this.showOrderModal = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.showToastMessage('❌ Failed to place order.');
+        }
+      });
+    }
   }
-}
 
 }

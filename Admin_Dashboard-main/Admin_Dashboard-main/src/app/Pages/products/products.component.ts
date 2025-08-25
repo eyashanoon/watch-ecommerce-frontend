@@ -56,6 +56,12 @@ type Filters = {
 
 
 export class ProductsComponent implements OnInit {
+
+    // Toast state
+  toastMessage: string = '';
+  showToast: boolean = false;
+
+
    constructor(private router: Router,
      private productService: ProductService,
      private productService1: ProductService1,
@@ -148,7 +154,14 @@ export class ProductsComponent implements OnInit {
     numberingFormat: filters.numberingType // rename here
   };
 }
-
+  /** TOAST UTILITY */
+  showToastMessage(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 5000);
+  }
  mapFiltersToBackend1(filters: Filters) {
   const backendFilters: any = {};
 
@@ -420,7 +433,7 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
 
   saveEdit(product: any) {
     if (!Number.isInteger(product.quantity)) {
-      alert("Quantity must be a whole number.");
+      this.showToastMessage("Quantity must be a whole number.");
       return;
     }
 
@@ -428,7 +441,7 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
       p !== product && p.name.trim().toLowerCase() === product.name.trim().toLowerCase()
     );
     if (nameExists) {
-      alert("Another product already has this name.");
+      this.showToastMessage("Another product already has this name.");
       return;
     }
 
@@ -436,7 +449,7 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
       p !== product && p.image.trim() === product.image.trim()
     );
     if (imageExists) {
-      alert("Another product already has this image URL.");
+      this.showToastMessage("Another product already has this image URL.");
       return;
     }
 

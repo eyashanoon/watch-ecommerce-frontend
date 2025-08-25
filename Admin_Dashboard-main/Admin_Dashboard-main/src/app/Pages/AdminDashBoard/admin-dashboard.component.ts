@@ -16,19 +16,24 @@ export class AdminDashboardComponent implements AfterViewInit, OnInit {
   sidebarVisible = false;
 
   constructor(private router: Router, private authService: AuthService) {}
-
+  // Toast state
+  toastMessage: string = '';
+  showToast: boolean = false;
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {
+      this.showToastMessage('⚠️ You must be signed in.');
       this.router.navigate(['/sign-in']);
       return;
     }
+  }
 
-    // Example: restrict access only to users with at least one admin role
-    const allowedRoles = [  'OWNER','ADMIN'];
-    if (!this.authService.hasAnyRole(allowedRoles)) {
-      alert('You do not have permission to access this page.');
-      this.router.navigate(['/home']);
-    }
+
+
+  showToastMessage(message: string) {
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 5000);
   }
 
   toggleSidebar() {
