@@ -9,7 +9,7 @@ import { HttpHeaders } from '@angular/common/http';
   providedIn: 'root',
 })
 export class WishlistService {
-  private apiUrl = 'http://localhost:8080/api/wishlist';
+  private apiUrl = 'http://10.10.33.90:8080/api/wishlist';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -63,7 +63,7 @@ export class WishlistService {
   getWishlistByCustomer(username: string): Observable<WishlistDto> {
   return this.http.get<WishlistDto>(`${this.apiUrl}/customer/${username}`, this.makeHeaders());
   }
-  getMyWishlist(): Observable<WishlistDto> {
+  getMyWishlist(): Observable<any> {
     console.log('Fetching wishlist from server...');
     // Fetch the current user's wishlist
   return this.http.get<WishlistDto>(`${this.apiUrl}/me`, this.makeHeaders());

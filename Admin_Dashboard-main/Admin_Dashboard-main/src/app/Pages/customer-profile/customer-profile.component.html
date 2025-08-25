@@ -138,8 +138,10 @@
   <div *ngIf="myCard && myCard.cardNumber">
     <p><strong>Card Type:</strong> {{ myCard.cardType }}</p>
     <p><strong>Card Holder:</strong> {{ myCard.cardHolderName }}</p>
-    <p><strong>Card Number:</strong> {{ myCard.cardNumber}}</p>
-    <p><strong>Expiration Date:</strong> {{ myCard.expirationDate }}</p>
+<div *ngIf="myCard && myCard.cardNumber">
+  <p><strong>Card Number:</strong> {{ formatCardNumberForView(myCard.cardNumber) }}</p>
+</div>
+<p><strong>Expiration Date:</strong> {{ formatExpirationForView(myCard.expirationDate) }}</p>
     <p><strong>CVV:</strong> {{myCard.cvv}}</p>
     <!--<button (click)="updateCardInfo()">Update Card</button>-->
   </div>
@@ -153,12 +155,35 @@
     <option *ngFor="let type of cardTypes" [value]="type">{{ type }}</option>
   </select>
 </label><br />
-  <label>Card Holder Name: <input [(ngModel)]="myCard.cardHolderName" /></label><br />
-  <label>Card Number: <input [(ngModel)]="myCard.cardNumber" /></label><br />
-  <label>Expiration Date: <input [(ngModel)]="myCard.expirationDate" placeholder="MM/YY" /></label><br />
-  <label>CVV: <input [(ngModel)]="myCard.cvv" /></label><br />
-  <label>Billing Address: <input [(ngModel)]="myCard.billingAddress" /></label><br />
-  <label>Postal Code: <input [(ngModel)]="myCard.postalCode" /></label><br />
+<label>Card Holder Name: 
+  <input [(ngModel)]="myCard.cardHolderName" maxlength="50" placeholder="Name On Card" />
+</label><br />
+<label>Card Number:
+  <input 
+    [(ngModel)]="myCard.cardNumber" 
+    (input)="formatCardNumber()" 
+    maxlength="19"
+    placeholder="xxxx xxxx xxxx xxxx"
+  />
+</label>
+<label>Expiration Date:
+  <input 
+    [(ngModel)]="myCard.expirationDate" 
+    (input)="formatExpirationDate()" 
+    maxlength="5" 
+    placeholder="MM/YY"
+  />
+</label>
+<label>CVV: 
+  <input [(ngModel)]="myCard.cvv" maxlength="3" placeholder="123" />
+</label><br />
+ <label>Billing Address: 
+  <input [(ngModel)]="myCard.billingAddress" maxlength="30" placeholder="Street, City, etc." />
+</label><br />
+
+<label>Postal Code: 
+  <input [(ngModel)]="myCard.postalCode" maxlength="10" placeholder="12345" />
+</label><br />
   <button (click)="createNewCard()">Create Card</button>
 </div>
 </div>

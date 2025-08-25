@@ -41,6 +41,7 @@ export class ImageService {
 
   // Delete an image by its ID
   deleteImage(imageId: number): Observable<any> {
+    console.log('Deleting image with ID:', imageId);
     return this.http.delete(`${API_URL}/${imageId}`, {
       headers: this.getAuthHeaders()
     });

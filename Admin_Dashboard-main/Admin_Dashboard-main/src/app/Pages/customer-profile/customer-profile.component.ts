@@ -26,7 +26,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
   editableUser: any = {};
 
   // ------------------- CARD MANAGEMENT -------------------
-  cardTypes: string[] = ['VISA', 'MasterCard'];
+  cardTypes: string[] = ['VISA', 'MASTERCARD'];
 
   myCard: any = {
     cardType: '',
@@ -52,15 +52,19 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
     return nameRegex.test(name || '');
   }
 
-  private isValidCardNumber(num: string, type: string): boolean {
-    if (!num) return false;
+private isValidCardNumber(num: string, type: string): boolean {
+  if (!num) return false;
 
-    if (type === 'Visa') return /^4\d{15}$/.test(num);
-    if (type === 'MasterCard')
-      return /^(5[1-5]\d{14}|2(2[2-9]\d{12}|[3-6]\d{13}|7[01]\d{12}|720\d{12}))$/.test(num);
+  // Remove spaces or other non-digit characters
+  const digits = num.replace(/\D/g, '');
 
-    return /^\d{13,19}$/.test(num);
-  }
+  if (type === 'Visa') return /^4\d{15}$/.test(digits);
+  if (type === 'MasterCard')
+    return /^(5[1-5]\d{14}|2(2[2-9]\d{12}|[3-6]\d{13}|7[01]\d{12}|720\d{12}))$/.test(digits);
+
+  return /^\d{13,19}$/.test(digits);
+}
+
 
   private isValidExpiryDate(date: string): boolean {
     const expiryRegex = /^(0[1-9]|1[0-2])\/(\d{2}|\d{4})$/;
@@ -85,6 +89,46 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
   private isValidBillingAddress(address: string): boolean {
     return !!address && address.trim().length >= 5;
   }
+  formatCardNumber() {
+  if (!this.myCard.cardNumber) return;
+
+  // Remove all non-digit characters
+  let digits = this.myCard.cardNumber.replace(/\D/g, '');
+
+  // Limit to max 16 digits
+  digits = digits.substring(0, 16);
+
+  // Insert a space every 4 digits
+  this.myCard.cardNumber = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+}
+formatCardNumberForView(cardNumber: string): string {
+  if (!cardNumber) return '';
+  // Remove non-digits and format in groups of 4
+  return cardNumber.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
+}
+formatExpirationDate() {
+  if (!this.myCard.expirationDate) return;
+
+  // Remove non-digits
+  let digits = this.myCard.expirationDate.replace(/\D/g, '');
+
+  // Limit to max 4 digits (MMYY)
+  digits = digits.substring(0, 4);
+
+  // Add slash after 2 digits
+  if (digits.length > 2) {
+    this.myCard.expirationDate = digits.substring(0, 2) + '/' + digits.substring(2);
+  } else {
+    this.myCard.expirationDate = digits;
+  }
+}
+formatExpirationForView(date: string): string {
+  if (!date) return '';
+  const digits = date.replace(/\D/g, '').substring(0, 4);
+  if (digits.length < 3) return digits;
+  return digits.substring(0, 2) + '/' + digits.substring(2);
+}
+
 
   private isValidPostalCode(code: string): boolean {
     const postalRegex = /^[A-Za-z0-9]{3,10}$/;

@@ -24,13 +24,17 @@
           <p>{{ a.username }}</p>
           <p>{{ a.email }}</p>
           <p>{{ a.phone }}</p>
-          <div class="roles-display">
-            <div class="scrollable-element">
-              <ul>
-                <li *ngFor="let role of a.roles">{{ role }}</li>
-              </ul>
-            </div>
-          </div>
+<div class="roles-container">
+  <div class="roles-collapsed">
+    {{ a.roles[0] }}
+  </div>
+
+  <div class="roles-expanded">
+    <ul>
+      <li *ngFor="let role of a.roles">{{ role }}</li>
+    </ul>
+  </div>
+</div>
         </div>
 
 <div class="admin-actions">

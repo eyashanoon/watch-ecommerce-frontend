@@ -77,7 +77,18 @@
   <button *ngIf="hasRole('DELETE_PRODUCT') || hasRole('OWNER')" (click)="deleteProduct()">Delete</button>
  
   <button *ngIf="hasRole('CUSTOMER')" (click)="addToCart(products)">Add TO Cart </button>
-  <button *ngIf="hasRole('CUSTOMER')" (click)="addToWishlist(products)">Add TO Wish List</button>
+  <div class="quantity-selector" *ngIf="hasRole('CUSTOMER')">
+  <label for="quantity">Quantity:</label>
+  <input type="number" id="quantity" [(ngModel)]="selectedQuantity" min="1" [max]="products.quantity" />
+</div>
+
+<button class="wishlist-btn" *ngIf="wishlistLoaded" (click)="toggleWishlist()">
+  <span class="heart-icon" [class.active]="isInWishlist()">
+    {{ flag ? '❤️' : '♡' }}
+  </span>
+  Wishlist
+</button>
+
  </div>
 
 

@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 })
 export class ManageAdminsComponent implements OnInit {
   admins: any[] = [];
+    hovering: boolean = false;
 
   constructor(
     private adminService: AdminService, 
@@ -21,6 +22,7 @@ export class ManageAdminsComponent implements OnInit {
     public authService: AuthService
   ) {}
 canSeeAdmins: boolean = false;
+
   ngOnInit() {
   this.canSeeAdmins = this.authService.hasAnyRole([
     'SEE_ADMIN',

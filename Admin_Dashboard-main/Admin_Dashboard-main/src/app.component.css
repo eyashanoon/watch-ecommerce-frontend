@@ -1,57 +1,4 @@
-/* Topbar */
-.topbar {
-  top: 20px;       
-  left: 20px;      
-  right: 20px;     
-  height: 80px;
-  background-color: #B6B09F;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  padding: 0 28px;
-  box-shadow: 0 10px 25px rgba(255,255,255,0.2),
-              0 4px 8px rgba(255,255,255,0.1);
-  color: #232526;
-  z-index: 1000;
-
-}
-
-/* Topbar left section */
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.topbar-left img {
-  width: 80px;
-}
-
-.topbar-left h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  margin: 0;
-}
-
-/* Topbar links on right */
-.topbar-links {
-  margin-left: auto;
-  display: flex;
-  gap: 20px;
-}
-
-.topbar-links a {
-  color: #232526;
-  font-weight: 600;
-  text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-}
-
-.topbar-links a:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-}
+/* ----------------- Layout ----------------- */
 html, body {
   height: 100%;
   margin: 0;
@@ -70,7 +17,7 @@ html, body {
 }
 
 .sidebar {
-  width: 250px; /* Adjust to your sidebar width */
+  width: 250px; /* Adjust sidebar width */
   /* Your existing sidebar styles */
 }
 
@@ -79,53 +26,147 @@ html, body {
   /* Your existing main styles */
 }
 
-/* Footer */
-.footer {
-    background-color: transparent;
-  color: 
-  #535049;
-  text-align: left;
-  font-size: 1rem;
+/* ----------------- Topbar ----------------- */
+.topbar {
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  height: 80px;
+  background-color: #B6B09F;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  box-shadow: 0 10px 25px rgba(255,255,255,0.2),
+              0 4px 8px rgba(255,255,255,0.1);
+  color: #232526;
+  z-index: 1000;
+  flex-wrap: wrap; /* allow items to wrap on small screens */
 }
 
-.footer p {
+/* Topbar left section */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-left img {
+  width: 60px; /* smaller logo on mobile */
+}
+
+.topbar-left h1 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
   margin: 0;
-  
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.footer a {
-  color: #535049;
-  text-decoration: underline;
+/* Topbar links */
+.topbar-links {
+  display: flex;
+  flex-wrap: wrap; /* wrap links to next line if needed */
+  gap: 10px;
+  margin-left: auto;
 }
-.footer p,
-.footer a {
-  color: #3f3434; /* dark base text */
-  font-weight: bold; /* bold */
-  font-size: 1.0rem; /* bigger text */
-  text-shadow: 
-    0 0 4px rgba(255, 255, 255, 0.9), /* strong white inner glow */
-    0 0 8px rgba(255, 255, 255, 0.8), /* medium outer glow */
-    0 0 12px rgba(255, 255, 255, 0.6); /* larger outer glow */
+
+.topbar-links a {
+  color: #232526;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.topbar-links a:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ----------------- Footer ----------------- */
+.footer {
+  background-color: transparent;
+  color: #3f3434;
+  padding: 10px 20px;
+  text-align: center; /* center on mobile */
+  font-size: 0.9rem;
+}
+
+.footer p, .footer a {
+  display: block;
+  margin: 4px 0;
+  font-weight: bold;
   text-decoration: underline;
+  text-shadow: 
+    0 0 4px rgba(255, 255, 255, 0.9),
+    0 0 8px rgba(255, 255, 255, 0.8),
+    0 0 12px rgba(255, 255, 255, 0.6);
   transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
 .footer a:hover {
-  color: #ffd700; /* gold on hover */
+  color: #ffd700;
   text-shadow: 
     0 0 6px rgba(255, 215, 0, 1),
     0 0 12px rgba(255, 215, 0, 0.9),
     0 0 16px rgba(255, 215, 0, 0.8);
 }
 
-
-
-.footer {
-  background-color: transparent; /* semi-transparent black */
-  color: #ffffff;
-  padding: 10px 20px;
-  text-align: left;
+/* ----------------- Responsive ----------------- */
+@media (max-width: 1024px) {
+  .topbar-left img {
+    width: 50px;
+  }
+  .topbar-left h1 {
+    font-size: 16px;
+  }
+  .topbar-links a {
+    font-size: 13px;
+    padding: 5px 8px;
+  }
 }
 
+@media (max-width: 768px) {
+  .topbar {
+    height: auto;
+    padding: 10px;
+  }
 
+  .topbar-links {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 8px;
+  }
 
+  .topbar-left h1 {
+    font-size: 15px;
+  }
+
+  .footer {
+    font-size: 0.8rem;
+    padding: 8px 10px;
+  }
+
+  .footer p, .footer a {
+    text-align: center;
+    text-shadow: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar-left img {
+    width: 40px;
+  }
+  .topbar-left h1 {
+    font-size: 14px;
+  }
+  .topbar-links a {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+}

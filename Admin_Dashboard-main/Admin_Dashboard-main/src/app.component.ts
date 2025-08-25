@@ -26,6 +26,7 @@ export class AppComponent implements OnInit {
   isAdminProductDetails = false;
   isCustomerProductDetails = false;
   isWishlistPage = false; 
+  isCartPage = false;
   isOrdersPage = false;
 
   // User info
@@ -88,14 +89,15 @@ export class AppComponent implements OnInit {
     this.isCustomerProductDetails = url.startsWith('/product/') && !this.isProductsPage;
     this.isControlAdmins = url === '/control-admins';
     this.isWishlistPage = url === '/wishlist'; 
+    this.isCartPage = url === '/cart';          
     this.isOrdersPage = url === '/orders';  
   }
 
   // 🔹 Navigation
   goToHome() { this.router.navigate(['/home']); }
   goToProducts() { this.router.navigate(['/product']); }
-  goToCart() { this.router.navigate(['/cart']); }           // ✅ new
-  goToWishlist() { this.router.navigate(['/wishlist']); }   // ✅ new
+  goToCart() { this.router.navigate(['/cart']); }         
+  goToWishlist() { this.router.navigate(['/wishlist']); }
   goToAdminPanel() { this.router.navigate(['/admin']); }
   goToCustomerPanel() { this.router.navigate(['/customer-dash-board']); }
   goToCustomerDashboard() { this.router.navigate(['/customer-dash-board']); } // ✅ new
