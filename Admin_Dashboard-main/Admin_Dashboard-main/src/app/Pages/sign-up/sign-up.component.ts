@@ -146,12 +146,12 @@ export class SignUpComponent implements AfterViewInit {
       next: (response) => {
         console.log('Registration successful:', response);
         localStorage.setItem('token', response.token);
-        alert('Account created & logged in!');
+        this.showToastMessage('Account created & logged in!');
         this.router.navigate(['/home']);
       },
       error: (error) => {
         console.error('Registration failed:', error);
-        alert('Failed to register.');
+        this.showToastMessage('Failed to register.');
       },
     });
   }

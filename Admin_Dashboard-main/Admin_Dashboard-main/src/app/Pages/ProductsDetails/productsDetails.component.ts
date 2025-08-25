@@ -66,7 +66,9 @@ export class ProductsDetailsComponent implements AfterViewInit {
   productID:number=0;
   colorCombinations!:ClorCombinations[];
   myWishlistIds!:Set<number>;
- 
+   // Toast state
+  toastMessage: string = '';
+  showToast: boolean = false;
    constructor(private router: Router, private productService: ProductService1,   public authService: AuthService ,private imageService:ImageService, private wishlistService: WishlistService,
       private cartService: CartService) {
     const nav = this.router.getCurrentNavigation();
@@ -163,6 +165,20 @@ loadProduct(productId: number): void {
     error: (err) => console.error('Failed to load product', err)
   });
 }
+
+
+  /** TOAST UTILITY */
+  showToastMessage(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 5000);
+  }
+
+
+
+
 changeWatchColor(combo: ClorCombinations) {
   this.loadProduct(combo.id);
   this.loadProductImages(combo.id);
@@ -262,11 +278,10 @@ editProduct() {
   }
 
  
- 
 addToCart(product: ProductWithImages & { selectedQty: number }) {
   product.selectedQty =1;
   if (!product.selectedQty || product.selectedQty < 1) {
-    alert('Please select a quantity of at least 1.');
+    this.showToastMessage('Please select a quantity of at least 1.');
     return;
   }
 
@@ -275,12 +290,12 @@ addToCart(product: ProductWithImages & { selectedQty: number }) {
     .subscribe({
       next: res => {
         console.log('[Cart Debug] Added to cart:', res);
-        alert(`${product.name} added to cart (Qty: ${product.selectedQty})`);
+        this.showToastMessage(`${product.name} added to cart (Qty: ${product.selectedQty})`);
         product.selectedQty = 1;
       },
       error: err => {
         console.error('[Cart Debug] Failed to add to cart:', err);
-        alert('Failed to add product to cart. See console for details.');
+        this.showToastMessage('Failed to add product to cart. See console for details.');
       }
     });
 }
@@ -315,11 +330,11 @@ toggleWishlist() {
         error: err => console.error('Failed to reload wishlist', err)
       });
 
-      alert(`${this.products?.name} ${inList ? 'removed from' : 'added to'} wishlist.`);
+      this.showToastMessage(`${this.products?.name} ${inList ? 'removed from' : 'added to'} wishlist.`);
     },
     error: err => {
       console.error('Wishlist operation failed', err);
-      alert('Wishlist operation failed.');
+      this.showToastMessage('Wishlist operation failed.');
     }
   });
 }

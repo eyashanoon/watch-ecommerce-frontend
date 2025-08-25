@@ -1,5 +1,12 @@
 <!-- Add / Edit Product Form - Reactive Form Version -->
 <div class="add-watch-card">
+  
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast show">
+      {{ toastMessage }}
+    </div>
+  </div>
+
   <h3 class="form-title">
     <span *ngIf="mode === 'add'" class="plus-icon">➕</span>
     <span *ngIf="mode !== 'add'" class="edit-icon">✏️</span>

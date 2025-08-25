@@ -33,7 +33,9 @@ export interface CustomerOrder {
 export class CustomerOrdersComponent implements OnInit {
   orders: CustomerOrder[] = [];
   expandedOrderId: number | null = null;
-
+  // Toast state
+  toastMessage: string = '';
+  showToast: boolean = false;
   constructor(
     private orderService: OrderService,
     private productService: ProductService1
@@ -109,5 +111,12 @@ export class CustomerOrdersComponent implements OnInit {
       case 'cancelled': return 'status-cancelled';
       default: return '';
     }
+  }
+    showToastMessage(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 5000);
   }
 }

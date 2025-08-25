@@ -1,4 +1,10 @@
 <div class="orders-wrapper">
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast show">
+      {{ toastMessage }}
+    </div>
+  </div>
+
   <h1 class="page-title">📦 My Orders</h1>
 
   <!-- Empty orders -->

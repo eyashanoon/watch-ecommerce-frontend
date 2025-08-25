@@ -1,6 +1,13 @@
 <div class="top-container">
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast show">
+      {{ toastMessage }}
+    </div>
+  </div>
+
 <!-- Manage Admins Button fixed at top right -->
 <div class="top-right-button">
+
   <button (click)="goToManagePage()">Manage Existing Admins?</button>
 </div>
 

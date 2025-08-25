@@ -39,6 +39,81 @@
   width: 75%;
     /* remove fixed height so it can scroll naturally */
 }
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none; /* Prevent blocking clicks */
+}
+
+.toast {
+  min-width: 250px;
+  max-width: 350px;
+  padding: 14px 22px;
+  border-radius: 12px;
+  background: rgba(40, 40, 40, 0.85);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transform: translateX(100%);
+  animation: slideIn 0.4s ease forwards, fadeOut 0.4s ease 2.6s forwards;
+  pointer-events: auto; /* Allow hover effects */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* 🔥 Toast Variants */
+.toast-success {
+  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+}
+
+.toast-error {
+  background: linear-gradient(135deg, #E53935, #B71C1C);
+}
+
+.toast-warning {
+  background: linear-gradient(135deg, #FFB300, #F57C00);
+  color: #000;
+}
+
+.toast-info {
+  background: linear-gradient(135deg, #29B6F6, #0288D1);
+}
+
+/* ✨ Slide In + Fade Out Animations */
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* 💫 Hover Effect */
+.toast:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
 
 .image-section {
   position: sticky;

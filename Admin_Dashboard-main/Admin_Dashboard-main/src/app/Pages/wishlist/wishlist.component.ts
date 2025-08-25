@@ -36,6 +36,9 @@ export class WishlistComponent implements OnInit {
     // Add this interface to define the structure of wishlist items with images 
 
   
+  // Toast state
+  toastMessage: string = '';
+  showToast: boolean = false;
 
 constructor(
   private wishlistService: WishlistService,
@@ -54,12 +57,12 @@ toggleSelectAll() {
 
 removeSelected() {
   const toRemove = this.wishlistItems.filter(i => i.selected);
-  if (!toRemove.length) return alert("No items selected.");
+  if (!toRemove.length) return this.showToastMessage("No items selected.");
 
   const ids = toRemove.map(i => i.productId);
   this.wishlistService.removeFromWishlist(ids).subscribe({
     next: () => {
-      alert('Selected items removed.');
+      this.showToastMessage('Selected items removed.');
       this.loadWishlist();
       this.selectAll = false;
     },
@@ -67,25 +70,37 @@ removeSelected() {
   });
 }
 
+
+  /** TOAST UTILITY */
+  showToastMessage(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 5000);
+  }
+
+
+
 addSelectedToCart() {
   const selected = this.wishlistItems.filter(i => i.selected);
-  if (!selected.length) return alert("No items selected.");
+  if (!selected.length) return this.showToastMessage("No items selected.");
   
   const payload = selected
     .map(i => ({ productId: Number(i.productId), quantity: 1 }))
     .filter(p => !isNaN(p.productId));
 
-  if (!payload.length) return alert('No valid product IDs to add.');
+  if (!payload.length) return this.showToastMessage('No valid product IDs to add.');
 
   this.cartService.addToCart(payload).subscribe({
     next: () => {
-      alert('Selected items added to cart!');
+      this.showToastMessage('Selected items added to cart!');
       selected.forEach(i => i.selected = false);
       this.selectAll = false;
     },
     error: err => {
       console.error('Failed to add selected items to cart', err);
-      alert('Failed to add selected items to cart.');
+      this.showToastMessage('Failed to add selected items to cart.');
     }
   });
 }
@@ -93,16 +108,16 @@ addSelectedToCart() {
 addToCart(item: WishlistItemWithImages) {
   const pid = Number(item.productId);
   if (isNaN(pid)) {
-    alert('Invalid product ID.');
+    this.showToastMessage('Invalid product ID.');
     return;
   }
 
   const payload = [{ productId: pid, quantity: 1 }];
   this.cartService.addToCart(payload).subscribe({
-    next: () => alert(`${item.productName} added to cart!`),
+    next: () => this.showToastMessage(`${item.productName} added to cart!`),
     error: err => {
       console.error('Failed to add item to cart', err);
-      alert('Failed to add item to cart.');
+      this.showToastMessage('Failed to add item to cart.');
     }
   });
 }
@@ -248,7 +263,7 @@ navigateToProduct(item: WishlistItemWithImages) {
     next: fullProduct => {
       if (!fullProduct) {
         console.error('Product not found for ID', item.productId);
-        alert('Product details not available.');
+        this.showToastMessage('Product details not available.');
         return;
       }
 
@@ -261,7 +276,7 @@ navigateToProduct(item: WishlistItemWithImages) {
     },
     error: err => {
       console.error('Failed to fetch product details', err);
-      alert('Cannot load product details.');
+      this.showToastMessage('Cannot load product details.');
     }
   });
 
@@ -288,12 +303,12 @@ goToProductDetails(product: any): void {
 
     obs.subscribe({
       next: () => {
-        alert(`${item.productName} ${inList ? 'removed from' : 'added to'} wishlist.`);
+        this.showToastMessage(`${item.productName} ${inList ? 'removed from' : 'added to'} wishlist.`);
         this.loadWishlist(); // ✅ always reload from backend
       },
       error: (err) => {
         console.error('Wishlist operation failed', err);
-        alert('Wishlist operation failed.');
+        this.showToastMessage('Wishlist operation failed.');
       }
     });
   }
@@ -309,12 +324,12 @@ goToProductDetails(product: any): void {
     if (!item?.productId) return;
     this.wishlistService.removeFromWishlist([item.productId]).subscribe({
       next: () => {
-        alert(`${item.productName} removed from wishlist.`);
+        this.showToastMessage(`${item.productName} removed from wishlist.`);
         this.loadWishlist(); // ✅ reload real server wishlist
       },
       error: () => {
         console.error('Failed to remove wishlist item');
-        alert(`${item.productName} could not be removed.`);
+        this.showToastMessage(`${item.productName} could not be removed.`);
       }
     });
   }

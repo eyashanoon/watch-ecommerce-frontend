@@ -3,6 +3,12 @@
   <main class="page-content">
     <div class="container">
       <!-- Sidebar -->
+       
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast show">
+      {{ toastMessage }}
+    </div>
+  </div>
 <div class="sidebar" *ngIf="hasRole('ADMIN')">
   <button (click)="toggleSidebar()">☰</button>
 

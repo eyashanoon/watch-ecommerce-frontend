@@ -1,19 +1,28 @@
 <div class="home-wrapper">
+  <!-- Background Video -->
   <video autoplay muted loop class="video-background">
     <source src="assets/customer_background.mp4" type="video/mp4" />
   </video>
 
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast show">
+      {{ toastMessage }}
+    </div>
+  </div>
+
+
+  <!-- CART CONTENT -->
   <div class="product-container">
     <h1 class="page-title">🛒 My Cart</h1>
 
-    <!-- EMPTY CART -->
+    <!-- EMPTY CART MESSAGE -->
     <div *ngIf="cartItems.length === 0" class="empty-cart">
       <h2>Your cart is empty 😔</h2>
       <p>Add items to your cart to keep track of products you love!</p>
       <button class="browse-btn" routerLink="/product">Browse Products</button>
     </div>
 
-    <!-- CART LIST -->
+    <!-- CART ITEMS LIST -->
     <div *ngIf="cartItems.length > 0" class="cart-list">
       <div *ngFor="let item of cartItems" class="cart-item">
         <input type="checkbox" [(ngModel)]="item.selected" (change)="toggleItemSelection()" class="select-checkbox" />
@@ -34,14 +43,11 @@
           </h3>
           <p class="product-brand">Brand: {{ item.brand || 'Unknown' }}</p>
           <p>Quantity: {{ item.quantity ?? 1 }}</p>
-          <p>
-            Unit Price: $
-            {{ (item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0) }}
-          </p>
+          <p>Unit Price: ${{ (item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0) }}</p>
           <p class="item-total">
             Total: ${{
               ((item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0)) *
-                (item.quantity ?? 1) | number : '1.2-2'
+              (item.quantity ?? 1) | number : '1.2-2'
             }}
           </p>
         </div>
@@ -54,7 +60,7 @@
         </div>
       </div>
 
-      <!-- SUMMARY -->
+      <!-- CART SUMMARY -->
       <div class="cart-summary">
         <p>Total Cart: <strong>${{ getCartTotal() | number : '1.2-2' }}</strong></p>
       </div>
@@ -78,33 +84,30 @@
     <h2><i class="fa-solid fa-bag-shopping"></i> Confirm Your Order</h2>
     <p>Order Time: <strong>{{ orderTime }}</strong></p>
 
-    <!-- Order Items -->
+    <!-- ORDER ITEMS -->
     <div class="order-items">
       <div *ngFor="let item of selectedItemsForOrder" class="order-item-card">
         <img [src]="item.images[0] || 'assets/logo.png'" class="order-item-image" />
         <div class="order-item-details">
           <h4>{{ item.productName }}</h4>
           <p>Quantity: {{ item.quantity ?? 1 }}</p>
-          <p>
-            Unit: $
-            {{ (item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0) }}
-          </p>
+          <p>Unit: ${{ (item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0) }}</p>
           <p class="order-item-total">
             Item Total: ${{
               ((item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0)) *
-                (item.quantity ?? 1) | number : '1.2-2'
+              (item.quantity ?? 1) | number : '1.2-2'
             }}
           </p>
         </div>
       </div>
     </div>
 
-    <!-- Total Summary -->
+    <!-- GRAND TOTAL -->
     <p class="order-summary">
       Grand Total: <strong>${{ getSelectedItemsTotal() | number : '1.2-2' }}</strong>
     </p>
 
-    <!-- Buttons -->
+    <!-- MODAL BUTTONS -->
     <div *ngIf="!orderConfirmed" class="modal-buttons">
       <button class="place-btn" (click)="confirmPayment()">Confirm Payment</button>
       <button class="remove-btn" (click)="cancelOrder()">Cancel</button>
@@ -113,11 +116,7 @@
     <div *ngIf="orderConfirmed" class="modal-buttons">
       <p class="countdown-text">✅ Order confirmed! ⏳ Auto place in {{ countdown }}s</p>
       <button class="remove-btn" (click)="cancelOrder()">Cancel Order</button>
-
-      <!-- NEW BUTTON: confirm early -->
-      <button *ngIf="confirmEnabled" class="place-btn" (click)="finalizeOrder()">
-        Confirm Order Now
-      </button>
+      <button *ngIf="confirmEnabled" class="place-btn" (click)="finalizeOrder()">Confirm Order Now</button>
     </div>
   </div>
 </div>

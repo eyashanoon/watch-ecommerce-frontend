@@ -28,11 +28,22 @@ export class ControlAdminsComponent implements OnInit {
     roles: [] as string[]
   };
 
+  // 🔥 Toast state (mirrored from SignInComponent)
+  toastMessage: string = '';
+  showToast = false;
+
   constructor(
     private router: Router,
     private adminService: AdminService
   ) {}
-
+ // ✅ Show toast method
+  showToastMessage(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 5000);
+  }
   ngOnInit() {
      this.adminService.getAllRoles().subscribe({
       next: (roles) => { this.roless = roles;
@@ -52,14 +63,16 @@ export class ControlAdminsComponent implements OnInit {
   }
 
   // Changed loadAdmins to return a Promise for async sequencing
-  loadAdmins(): Promise<void> {
+   loadAdmins(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.adminService.getAllAdmins().subscribe({
         next: (data) => {
           this.admins = data.content;
           resolve();
         },
-        error: (error) => {
+        error: () => {
+          this.showToastMessage('Failed to load admins');
+          reject();
         }
       });
     });
@@ -100,7 +113,7 @@ export class ControlAdminsComponent implements OnInit {
 
 onSubmit() {
   if (this.isEmailDuplicate(this.admin.email)) {
-    alert('This email is already used by another admin.');
+    this.showToastMessage('This email is already used by another admin.');
     return;
   }
 
@@ -123,26 +136,26 @@ onSubmit() {
       next: () => {
         if (this.admin.password) {
           if (!this.passwordsMatch()) {
-            alert("Passwords do not match");
+            this.showToastMessage("Passwords do not match");
             return;
           }
           if (this.admin.password.length < 6) {
-            alert("Password must be at least 6 characters");
+            this.showToastMessage("Password must be at least 6 characters");
             return;
           }
           this.adminService.updateAdminPassword(adminToUpdate.id, { password: this.admin.password }).subscribe({
             next: () => {
-              alert('Admin and password updated successfully');
+              this.showToastMessage('Admin and password updated successfully');
               this.loadAdmins();
               this.resetForm();
             },
             error: (err) => {
-              alert('Failed to update password');
+              this.showToastMessage('Failed to update password');
               console.error(err);
             }
           });
         } else {
-          alert('Admin updated successfully');
+          this.showToastMessage('Admin updated successfully');
           this.loadAdmins();
           this.resetForm();
                   this.goToManagePage();
@@ -150,18 +163,18 @@ onSubmit() {
         }
       },
       error: (err) => {
-        alert('Failed to update admin');
+        this.showToastMessage('Failed to update admin');
         console.error(err);
       }
     });
   } else {
     // Adding new admin
     if (!this.passwordsMatch()) {
-      alert("Passwords do not match");
+      this.showToastMessage("Passwords do not match");
       return;
     }
     if (!this.admin.password || this.admin.password.length < 6) {
-      alert("Password must be at least 6 characters");
+      this.showToastMessage("Password must be at least 6 characters");
       return;
     }
     const adminPayload: any = {
@@ -174,14 +187,14 @@ onSubmit() {
 
     this.adminService.addAdmin(adminPayload).subscribe({
       next: () => {
-        alert('Admin added successfully');
+         this.showToastMessage('Admin added successfully');
         this.loadAdmins();
         this.router.navigate(['/admin/manage']);
         this.resetForm();
         this.goToManagePage();
       },
       error: (err) => {
-        alert('Failed to add admin');
+         this.showToastMessage('Failed to add admin');
         console.log(adminPayload);
         console.error(err);
       }
@@ -216,11 +229,11 @@ onSubmit() {
     const adminToDelete = this.admins[index];
     this.adminService.deleteAdmin(adminToDelete.id).subscribe({
       next: () => {
-        alert('Admin deleted successfully');
+         this.showToastMessage('Admin deleted successfully');
         this.loadAdmins();
       },
       error: (err) => {
-        alert('Failed to delete admin');
+        this.showToastMessage('Failed to delete admin');
         console.error(err);
       }
     });
