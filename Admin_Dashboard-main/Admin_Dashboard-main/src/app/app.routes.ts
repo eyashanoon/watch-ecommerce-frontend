@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { AdminDashboardComponent } from './Pages/AdminDashBoard/admin-dashboard.component';
 import { ProductsComponent } from './Pages/products/products.component';
-import { OrdersComponent } from './Pages/orders/orders.component';
+import { AdminOrdersComponent } from './Pages/orders/orders.component';
 import { HomeComponent } from './Pages/home/home.component';
 import { CustomerProductsComponent } from './Pages/customer-products/customer-products.component';
 import { AddProductComponent } from './Pages/add-product/add-product.component';
@@ -14,7 +14,7 @@ export const routes: Routes = [
 
   { path: 'product', component: ProductsComponent },
   { path: '', component: HomeComponent },
-  { path: 'orders', component: OrdersComponent },
+  { path: 'orders', component: AdminOrdersComponent },
   { path: 'customer', component: CustomerProductsComponent },
 
   {
