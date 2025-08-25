@@ -2,12 +2,12 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { routes } from './app.routes';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CustomerDashBoardComponent } from './Pages/customer-dash-board/customer-dash-board.component';
 import { AdminDashboardComponent } from './Pages/AdminDashBoard/admin-dashboard.component';
 import { ProductsComponent } from './Pages/products/products.component';
-import { OrdersComponent } from './Pages/orders/orders.component';
+import { AdminOrdersComponent } from './Pages/orders/orders.component';
 import { HomeComponent } from './Pages/home/home.component';
 import { CustomerProductsComponent } from './Pages/customer-products/customer-products.component';
 import { AddProductComponent } from './Pages/add-product/add-product.component';
@@ -31,7 +31,7 @@ export const appImports = [
   CustomerDashBoardComponent,
   AdminDashboardComponent,
   ProductsComponent,
-  OrdersComponent,
+  AdminOrdersComponent,
   HomeComponent,
   CustomerProductsComponent,
   AddProductComponent,

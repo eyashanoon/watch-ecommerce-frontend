@@ -1,51 +1,92 @@
-<div class="orders-container" *ngIf="canViewOrders">
-  <h2>Customer Orders</h2>
+<div class="admin-orders-wrapper">
+  <h1 class="page-title">🛠️ Admin - Customer Orders</h1>
 
-  <div class="customer-card" *ngFor="let order of orders">
-    <!-- Customer Info -->
-    <div class="customer-info">
-      <h3>Customer Information</h3>
-      <div class="info-row">
-        <span><strong>Name:</strong> {{ order.customerName }}</span>
-        <span><strong>Email:</strong> {{ order.email }}</span>
-        <span><strong>Phone:</strong> {{ order.phone }}</span>
-      </div>
-    </div>
-
-    <!-- Products Table -->
-    <div class="products-info">
-      <h4>Products Ordered</h4>
-      <table class="products-table">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Date</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{ order.productName }}</td>
-            <td>{{ order.quantity }}</td>
-            <td>{{ order.date | date:'mediumDate' }}</td>
-            <td>
-              <select
-                *ngIf="canEditStatus"
-                [(ngModel)]="order.status"
-                (change)="updateStatus(order)"
-              >
-                <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
-              </select>
-              <span *ngIf="!canEditStatus">{{ order.status }}</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- Filter by status -->
+  <div class="filter-bar">
+    <label for="statusFilter" class="filter-label">Filter by status:</label>
+    <select id="statusFilter" [(ngModel)]="filterStatus" class="status-select">
+      <option value="ALL">All</option>
+      <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+    </select>
   </div>
-</div>
 
-<div *ngIf="!canViewOrders">
-  <p>You do not have permission to view orders.</p>
+  <!-- Empty orders -->
+  <div *ngIf="groupedOrders.length === 0" class="empty-orders">
+    <h2>No orders found 😔</h2>
+    <p>Looks like there are no customer orders yet.</p>
+  </div>
+
+  <!-- Customer orders list -->
+  <div *ngIf="groupedOrders.length > 0" class="customers-list">
+    <ng-container *ngFor="let customer of groupedOrders">
+      <!-- Show customer only if they have orders matching the filter -->
+        <ng-container *ngIf="isCustomerVisible(customer)">
+        <div class="customer-card">
+
+          <!-- Customer Header -->
+          <div class="customer-header">
+            <div>
+              <h2>{{ customer.customerName }}</h2>
+              <p>Email: {{ customer.customerEmail }}</p>
+              <p>Phone: {{ customer.customerPhone }}</p>
+              <p>Total Orders: <strong>{{ customer.orders.length }}</strong></p>
+            </div>
+          </div>
+
+          <!-- Orders for this customer -->
+          <div class="orders-list">
+            <ng-container *ngFor="let order of customer.orders">
+              <div *ngIf="filterStatus === 'ALL' || order.status === filterStatus" class="order-card">
+                <div class="order-info">
+                  <h3>Order #{{ order.displayOrderId }}</h3>
+                  <p>Placed on: {{ order.orderTime | date:'medium' }}</p>
+                  <p>Total Amount: <strong class="highlight">${{ order.totalAmount | number:'1.2-2' }}</strong></p>
+
+                  <!-- Status -->
+                  <p>Status:
+                    <ng-container *ngIf="!order.editingStatus">
+                      <strong [ngClass]="getStatusClass(order.status)">{{ order.status }}</strong>
+                    </ng-container>
+                    <ng-container *ngIf="order.editingStatus">
+                      <select [(ngModel)]="order.status" class="status-select">
+                        <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+                      </select>
+                      <button class="edit-status-btn" (click)="saveStatus(order)">Save</button>
+                      <button class="cancel-status-btn" (click)="cancelEdit(order)">Cancel</button>
+                    </ng-container>
+                  </p>
+
+                  <!-- Edit Status Button -->
+                  <button *ngIf="canEditStatus && !order.editingStatus" class="edit-status-btn" (click)="order.editingStatus = true">
+                    Edit Status
+                  </button>
+
+                  <!-- Toggle button -->
+                  <button class="toggle-btn" (click)="toggleItems(order)">
+                    {{ order.showItems ? 'Hide Items' : 'Show Items' }}
+                  </button>
+                </div>
+
+                <!-- Order items -->
+                <div class="order-items" *ngIf="order.showItems">
+                  <div *ngFor="let item of order.items" class="order-item-card">
+                    <img [src]="item.images[0]" alt="{{ item.productName }}" class="order-item-image" />
+                    <div class="order-item-details">
+                      <h4>{{ item.productName }}</h4>
+                      <p>Brand: {{ item.brand }}</p>
+                      <p>Quantity: <strong>{{ item.quantity }}</strong></p>
+                      <p>Unit Price: <strong class="highlight">${{ (item.discountPrice ?? item.unitPrice) | number:'1.2-2' }}</strong></p>
+                      <p>Total: <strong class="highlight">${{ getItemTotal(item) | number:'1.2-2' }}</strong></p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </ng-container>
+          </div>
+
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
 </div>
