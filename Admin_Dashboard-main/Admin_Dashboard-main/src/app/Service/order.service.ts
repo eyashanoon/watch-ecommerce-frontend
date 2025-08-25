@@ -27,6 +27,7 @@ export class OrderService {
    * @param orderData - The new admin's data.
    */
   createOrder(orderData: any): Observable<any> {
+    console.log(orderData);
     return this.http.post(API_URL, orderData, {
       headers: this.getAuthHeaders()
     });
@@ -35,14 +36,10 @@ export class OrderService {
   /**
    * Get all admins (paginated).
    */
-  getAllAdmins(pageNumber: number = 1, pageSize: number = 20): Observable<{ content: any[]; [key: string]: any }> {
-    let params = new HttpParams()
-      .set('pageNumber', pageNumber.toString())
-      .set('pageSize', pageSize.toString());
-
-    return this.http.get<{ content: any[]; [key: string]: any }>(API_URL, {
+  getAllOrderForMe( ): Observable<any> {
+    return this.http.get (`${API_URL}`+`/me`, {
       headers: this.getAuthHeaders(),
-      params
+
     });
   }
 

@@ -18,7 +18,7 @@ export interface CartItemWithImages extends CartItem {
   discountPrice?: number;
   quantity?: number;
 }
-// ... other imports remain the same
+
 @Component({
   selector: 'app-cart',
   standalone: true,
@@ -39,6 +39,10 @@ export class CartComponent implements OnInit {
   countdownInterval: any;
   selectedItemsForOrder: CartItemWithImages[] = [];
   orderTime: string = '';
+
+  // NEW STATE
+  confirmEnabled: boolean = false;
+  confirmTimeout: any;
 
   constructor(
     private router: Router,
@@ -177,6 +181,15 @@ export class CartComponent implements OnInit {
     });
   }
 
+  /** SELECT ALL HANDLING */
+  toggleSelectAll() {
+    this.cartItems.forEach(item => (item.selected = this.selectAll));
+  }
+
+  toggleItemSelection() {
+    this.selectAll = this.cartItems.every(item => item.selected);
+  }
+
   placeOrderSelected() {
     this.selectedItemsForOrder = this.cartItems.filter(i => i.selected);
     if (!this.selectedItemsForOrder.length) { alert("Please select at least one item."); return; }
@@ -193,16 +206,28 @@ export class CartComponent implements OnInit {
   confirmPayment() {
     this.orderConfirmed = true;
     this.countdown = 20;
+    this.confirmEnabled = false;
+
+    clearTimeout(this.confirmTimeout);
+    this.confirmTimeout = setTimeout(() => {
+      this.confirmEnabled = true;
+    }, 4000); // Enable after 4s
+
     this.countdownInterval = setInterval(() => {
       this.countdown--;
-      if (this.countdown <= 0) { clearInterval(this.countdownInterval); this.finalizeOrder(); }
+      if (this.countdown <= 0) {
+        clearInterval(this.countdownInterval);
+        this.finalizeOrder();
+      }
     }, 1000);
   }
 
   cancelOrder() {
     clearInterval(this.countdownInterval);
+    clearTimeout(this.confirmTimeout);
     this.showOrderModal = false;
     this.orderConfirmed = false;
+    this.confirmEnabled = false;
   }
 
   getSelectedItemsTotal(): number {
@@ -212,28 +237,45 @@ export class CartComponent implements OnInit {
       return acc + price * qty;
     }, 0);
   }
+finalizeOrder() {
+  clearInterval(this.countdownInterval);
+  clearTimeout(this.confirmTimeout);
 
-  private finalizeOrder() {
-    // Call API to place order here
-    if(this.cartItems.length>0){
-      const mapCart = new Map<number, number>(
-      this.cartItems.map(cartItem => [cartItem.productId, cartItem.quantity ?? 1])
-    );
-    this.orderService.createOrder(mapCart).subscribe({
-      next:()=>{
-            alert('✅ Order placed successfully!');
-            this.showOrderModal = false;
-            this.loadCart();
-      },
-      error: (err) => {
-        alert('Failed to placed Order');
-         console.error(err);
-      }
-
+  if (this.selectedItemsForOrder.length > 0) {
+    // Prepare payload only for selected items
+    const orderData: { [key: number]: number } = {};
+    this.selectedItemsForOrder.forEach(item => {
+      orderData[item.productId] = item.quantity ?? 1;
     });
 
+    this.orderService.createOrder(orderData).subscribe({
+      next: () => {
+        alert('✅ Order placed successfully!');
 
-    }
+        // Remove ordered items from cart
+        const removePayload = this.selectedItemsForOrder.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity ?? 1
+        }));
 
+        this.cartService.removeFromCart(removePayload).subscribe({
+          next: () => {
+            this.loadCart();  // reload remaining cart items
+          },
+          error: (err) => {
+            console.error('Failed to remove ordered items from cart:', err);
+            this.loadCart(); // still reload cart
+          }
+        });
+
+        this.showOrderModal = false;
+      },
+      error: (err) => {
+        alert('❌ Failed to place order');
+        console.error(err);
+      }
+    });
   }
+}
+
 }

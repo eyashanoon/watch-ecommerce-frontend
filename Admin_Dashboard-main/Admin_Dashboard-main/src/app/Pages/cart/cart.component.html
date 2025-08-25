@@ -16,7 +16,7 @@
     <!-- CART LIST -->
     <div *ngIf="cartItems.length > 0" class="cart-list">
       <div *ngFor="let item of cartItems" class="cart-item">
-        <input type="checkbox" [(ngModel)]="item.selected" class="select-checkbox" />
+        <input type="checkbox" [(ngModel)]="item.selected" (change)="toggleItemSelection()" class="select-checkbox" />
 
         <!-- IMAGE -->
         <div class="cart-item-image">
@@ -62,7 +62,7 @@
       <!-- BOTTOM CONTROLS -->
       <div class="cart-controls-bottom">
         <label>
-          <input type="checkbox" [(ngModel)]="selectAll" (change)="removeAllItemsFromCart()" />
+          <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" />
           Select All
         </label>
         <button class="remove-btn" (click)="removeSelected()">Remove Selected</button>
@@ -111,8 +111,13 @@
     </div>
 
     <div *ngIf="orderConfirmed" class="modal-buttons">
-      <p class="countdown-text">✅ Order confirmed! ⏳ Cancel within {{ countdown }}s</p>
+      <p class="countdown-text">✅ Order confirmed! ⏳ Auto place in {{ countdown }}s</p>
       <button class="remove-btn" (click)="cancelOrder()">Cancel Order</button>
+
+      <!-- NEW BUTTON: confirm early -->
+      <button *ngIf="confirmEnabled" class="place-btn" (click)="finalizeOrder()">
+        Confirm Order Now
+      </button>
     </div>
   </div>
 </div>
