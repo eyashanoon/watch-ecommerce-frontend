@@ -40,7 +40,8 @@ export class AddProductComponent implements OnInit {
   shapes: string[] = [];
 
   submitted = false;
-
+  toastMessage: string = '';
+  showToast = false;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -62,7 +63,13 @@ export class AddProductComponent implements OnInit {
       this.loadProductForEdit(this.productId);
     }
   }
-
+  showToastMessage(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 5000);
+  }
   initializeForm(): void {
     this.watchForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(50)]],
@@ -180,8 +187,8 @@ export class AddProductComponent implements OnInit {
       },
       error: err => {
         console.error('Failed to load product', err);
-        alert('Could not load product for editing.');
-        this.router.navigate(['/product']);
+        this.showToastMessage('Could not load product for editing');
+                this.router.navigate(['/product']);
       }
     });
 
@@ -221,7 +228,8 @@ export class AddProductComponent implements OnInit {
             this.imageService.addImageToProduct(product.id, file)
           );
           uploadObservables.forEach(obs => obs.subscribe());
-          alert('Product added successfully!');
+          this.showToastMessage('Product added successfully!');
+
           this.resetForm();
           this.router.navigate(['/product']);
         },
@@ -255,13 +263,14 @@ export class AddProductComponent implements OnInit {
           this.imageFiles = [];
           this.deletedImageIds = [];
           this.loadProductForEdit(this.productId!);
-          alert('Product updated successfully!');
+          
+           this.showToastMessage('Product updated successfully!');
           this.resetForm();
           this.router.navigate(['/product']);
         },
         error: err => {
           console.error('Error updating product:', err);
-          alert('Failed to update product. Please try again later.');
+           this.showToastMessage('Failed to update product. Please try again later.');
         }
       });
     }

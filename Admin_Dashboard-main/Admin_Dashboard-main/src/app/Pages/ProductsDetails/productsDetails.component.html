@@ -1,7 +1,12 @@
 
 <!-- Product Details Section -->
 <div class="product-detail-container" *ngIf="products">
-
+      <!-- TOAST CONTAINER -->
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast show">
+      {{ toastMessage }}
+    </div>
+  </div>
   <div class="product-wrapper">
 
     <!-- Left: Image Section -->

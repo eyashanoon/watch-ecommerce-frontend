@@ -27,6 +27,7 @@ export class OrderService {
    * @param orderData - The new admin's data.
    */
   createOrder(orderData: any): Observable<any> {
+    console.log(orderData);
     return this.http.post(API_URL, orderData, {
       headers: this.getAuthHeaders()
     });
@@ -35,53 +36,30 @@ export class OrderService {
   /**
    * Get all admins (paginated).
    */
-  getAllAdmins(pageNumber: number = 1, pageSize: number = 20): Observable<{ content: any[]; [key: string]: any }> {
-    let params = new HttpParams()
-      .set('pageNumber', pageNumber.toString())
-      .set('pageSize', pageSize.toString());
-
-    return this.http.get<{ content: any[]; [key: string]: any }>(API_URL, {
+  getAllOrderForMe( ): Observable<any> {
+    return this.http.get (`${API_URL}`+`/me`, {
       headers: this.getAuthHeaders(),
-      params
+
     });
   }
 
   /**
    * Get admin by ID
    */
-  getAdminById(id: number): Observable<any> {
-    return this.http.get(`${API_URL}/${id}`, {
+  getOrders( ): Observable<any> {
+    return this.http.get(`${API_URL}`, {
       headers: this.getAuthHeaders()
     });
   }
+updateOrderStatus(id: number, status: string): Observable<{ status: string }> {
+  return this.http.put<{ status: string }>(`${API_URL}/${id}/status`, JSON.stringify(status), {
+    headers: this.getAuthHeaders()
+  });
+}
+
 
   /**
    * Updates an admin's information.
    */
-  updateAdmin(id: number, updatedData: any): Observable<any> {
-    return this.http.put(`${API_URL}/${id}`, updatedData, {
-      headers: this.getAuthHeaders()
-    });
-  }
 
-  /**
-   * Updates an admin's password
-   */
-  updateAdminPassword(adminId: number, updatedData: any): Observable<any> {
-    return this.http.put(`${API_URL}/changePassword/${adminId}`, updatedData, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * Deletes an admin by ID.
-   */
-  deleteAdmin(id: number): Observable<any> {
-    return this.http.delete(`${API_URL}/${id}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-  getAllRoles(): Observable<string[]> {
-    return this.http.get<string[]>(`${API_URL}/roles`, { headers: this.getAuthHeaders() });
-  }
 }

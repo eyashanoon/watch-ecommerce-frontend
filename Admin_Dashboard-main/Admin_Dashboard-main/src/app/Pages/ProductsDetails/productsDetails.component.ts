@@ -66,9 +66,13 @@ export class ProductsDetailsComponent implements AfterViewInit {
   loadedImages:any[]=[] ;
   productID:number=0;
   colorCombinations!:ClorCombinations[];
-  myWishlistIds: Set<number> = new Set();
+   myWishlistIds: Set<number> = new Set();
  
-   constructor(private router: Router, private productService: ProductService1,   public authService: AuthService ,private imageService:ImageService, private wishlistService: WishlistService,
+ 
+    // Toast state
+  toastMessage: string = '';
+  showToast: boolean = false;
+    constructor(private router: Router, private productService: ProductService1,   public authService: AuthService ,private imageService:ImageService, private wishlistService: WishlistService,
       private cartService: CartService) {
     const nav = this.router.getCurrentNavigation();
     const stateProduct = nav?.extras?.state?.['product'];
@@ -156,6 +160,20 @@ loadProduct(productId: number): void {
     error: (err) => console.error('Failed to load product', err)
   });
 }
+
+
+  /** TOAST UTILITY */
+  showToastMessage(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 5000);
+  }
+
+
+
+
 changeWatchColor(combo: ClorCombinations) {
   this.loadProduct(combo.id);
   this.loadProductImages(combo.id);
@@ -265,22 +283,27 @@ editProduct() {
     }
   });
   }
- addToCart(product: ProductWithImages & { selectedQty: number }) {
-  if (!this.selectedQuantity || this.selectedQuantity < 1) {
-    alert('Please select a quantity of at least 1.');
-    return;
+ 
+
+ 
+addToCart(product: ProductWithImages & { selectedQty: number }) {
+  product.selectedQty =1;
+  if (!product.selectedQty || product.selectedQty < 1) {
+    this.showToastMessage('Please select a quantity of at least 1.');
+     return;
   }
 
   this.cartService.addToCart([{ productId: product.id, quantity: this.selectedQuantity }])
     .subscribe({
       next: res => {
         console.log('[Cart Debug] Added to cart:', res);
-        alert(`${product.name} added to cart (Qty: ${this.selectedQuantity})`);
+         this.showToastMessage(`${product.name} added to cart (Qty: ${product.selectedQty})`);
         this.selectedQuantity = 1; // reset input after adding
+ 
       },
       error: err => {
         console.error('[Cart Debug] Failed to add to cart:', err);
-        alert('Failed to add product to cart. See console for details.');
+        this.showToastMessage('Failed to add product to cart. See console for details.');
       }
     });
 }
@@ -322,7 +345,7 @@ toggleWishlist() {
 
   obs.subscribe({
     next: () => {
-      console.log(`Wishlist updated: ${inList ? 'removed' : 'added'} product ${pid}`);
+       console.log(`Wishlist updated: ${inList ? 'removed' : 'added'} product ${pid}`);
     },
     error: err => {
       console.error('Wishlist operation failed', err);
@@ -334,7 +357,8 @@ toggleWishlist() {
         this.myWishlistIds.delete(pid);
       }
 
-      alert('Wishlist operation failed.');
+      this.showToastMessage('Wishlist operation failed.');
+ 
     }
   });
      this.flag=this.myWishlistIds.has(pid);

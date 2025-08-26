@@ -1,0 +1,47 @@
+<div class="orders-wrapper">
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast show">
+      {{ toastMessage }}
+    </div>
+  </div>
+
+  <h1 class="page-title">📦 My Orders</h1>
+
+  <!-- Empty orders -->
+  <div *ngIf="orders.length === 0" class="empty-orders">
+    <h2>You have no orders yet 😔</h2>
+    <p>Browse products and place your first order!</p>
+    <button class="browse-btn" routerLink="/product">Browse Products</button>
+  </div>
+
+  <!-- Orders list -->
+  <div *ngIf="orders.length > 0" class="orders-list">
+    <div *ngFor="let order of orders" class="order-card">
+
+      <!-- Order Header -->
+      <div class="order-header" (click)="toggleOrder(order.displayOrderId)">
+        <div>
+          <h3>Order #{{ order.displayOrderId }}</h3>
+          <p>Placed on: {{ order.orderTime | date:'medium' }}</p>
+          <p>Total Amount: <strong class="highlight">${{ order.totalAmount | number:'1.2-2' }}</strong></p>
+          <p>Status: <strong [ngClass]="getStatusClass(order.status)">{{ order.status }}</strong></p>
+        </div>
+        <button class="toggle-btn">{{ expandedOrderId === order.displayOrderId ? 'Hide Items' : 'View Items' }}</button>
+      </div>
+
+      <!-- Items -->
+      <div *ngIf="expandedOrderId === order.displayOrderId" class="order-items">
+        <div *ngFor="let item of order.items" class="order-item-card">
+          <img [src]="item.images[0]" alt="{{ item.productName }}" class="order-item-image" />
+          <div class="order-item-details">
+            <h4>{{ item.productName }}</h4>
+            <p>Brand: {{ item.brand }}</p>
+            <p>Quantity: <strong>{{ item.quantity }}</strong></p>
+            <p>Unit Price: <strong class="highlight">${{ (item.discountPrice ?? item.unitPrice) | number:'1.2-2' }}</strong></p>
+            <p>Total: <strong class="highlight">${{ getItemTotal(item) | number:'1.2-2' }}</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

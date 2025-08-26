@@ -22,8 +22,18 @@ export class CustomerDashBoardComponent {
       });
     }
   constructor(private router: Router) {}
+  // Toast state
+  toastMessage: string = '';
+  showToast: boolean = false;
 
  goToProducts() {
   this.router.navigate(['/customer-product'], { state: { source: 'dashboard' } });
 }
+  showToastMessage(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 5000);
+  }
 }

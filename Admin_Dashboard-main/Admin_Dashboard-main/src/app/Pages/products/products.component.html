@@ -9,6 +9,12 @@
 </button>
 <!-- Product Section -->
 <div class="product-container">
+        <!-- TOAST CONTAINER -->
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast show">
+      {{ toastMessage }}
+    </div>
+  </div>
   <h2 class="title">Our Collection</h2>
 
   <!-- Search Bar -->

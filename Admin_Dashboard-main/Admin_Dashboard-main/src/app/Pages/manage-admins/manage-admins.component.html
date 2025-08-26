@@ -1,5 +1,11 @@
 <div class="admin-list">
-
+      <!-- TOAST CONTAINER -->
+      <!-- TOAST CONTAINER -->
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast show">
+      {{ toastMessage }}
+    </div>
+  </div>
 <!-- Go to Add Admin Button (only for ADD_ADMIN or OWNER) -->
 <div style="margin-bottom: 15px;" 
      *ngIf="authService.hasAnyRole(['ADD_ADMIN', 'OWNER'])">

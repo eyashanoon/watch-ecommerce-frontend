@@ -14,8 +14,9 @@ import { Router } from '@angular/router';
 })
 export class ManageAdminsComponent implements OnInit {
   admins: any[] = [];
-    hovering: boolean = false;
-
+     hovering: boolean = false;
+   toastMessage: string = '';
+ 
   constructor(
     private adminService: AdminService, 
     private router: Router,
@@ -38,6 +39,15 @@ canSeeAdmins: boolean = false;
 
   }
 
+
+  showToastMessage(message: string) {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 5000);
+  }
+
   loadAdmins() {
     console.log('Loading admins...');
     this.adminService.getAllAdmins().subscribe({
@@ -49,7 +59,7 @@ canSeeAdmins: boolean = false;
         console.log(this.admins);
       },
       error: (err) => {
-        alert('Failed to load admins');
+        this.showToastMessage('Failed to load admins');
         console.error(err);
       }
     });
@@ -64,11 +74,11 @@ canSeeAdmins: boolean = false;
 
     this.adminService.deleteAdmin(adminId).subscribe({
       next: () => {
-        alert('Admin deleted successfully');
+        this.showToastMessage('Admin deleted successfully');
         this.loadAdmins();
       },
       error: (err) => {
-        alert('Failed to delete admin');
+        this.showToastMessage('Failed to delete admin');
         console.error(err);
       }
     });

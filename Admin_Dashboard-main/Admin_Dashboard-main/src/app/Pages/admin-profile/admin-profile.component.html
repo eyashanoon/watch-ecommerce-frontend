@@ -6,10 +6,12 @@
 
 <!-- Dark overlay -->
 <div class="overlay"></div>
-
-
- 
 <div style="height: 100px;"></div> <!-- spacer -->
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast show">
+      {{ toastMessage }}
+    </div>
+  </div>
 
 <div class="profile-container">
   <h2>Your Profile</h2>
