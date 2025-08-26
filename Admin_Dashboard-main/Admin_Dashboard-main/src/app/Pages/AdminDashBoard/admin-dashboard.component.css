@@ -8,6 +8,30 @@
   font-family: 'Segoe UI', Arial, sans-serif;
 }
 
+
+
+/* Focused card */
+.card-wrapper.focused {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 2000;
+    transform: translate(-50%, -50%) scale(5); /* 2.5 times bigger */
+}
+
+.card-wrapper.focused .card {
+  background-color: #ffffff; /* pure white background */
+  filter: brightness(1.2) contrast(1.2); /* optional: slightly boost contrast */
+  box-shadow: 0 30px 60px rgb(255, 255, 255);
+  border: 1px solid #ccc; /* optional subtle border */
+}
+
+/* Focused figure */
+.card-wrapper.focused figure {
+  color: #000; /* ensure title text is black */
+  transform: scale(1.2);
+}
+
 html, body {
   height: 100%;
   overflow: auto;
@@ -15,6 +39,15 @@ html, body {
   color: #232526;
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* =========================
+   Toasts
+========================= */
 .toast-container {
   position: fixed;
   top: 20px;
@@ -23,7 +56,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  pointer-events: none; /* Prevent blocking clicks */
+  pointer-events: none;
 }
 
 .toast {
@@ -40,181 +73,25 @@ html, body {
   opacity: 0;
   transform: translateX(100%);
   animation: slideIn 0.4s ease forwards, fadeOut 0.4s ease 2.6s forwards;
-  pointer-events: auto; /* Allow hover effects */
+  pointer-events: auto;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* 🔥 Toast Variants */
-.toast-success {
-  background: linear-gradient(135deg, #4CAF50, #2E7D32);
-}
+.toast-success { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
+.toast-error   { background: linear-gradient(135deg, #E53935, #B71C1C); }
+.toast-warning { background: linear-gradient(135deg, #FFB300, #F57C00); color: #000; }
+.toast-info    { background: linear-gradient(135deg, #29B6F6, #0288D1); }
 
-.toast-error {
-  background: linear-gradient(135deg, #E53935, #B71C1C);
-}
 
-.toast-warning {
-  background: linear-gradient(135deg, #FFB300, #F57C00);
-  color: #000;
-}
 
-.toast-info {
-  background: linear-gradient(135deg, #29B6F6, #0288D1);
-}
-
-/* ✨ Slide In + Fade Out Animations */
 @keyframes slideIn {
-  0% {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  0% { opacity: 0; transform: translateX(100%); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes fadeOut {
-  0% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-}
-
-/* 💫 Hover Effect */
-.toast:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
-
-
-/* =========================
-   Body Layout
-========================= */
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* =========================
-   Video Background
-========================= */
-.video-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  min-width: 100%;
-  min-height: 100%;
-  object-fit: cover;
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* =========================
-   Sidebar
-========================= */
-.sidebar {
-  width: 220px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 0;
-  background: transparent;
-  height: 100%;
-  transition: transform 0.3s ease;
-}
-
-.sidebar img {
-  width: 100px;
-  margin-bottom: 20px;
-}
-
-.menu-toggle {
-  background: transparent;
-  border: none;
-  color: #e0e0e0;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 8px 20px;
-  border-radius: 4px;
-  margin: 10px 0;
-  width: 100%;
-  text-align: left;
-  transition: background-color 0.3s;
-  z-index: 1000;
-}
-
-.menu-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 20px;
-  padding: 20px;
-  width: 100%;
-  transition: max-height 0.3s ease;
-}
-
-.sidebar-content.hidden {
-  max-height: 0;
-  overflow: hidden;
-}
-
-.sidebar button:not(.menu-toggle) {
-  width: 200px;
-  height: 60px;
-  margin: 5px 0;
-  background: linear-gradient(90deg, #2b2b2b 0%, #4a4a4a 100%);
-  color: #e0e0e0;
-  cursor: pointer;
-  border: 1px solid #8f8f8f;
-  font-weight: bold;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: 0.5px;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(44,62,80,0.07);
-  transition: background 0.2s, transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-}
-
-.sidebar button:hover,
-.sidebar button:focus {
-  background: linear-gradient(90deg, #4a4a4a 0%, #6f6f6f 100%);
-  color: #ffffff;
-  border: 1.5px solid #9ca3af;
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 4px 12px rgba(44,62,80,0.13);
-}
-
-.sidebar button:active {
-  background: #6f6f6f;
-  color: #ffffff;
-  border: 1.5px solid #9ca3af;
-}
-
-/* =========================
-   Admin Badge
-========================= */
-.admin {
-  font-size: 15px;
-  font-weight: 500;
-  color: #232526;
-  background: rgba(255, 255, 255, 0.18);
-  padding: 4px 14px;
-  border-radius: 8px;
-  border: 1px solid #bdbdbd;
-  box-shadow: 0 1px 4px #cccccc22;
+  0% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(100%); }
 }
 
 /* =========================
@@ -242,22 +119,15 @@ body {
   width: 100%;
 }
 
-/* =========================
-   Scrollable Page Content
-========================= */
-.page-content {
-  overflow: auto;
-}
+.page-content { overflow: auto; }
 
 /* =========================
-   Card Grid
+   Grid & Cards
 ========================= */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  justify-items: stretch;
-  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .card-row {
@@ -269,10 +139,18 @@ body {
   padding-bottom: 20px;
 }
 
+.card-wrapper {
+  position: relative;
+  transition: transform 0.5s ease, z-index 0.5s ease;
+  cursor: pointer;
+  display: inline-block;
+}
+
 .card {
   width: 100%;
   max-width: 400px;
-  min-height: 150px;
+  height: 300px;
+  min-height: 100px;
   padding: 20px 35px;
   display: flex;
   flex-direction: column;
@@ -280,122 +158,100 @@ body {
   justify-content: flex-start;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
-  box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1) inset;
   backdrop-filter: blur(12px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  cursor: pointer;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  border: 1px solid rgba(255,255,255,0.25);
+  transition: transform 0.4s ease, box-shadow 0.4s ease, filter 0.4s ease;
+}
+.card .chart-container {
+  width: 100%;
+  height: 200px; /* desired chart height */
 }
 
-.card:hover {
-  transform: scale(1.03);
-  box-shadow:
-    0 6px 30px rgba(0, 0, 0, 0.4),
-    0 0 0 2px rgba(255, 255, 255, 0.2) inset;
-}
 
 .card figure {
   margin-bottom: 12px;
   font-size: 20px;
   font-weight: 600;
   text-align: center;
-  color: #000000;
+  color: #000;
+  transition: transform 0.4s ease;
 }
 
-.card img {
-  width: 70px;
-  margin-bottom: 12px;
-  filter: brightness(0) invert(1);
+/* Focused card */
+.card-wrapper.focused {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(2);
+  z-index: 2000;
 }
 
-.card p {
-  font-size: 14px;
-  font-weight: 400;
-  text-align: center;
-  max-width: 280px;
-  margin: 0 auto;
-  color: #000000;
+.card-wrapper.focused .card {
+  filter: brightness(1.5) contrast(1.5);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+}
+
+.card-wrapper.focused figure {
+  transform: scale(1.2);
+}
+
+
+
+/* Remove blur for focused card */
+.card-wrapper.focused ~ .grid,
+.card-wrapper.focused .card {
+  filter: none !important;
 }
 
 /* =========================
-   Analytics Cards
+   Sidebar
 ========================= */
-.analytics {
+.sidebar {
+  width: 220px;
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.analytics .card {
-  flex: 1;
-  min-width: 200px;
-  height: 100px;
-}
-
-/* =========================
-   Section Titles
-========================= */
-.section-title {
-  font-size: 18px;
-  color: #2c3e50;
-  font-weight: bold;
-}
-
-/* =========================
-   Centering Pages
-========================= */
-.page-center {
-  display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  min-height: 100vh;
-  padding: 20px;
+  padding: 20px 0;
+  height: 100%;
+  background: transparent;
+  transition: transform 0.3s ease;
+}
+
+.sidebar button {
+  width: 200px;
+  height: 60px;
+  margin: 5px 0;
+  background: linear-gradient(90deg, #2b2b2b, #4a4a4a);
+  color: #e0e0e0;
+  cursor: pointer;
+  border: 1px solid #8f8f8f;
+  font-weight: bold;
+  font-size: 16px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(44,62,80,0.07);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.sidebar button:hover {
+  background: linear-gradient(90deg, #4a4a4a, #6f6f6f);
+  color: #fff;
+  border: 1.5px solid #9ca3af;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 12px rgba(44,62,80,0.13);
 }
 
 /* =========================
-   Responsive Styles
+   Responsive
 ========================= */
 @media (max-width: 1024px) {
-  .container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
-    justify-content: space-around;
-    padding: 10px 0;
-    transform: translateY(0);
-  }
-
-  .sidebar img {
-    width: 60px;
-    margin-bottom: 0;
-  }
-
-  .menu-toggle {
-    font-size: 20px;
-    padding: 6px 12px;
-  }
-
-  .sidebar-content {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-  }
+  .container { flex-direction: column; }
+  .sidebar { width: 100%; flex-direction: row; overflow-x: auto; justify-content: space-around; padding: 10px 0; }
+  .sidebar button { width: auto; padding: 6px 12px; font-size: 14px; }
+  .card-row { justify-content: center; }
 }
 
 @media (max-width: 768px) {
-  .card {
-    max-width: 90%;
-    margin: 0 auto;
-  }
-
-  .sidebar-content.hidden {
-    display: none; /* hide sidebar buttons when collapsed */
-  }
+  .card { max-width: 90%; margin: 0 auto; }
+  .sidebar-content.hidden { display: none; }
 }
