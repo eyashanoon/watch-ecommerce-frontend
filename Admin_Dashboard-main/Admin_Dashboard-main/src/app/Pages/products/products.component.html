@@ -217,12 +217,51 @@
         </div>
 
         <h3 class="product-name clickable" (click)="goToProductDetails(product)">{{ product.name }}</h3>
+<p class="normal-grey-text">{{product.brand}} </p>
         <div class="Price-quan-con">
+  <!-- Out of Stock Indicator -->
+    <p class="product-price">{{ product.originalPrice | currency }}</p>
+  <p 
+    class="stock-status" 
+    *ngIf="product.quantity === 0">
+    OUT OF STOCK
+  </p>
 
-          <p class="product-price">{{ product.quantity }}  unit </p>
-          <p class="product-price">{{ product.originalPrice | currency }}</p>
+<div class="product-actions" *ngIf="product.quantity > 0 && authService.isLoggedIn() && wishlistLoaded">
+  <button (click)="toggleCart(product)" class="cart-icon-btn icon-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+         [class.filled]="isCartIconActive(product)">
+      <path d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 
+               0 1.1.9 2 2 2h12v-2h-12l1.1-2h7.45c.75 0 1.41-.41 
+               1.75-1.03l3.58-6.49-.03-.02c.09-.16.15-.35.15-.55 
+               0-.55-.45-1-1-1h-14z"/>
+    </svg>
+  </button>
 
-        </div>
+  <button class="wishlist-btn icon-btn" (click)="toggleWishlist(product)">
+    <span class="heart-icon" [class.active]="isInWishlist(product)">
+  {{ isInWishlist(product) ? '❤️' : '♡' }}
+</span>
+
+  </button>
+</div>
+
+
+
+
+
+<!-- Toast -->
+<div class="toast-container" *ngIf="showToast">
+  <div class="toast">
+    {{ toastMessage }}
+  </div>
+</div>
+
+
+  <!-- Price -->
+ 
+</div>
+
 
       </div>
     </div>
