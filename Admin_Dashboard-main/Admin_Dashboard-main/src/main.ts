@@ -9,8 +9,3 @@ import { ChartsComponent } from './app/Pages/charts/charts.component';
 bootstrapApplication(AppComponent, {
   providers: [provideRouter(routes),   provideHttpClient()]
 }).catch(err => console.error(err));
-
-
-bootstrapApplication(ChartsComponent, {
-  providers: [provideCharts(withDefaultRegisterables())],
-}).catch((err) => console.error(err));

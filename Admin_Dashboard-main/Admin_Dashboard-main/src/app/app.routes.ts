@@ -53,12 +53,12 @@ export const routes: Routes = [
 
   {
     path: 'customer-product',
-    loadComponent: () => import('./Pages/customer-products/customer-products.component').then(m => m.CustomerProductsComponent),canActivate: [CustomerGuard]
+    loadComponent: () => import('./Pages/customer-products/customer-products.component').then(m => m.CustomerProductsComponent)
   },
 
   {
     path: 'customer-profile',
-    loadComponent: () => import('./Pages/customer-profile/customer-profile.component').then(m => m.CustomerProfileComponent),canActivate: [CustomerGuard]
+    loadComponent: () => import('./Pages/customer-profile/customer-profile.component').then(m => m.CustomerProfileComponent)
   },
 
   {
@@ -79,18 +79,18 @@ export const routes: Routes = [
 {
   path: 'wishlist',
   loadComponent: () =>
-    import('./Pages/wishlist/wishlist.component').then(m => m.WishlistComponent),canActivate: [CustomerGuard]
+    import('./Pages/wishlist/wishlist.component').then(m => m.WishlistComponent)
 }
 
 ,
 {
   path: 'cart',
-  loadComponent: () => import('./Pages/cart/cart.component').then(m => m.CartComponent),canActivate: [CustomerGuard]
+  loadComponent: () => import('./Pages/cart/cart.component').then(m => m.CartComponent)
 }
 ,
 {
   path: 'customer/orders',
-  loadComponent: () => import('./Pages/customer-orders/customer-orders.component').then(m => m.CustomerOrdersComponent),canActivate: [CustomerGuard]
+  loadComponent: () => import('./Pages/customer-orders/customer-orders.component').then(m => m.CustomerOrdersComponent)
 }
 ,
 {
@@ -102,9 +102,5 @@ export const routes: Routes = [
   path: 'recommendation',
   loadComponent: () => import('./Pages/recommendation/recommendation.component').then(m => m.RecommendationComponent)
 }
-
-
-
-
 
 ];
