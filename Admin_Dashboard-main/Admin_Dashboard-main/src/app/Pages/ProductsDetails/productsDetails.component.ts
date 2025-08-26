@@ -12,7 +12,8 @@ import { switchMap, map } from 'rxjs/operators';
  import { CartService } from '../../Service/cart.service';
 import { CartDto } from '../../models/cart.model';
 import { WishlistDto } from '../../models/wishlist.model';
- 
+import{RecommendationComponent} from "../../Pages/recommendation/recommendation.component"
+
 
 type Filters = {
   maxPrice: number;
@@ -50,7 +51,7 @@ type ClorCombinations={
 @Component({
   selector: 'app-productsDetails',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIf, NgFor], // <-- include them here
+  imports: [CommonModule, FormsModule, NgIf, NgFor,RecommendationComponent], // <-- include them here
   templateUrl: './productsDetails.component.html',
   styleUrls: ['./productsDetails.component.css']
 })
@@ -61,14 +62,14 @@ export class ProductsDetailsComponent implements AfterViewInit {
   @ViewChildren('carouselImg') carouselImages!: QueryList<ElementRef<HTMLImageElement>>;
   currentIndex = 0;
   is3DViewActive = false;
-  selectedQuantity: number = 1; 
+  selectedQuantity: number = 1;
   products!: ProductWithImages & { selectedQty: number, colorCombinations:ClorCombinations[] };
   loadedImages:any[]=[] ;
   productID:number=0;
   colorCombinations!:ClorCombinations[];
    myWishlistIds: Set<number> = new Set();
- 
- 
+
+
     // Toast state
   toastMessage: string = '';
   showToast: boolean = false;
@@ -86,7 +87,7 @@ export class ProductsDetailsComponent implements AfterViewInit {
       this.router.navigate(['/']);
       return;
     }
- 
+
    }
 
     loadProductImages(productId: number): void {
@@ -107,16 +108,16 @@ export class ProductsDetailsComponent implements AfterViewInit {
             next:(pros:ProductWithImages[])=>{
               this.colorCombinations=pros.map(p=>{
                 return {
-                  hands: p.handsColor, 
+                  hands: p.handsColor,
                   background: p.backgroundColor,
                    band: p.bandColor,
-                   id:p.id 
+                   id:p.id
                 }
               })
             }
            })
-           
-                
+
+
            this.products.colorCombinations= this.colorCombinations;
 
            console.log(this.products);
@@ -126,17 +127,17 @@ export class ProductsDetailsComponent implements AfterViewInit {
           { hands: "#FFFFFF", background: "#333333", band: "#008000",id:2 }, // comp3
           { hands: "#FF69B4", background: "#F0E68C", band: "#8B4513",id:2 }  // comp4
         ]
-    
+
         },
         error: (err) => console.error('Failed to load product', err)
       });
     }
-    
+
     */
-   
+
 loadProduct(productId: number): void {
   this.productService.getProductById(productId).pipe(
-    switchMap((pro: ProductWithImages & { selectedQty: number }) => 
+    switchMap((pro: ProductWithImages & { selectedQty: number }) =>
       this.productService.getProductByName(pro.name).pipe(
         map((pros: ProductWithImages[]) => {
           const colorCombinations = pros.map(p => ({
@@ -178,7 +179,7 @@ changeWatchColor(combo: ClorCombinations) {
   this.loadProduct(combo.id);
   this.loadProductImages(combo.id);
   this.productService.getProductById(combo.id).pipe(
-    switchMap(product => 
+    switchMap(product =>
       this.productService.getProductByName(product.name).pipe(
         map(products => {
           const colorCombinations = products.map(p => ({
@@ -200,7 +201,7 @@ changeWatchColor(combo: ClorCombinations) {
   });
 }
 
- 
+
 
   ngAfterViewInit() {
     if (this.is3DViewActive) this.update3DCarousel();
@@ -283,9 +284,9 @@ editProduct() {
     }
   });
   }
- 
 
- 
+
+
 addToCart(product: ProductWithImages & { selectedQty: number }) {
   product.selectedQty =1;
   if (!product.selectedQty || product.selectedQty < 1) {
@@ -299,7 +300,7 @@ addToCart(product: ProductWithImages & { selectedQty: number }) {
         console.log('[Cart Debug] Added to cart:', res);
          this.showToastMessage(`${product.name} added to cart (Qty: ${product.selectedQty})`);
         this.selectedQuantity = 1; // reset input after adding
- 
+
       },
       error: err => {
         console.error('[Cart Debug] Failed to add to cart:', err);
@@ -358,7 +359,7 @@ toggleWishlist() {
       }
 
       this.showToastMessage('Wishlist operation failed.');
- 
+
     }
   });
      this.flag=this.myWishlistIds.has(pid);
@@ -369,6 +370,5 @@ isInWishlist(): boolean {
   return this.products?.id ? this.myWishlistIds.has(this.products.id) : false;
 }
 
- 
+
  }
- 

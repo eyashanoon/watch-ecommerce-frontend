@@ -95,7 +95,14 @@ export const routes: Routes = [
 {
   path: 'chart',
   loadComponent: () => import('./Pages/charts/charts.component').then(m => m.ChartsComponent)
+},
+{
+  path: 'recommendation',
+  loadComponent: () => import('./Pages/recommendation/recommendation.component').then(m => m.RecommendationComponent)
 }
+
+
+
 
 
 

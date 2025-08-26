@@ -16,6 +16,7 @@ import { ControlAdminsComponent } from './Pages/control-admins/control-admins.co
 import { SignInComponent } from './Pages/sign-in/sign-in.component';
 import { SignUpComponent } from './Pages/sign-up/sign-up.component';
 import { ChartsComponent } from './Pages/charts/charts.component';
+import {RecommendationComponent} from  './Pages/recommendation/recommendation.component';
 
 
 export const appConfig: ApplicationConfig = {
@@ -41,5 +42,6 @@ export const appImports = [
   ControlAdminsComponent,
   SignInComponent,
   SignUpComponent,
-  ChartsComponent
+  ChartsComponent,
+  RecommendationComponent
 ];
