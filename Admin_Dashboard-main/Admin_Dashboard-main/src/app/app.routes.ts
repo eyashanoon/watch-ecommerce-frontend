@@ -17,10 +17,6 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'orders', component: AdminOrdersComponent, canActivate: [AdminGuard] },
 
-  {
-    path: 'report',
-    loadComponent: () => import('./Pages/report/report.component').then(m => m.ReportComponent), canActivate: [AdminGuard]
-  },
 
   {
     path: 'control-admins',

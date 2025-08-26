@@ -9,7 +9,6 @@ import { ProductsComponent } from './Pages/products/products.component';
 import { AdminOrdersComponent } from './Pages/orders/orders.component';
 import { HomeComponent } from './Pages/home/home.component';
 import { AddProductComponent } from './Pages/add-product/add-product.component';
-import { ReportComponent } from './Pages/report/report.component';
 import { ControlAdminsComponent } from './Pages/control-admins/control-admins.component';
 import { SignInComponent } from './Pages/sign-in/sign-in.component';
 import { SignUpComponent } from './Pages/sign-up/sign-up.component';
@@ -33,7 +32,6 @@ export const appImports = [
   AdminOrdersComponent,
   HomeComponent,
   AddProductComponent,
-  ReportComponent,
   ControlAdminsComponent,
   SignInComponent,
   SignUpComponent,
