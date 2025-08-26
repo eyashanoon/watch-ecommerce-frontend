@@ -1,64 +1,135 @@
 <body>
-  <!-- Main content section -->
   <main class="page-content">
     <div class="container">
+
+      <!-- Toast -->
+      <div class="toast-container" *ngIf="showToast">
+        <div class="toast show">{{ toastMessage }}</div>
+      </div>
+
       <!-- Sidebar -->
-       
-  <div class="toast-container" *ngIf="showToast">
-    <div class="toast show">
-      {{ toastMessage }}
-    </div>
-  </div>
-<div class="sidebar" *ngIf="hasRole('ADMIN')">
-  <button (click)="toggleSidebar()">☰</button>
-
-  <div class="sidebar-content" *ngIf="sidebarVisible">
-    <ng-container *ngIf="hasRole('CONTROLADMINS'); else limitedMenu">
-      <button (click)="goToManageAdminsPage()">Control Admins</button>
-      <button (click)="goToProductPage()">Product Management</button>
-      <button (click)="goToOrderPage()">Order Management</button>
-      <button (click)="goToReportPage()">Reports</button>
-    </ng-container>
-
-    <ng-template #limitedMenu>
-      <button *ngIf="hasRole('ADMIN')" (click)="goToManageAdminsPage()">Control Admins</button>
-      <button *ngIf="hasRole('ADMIN')" (click)="goToProductPage()">Product Management</button>
-      <button *ngIf="hasRole('ADMIN')" (click)="goToOrderPage()">Order Management</button>
-      <button *ngIf="hasRole('ADMIN')" (click)="goToReportPage()">Reports</button>
-    </ng-template>
-  </div>
-</div>
-
+      <div class="sidebar" *ngIf="hasRole('ADMIN')">
+        <button (click)="toggleSidebar()">☰</button>
+        <div class="sidebar-content" *ngIf="sidebarVisible">
+          <ng-container *ngIf="hasRole('CONTROLADMINS'); else limitedMenu">
+            <button (click)="goToManageAdminsPage()">Control Admins</button>
+            <button (click)="goToProductPage()">Product Management</button>
+            <button (click)="goToOrderPage()">Order Management</button>
+            <button (click)="goToReportPage()">Reports</button>
+          </ng-container>
+          <ng-template #limitedMenu>
+            <button *ngIf="hasRole('ADMIN')" (click)="goToManageAdminsPage()">Control Admins</button>
+            <button *ngIf="hasRole('ADMIN')" (click)="goToProductPage()">Product Management</button>
+            <button *ngIf="hasRole('ADMIN')" (click)="goToOrderPage()">Order Management</button>
+            <button *ngIf="hasRole('ADMIN')" (click)="goToReportPage()">Reports</button>
+          </ng-template>
+        </div>
+      </div>
 
       <!-- Main Content -->
-      <div class="main">
+      <div class="main" [class.blur-background]="selectedCard !== null" (click)="selectedCard = null">
         <div class="grid">
+
+          <!-- Row 1: Product Charts -->
           <div class="card-row">
-            <div class="card">
-              <figure>Low Stock List</figure>
-              <p>Description: Items running low in stock.</p>
+
+            <div class="card-wrapper"
+                 [class.focused]="selectedCard === 0"
+                 (click)="$event.stopPropagation(); selectedCard = (selectedCard === 0 ? null : 0)">
+              <div class="card">
+                <figure>Yearly Product Report</figure>
+                <div style="width: 300px; height: 250px;">
+                  <canvas baseChart
+                          [data]="yearlyProductChartData"
+                          [options]="barChartOptions"
+                          [type]="barChartType">
+                  </canvas>
+                </div>
+              </div>
             </div>
-            <div class="card">
-              <figure>Highest Demand</figure>
-              <p>Description: Products with the highest demand.</p>
+
+            <div class="card-wrapper"
+                 [class.focused]="selectedCard === 1"
+                 (click)="$event.stopPropagation(); selectedCard = (selectedCard === 1 ? null : 1)">
+              <div class="card">
+                <figure>Monthly Product Report</figure>
+                <div style="width: 300px; height: 250px;">
+                  <canvas baseChart
+                          [data]="monthlyProductChartData"
+                          [options]="barChartOptions"
+                          [type]="barChartType">
+                  </canvas>
+                </div>
+              </div>
             </div>
-            <div class="card">
-              <figure>Total Revenue This Month</figure>
-              <p>Description: Revenue generated this month.</p>
+
+            <div class="card-wrapper"
+                 [class.focused]="selectedCard === 2"
+                 (click)="$event.stopPropagation(); selectedCard = (selectedCard === 2 ? null : 2)">
+              <div class="card">
+                <figure>Daily Product Report</figure>
+                <div style="width: 300px; height: 250px;">
+                  <canvas baseChart
+                          [data]="dailyProductChartData"
+                          [options]="barChartOptions"
+                          [type]="barChartType">
+                  </canvas>
+                </div>
+              </div>
             </div>
-            <div class="card">
-              <figure>Top Purchasing Customers</figure>
-              <p>Description: Customers with the highest purchases.</p>
-            </div>
-            <div class="card">
-              <figure>Top Purchasing Customers</figure>
-              <p>Description: Customers with the highest purchases.</p>
-            </div>
-            <div class="card">
-              <figure>Top Purchasing Customers</figure>
-              <p>Description: Customers with the highest purchases.</p>
-            </div>
+
           </div>
+
+          <!-- Row 2: Order Charts -->
+          <div class="card-row">
+
+            <div class="card-wrapper"
+                 [class.focused]="selectedCard === 3"
+                 (click)="$event.stopPropagation(); selectedCard = (selectedCard === 3 ? null : 3)">
+              <div class="card">
+                <figure>Yearly Order Report</figure>
+                <div style="width: 300px; height: 250px;">
+                  <canvas baseChart
+                          [data]="yearlyOrderChartData"
+                          [options]="barChartOptions"
+                          [type]="barChartType">
+                  </canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-wrapper"
+                 [class.focused]="selectedCard === 4"
+                 (click)="$event.stopPropagation(); selectedCard = (selectedCard === 4 ? null : 4)">
+              <div class="card">
+                <figure>Monthly Order Report</figure>
+                <div style="width: 300px; height: 250px;">
+                  <canvas baseChart
+                          [data]="monthlyOrderChartData"
+                          [options]="barChartOptions"
+                          [type]="barChartType">
+                  </canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-wrapper"
+                 [class.focused]="selectedCard === 5"
+                 (click)="$event.stopPropagation(); selectedCard = (selectedCard === 5 ? null : 5)">
+              <div class="card">
+                <figure>Daily Order Report</figure>
+                <div style="width: 300px; height: 250px;">
+                  <canvas baseChart
+                          [data]="dailyOrderChartData"
+                          [options]="barChartOptions"
+                          [type]="barChartType">
+                  </canvas>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
         </div>
       </div>
 
