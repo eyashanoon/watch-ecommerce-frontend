@@ -51,11 +51,14 @@ export class OrderService {
       headers: this.getAuthHeaders()
     });
   }
-updateOrderStatus(id: number, status: string): Observable<{ status: string }> {
-  return this.http.put<{ status: string }>(`${API_URL}/${id}/status`, JSON.stringify(status), {
-    headers: this.getAuthHeaders()
-  });
+updateOrderStatus(id: number, status: string): Observable<any> {
+  return this.http.put<any>(
+    `${API_URL}/${id}/status`,
+    {status:status}, // wrap the status in quotes
+    { headers: this.getAuthHeaders() }
+  );
 }
+
 
 
   /**
