@@ -1,12 +1,13 @@
-
 <!-- Product Details Section -->
 <div class="product-detail-container" *ngIf="products">
-      <!-- TOAST CONTAINER -->
+
+  <!-- TOAST CONTAINER -->
   <div class="toast-container" *ngIf="showToast">
     <div class="toast show">
       {{ toastMessage }}
     </div>
   </div>
+
   <div class="product-wrapper">
 
     <!-- Left: Image Section -->
@@ -18,12 +19,12 @@
                [class.selected]="i === currentIndex"
                (click)="selectImage(i)" />
         </div>
+
         <div class="main-image-container" *ngIf="!is3DViewActive">
-          <img [src]="loadedImages[currentIndex]" class="main-image" />
+          <img [src]="loadedImages[currentIndex]|| 'assets/logo.png'" class="main-image" />
         </div>
 
         <!-- Carousel arrows -->
-       <!-- <button class="carousel-arrow left" (click)="prevImage()">&#10094;</button>-->
         <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
 
         <!-- 3D View Button -->
@@ -43,59 +44,64 @@
         <div class="product-price"><strong>Price:</strong> ${{ products.originalPrice }}</div>
         <div class="product-qty"><strong>Quantity:</strong> {{ products.quantity }}</div>
 
+        <!-- Color Combinations Section -->
+        <div class="color-combinations" *ngIf="products?.colorCombinations">
+          <h3>Color Combinations</h3>
+          <div class="combo-grid">
+            <div *ngFor="let combo of products.colorCombinations; let i = index" class="watch-combo">
+              <div class="watch-template" (click)="changeWatchColor(combo)">
+                <!-- Band Top -->
+                <div class="watch-band" [style.backgroundColor]="combo.band"></div>
 
-<!-- Color Combinations Section -->
-<div class="color-combinations" *ngIf="products?.colorCombinations">
-  <h3>Color Combinations</h3>
+                <!-- Watch Case -->
+                <div class="watch-case" [style.backgroundColor]="combo.background">
+                  <!-- Hour ticks -->
+                  <div *ngFor="let tick of [].constructor(12); let j = index"
+                       class="watch-tick"
+                       [style.transform]="'rotate(' + (j*30) + 'deg) translateY(-30%)'">
+                  </div>
+                  <!-- Hands -->
+                  <div class="watch-hand hour" [style.backgroundColor]="combo.hands"></div>
+                  <div class="watch-hand minute" [style.backgroundColor]="combo.hands"></div>
+                </div>
 
-  <div class="combo-grid">
-    <div *ngFor="let combo of products.colorCombinations; let i = index" class="watch-combo">
-      <div class="watch-template" (click)="changeWatchColor(combo)">
-        <!-- Band Top -->
-        <div class="watch-band" [style.backgroundColor]="combo.band"></div>
-
-        <!-- Watch Case -->
-        <div class="watch-case" [style.backgroundColor]="combo.background">
-          <!-- Hour ticks -->
-          <div *ngFor="let tick of [].constructor(12); let j = index"
-               class="watch-tick"
-               [style.transform]="'rotate(' + (j*30) + 'deg) translateY(-30%)'">
+                <!-- Band Bottom -->
+                <div class="watch-band" [style.backgroundColor]="combo.band"></div>
+              </div>
+              <span class="combo-label">Combo {{ i+1 }}</span>
+            </div>
           </div>
-          <!-- Hands -->
-          <div class="watch-hand hour" [style.backgroundColor]="combo.hands"></div>
-          <div class="watch-hand minute" [style.backgroundColor]="combo.hands"></div>
         </div>
 
-        <!-- Band Bottom -->
-        <div class="watch-band" [style.backgroundColor]="combo.band"></div>
-      </div>
-      <span class="combo-label">Combo {{ i+1 }}</span>
-    </div>
-  </div>
-</div>
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <!-- Edit Icon -->
+          <button *ngIf="hasRole('UPDATE_PRODUCT') || hasRole('OWNER')" (click)="editProduct()" title="Edit">
+            <i class="fa-solid fa-pen"></i>
+          </button>
 
+          <!-- Delete Icon -->
+          <button *ngIf="hasRole('DELETE_PRODUCT') || hasRole('OWNER')" (click)="deleteProduct()" title="Delete">
+            <i class="fa-solid fa-trash"></i>
+          </button>
 
+          <!-- Add to Cart Icon -->
+          <button *ngIf="hasRole('CUSTOMER')" (click)="addToCart(products)" title="Add to Cart">
+            <i class="fa-solid fa-cart-plus"></i>
+          </button>
 
-
-<div class="action-buttons">
-   <button *ngIf="hasRole('UPDATE_PRODUCT') || hasRole('OWNER')" (click)="editProduct()">Edit</button>
-  <button *ngIf="hasRole('DELETE_PRODUCT') || hasRole('OWNER')" (click)="deleteProduct()">Delete</button>
-
-  <button *ngIf="hasRole('CUSTOMER')" (click)="addToCart(products)">Add TO Cart </button>
-  <div class="quantity-selector" *ngIf="hasRole('CUSTOMER')">
-  <label for="quantity">Quantity:</label>
-  <input type="number" id="quantity" [(ngModel)]="selectedQuantity" min="1" [max]="products.quantity" />
-</div>
+          <!-- Quantity Selector -->
+          <div class="quantity-selector" *ngIf="hasRole('CUSTOMER')">
+            <label for="quantity">Qty:</label>
+            <input type="number" id="quantity" [(ngModel)]="selectedQuantity" min="1" [max]="products.quantity" />
+          </div>
 
 <button class="wishlist-btn" *ngIf="wishlistLoaded" (click)="toggleWishlist()">
   <span class="heart-icon" [class.active]="isInWishlist()">
     {{ flag ? '❤️' : '♡' }}
   </span>
-  Wishlist
 </button>
-
- </div>
-
+        </div>
 
         <p class="product-short-desc">{{ products.description }}</p>
       </div>
@@ -135,8 +141,6 @@
         </div>
       </div>
 
-
-
     </div>
   </div>
 
@@ -150,10 +154,9 @@
     <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
   </div>
 
-
-  <div class="ff" *ngIf="isCustomer">
-    <app-recommendation></app-recommendation>
-
-  </div>
  
+  <div class="ff" *ngIf="isCustomer">
+     <app-recommendation></app-recommendation>
+  </div>
+
 </div>

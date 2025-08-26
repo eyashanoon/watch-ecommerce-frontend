@@ -1,32 +1,27 @@
-/* ----------------- Layout ----------------- */
-html, body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.page-content {
-  flex: 1 1 auto;
-  display: flex;
-}
-
-.container {
-  display: flex;
-  flex: 1 1 auto;
-}
-
-.sidebar {
-  width: 250px; /* Adjust sidebar width */
-  /* Your existing sidebar styles */
-}
-
-.main {
-  flex: 1 1 auto;
-  /* Your existing main styles */
-}
-
 /* ----------------- Topbar ----------------- */
+.topbar-user {
+  margin-left: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #232526;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar-user .user-name {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.topbar-user .user-name:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
+}
+
 .topbar {
   top: 20px;
   left: 20px;
@@ -37,7 +32,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 16px; /* horizontal spacing */
   box-shadow: 0 10px 25px rgba(255,255,255,0.2),
               0 4px 8px rgba(255,255,255,0.1);
   color: #232526;
@@ -45,7 +40,13 @@ html, body {
   flex-wrap: wrap; /* allow items to wrap on small screens */
 }
 
-/* Topbar left section */
+/* Highlight active link */
+.topbar-links a.active-link {
+  color: #ffd700;      /* highlight color */
+  font-weight: 700;    /* optional: make it bold */
+}
+
+/* ----------------- Topbar Left Section ----------------- */
 .topbar-left {
   display: flex;
   align-items: center;
@@ -53,25 +54,20 @@ html, body {
 }
 
 .topbar-left img {
-  width: 60px; /* smaller logo on mobile */
+  width: 60px;
 }
 
 .topbar-left h1 {
   font-size: 18px;
   font-weight: 700;
-  letter-spacing: 1px;
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-/* Topbar links */
+/* ----------------- Topbar Links ----------------- */
 .topbar-links {
   display: flex;
-  flex-wrap: wrap; /* wrap links to next line if needed */
-  gap: 10px;
-  margin-left: auto;
+  align-items: center;
+  gap: 15px;
 }
 
 .topbar-links a {
@@ -87,20 +83,27 @@ html, body {
   background-color: rgba(255, 255, 255, 0.3);
 }
 
+/* ----------------- Page Content ----------------- */
+.page-content {
+  padding: 0 16px;  /* optional horizontal spacing */
+}
+
 /* ----------------- Footer ----------------- */
 .footer {
   background-color: transparent;
   color: #3f3434;
   padding: 10px 20px;
-  text-align: center; /* center on mobile */
+  text-align: center;
   font-size: 0.9rem;
 }
 
-.footer p, .footer a {
+.footer p, 
+.footer a {
   display: block;
   margin: 4px 0;
   font-weight: bold;
   text-decoration: underline;
+  text-align: left;
   text-shadow: 
     0 0 4px rgba(255, 255, 255, 0.9),
     0 0 8px rgba(255, 255, 255, 0.8),
@@ -110,30 +113,13 @@ html, body {
 
 .footer a:hover {
   color: #ffd700;
-  text-shadow: 
-    0 0 6px rgba(255, 215, 0, 1),
-    0 0 12px rgba(255, 215, 0, 0.9),
-    0 0 16px rgba(255, 215, 0, 0.8);
 }
 
 /* ----------------- Responsive ----------------- */
-@media (max-width: 1024px) {
-  .topbar-left img {
-    width: 50px;
-  }
-  .topbar-left h1 {
-    font-size: 16px;
-  }
-  .topbar-links a {
-    font-size: 13px;
-    padding: 5px 8px;
-  }
-}
-
 @media (max-width: 768px) {
   .topbar {
     height: auto;
-    padding: 10px;
+    padding: 10px 20px; /* slightly more horizontal spacing on tablet */
   }
 
   .topbar-links {
@@ -146,25 +132,17 @@ html, body {
   .topbar-left h1 {
     font-size: 15px;
   }
-
-  .footer {
-    font-size: 0.8rem;
-    padding: 8px 10px;
-  }
-
-  .footer p, .footer a {
-    text-align: center;
-    text-shadow: none;
-  }
 }
 
 @media (max-width: 480px) {
   .topbar-left img {
     width: 40px;
   }
+
   .topbar-left h1 {
     font-size: 14px;
   }
+
   .topbar-links a {
     font-size: 12px;
     padding: 4px 6px;

@@ -16,9 +16,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   showCenterContent = true;
 
   // Lines for the typewriter effect
-  aboutLines: string[] = [
-    "At La Royale, we merge classic sophistication with modern craftsmanship to deliver timepieces that are more than accessories — they’re legacies. Each watch in our collection is designed with precision and built to withstand the test of time,combining luxurious materials with timeless design."
-  ];
 
   constructor(private router: Router) {}
 
@@ -51,8 +48,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.showCenterContent = scrollTop < 50;
     });
 
-    // Start typewriter effect on about section
-    this.typewriterLineByLine(this.aboutLines, 'typewriter-container', 20, 400);
   }
 
   // Line-by-line typewriter effect
