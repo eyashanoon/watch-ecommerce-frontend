@@ -15,8 +15,11 @@ export interface CartItemWithImages extends CartItem {
   currentImageIndex: number;
   selected?: boolean;
   brand?: string;
-  discountPrice?: number;
-  quantity?: number;
+
+  /** 🔹 Changed: now guaranteed numbers (not optional) */
+  discountPrice: number;   
+  productPrice: number;   
+  quantity: number;       
 }
 
 @Component({
@@ -62,6 +65,7 @@ export class CartComponent implements OnInit {
     }
     this.loadCart();
   }
+
   /** TOAST UTILITY */
   showToastMessage(message: string) {
     this.toastMessage = message;
@@ -71,7 +75,7 @@ export class CartComponent implements OnInit {
     }, 5000);
   }
 
- loadCart() {
+  loadCart() {
     this.cartService.getMyCart().subscribe({
       next: (res) => {
         const items = res.items ?? [];
@@ -89,6 +93,7 @@ export class CartComponent implements OnInit {
       }
     });
   }
+
   private initializecartItems(items: any[]) {
     this.cartItems = items.map(it => ({
       productId: Number(it.productId ?? 0),
@@ -135,7 +140,7 @@ export class CartComponent implements OnInit {
   getCartTotal(): number {
     return this.cartItems.reduce((acc, i) => {
       const price = (i.discountPrice && i.discountPrice > 0) ? i.discountPrice : i.productPrice;
-      const qty = i.quantity ?? 1;
+      const qty = i.quantity;
       return acc + price * qty;
     }, 0);
   }
@@ -151,46 +156,46 @@ export class CartComponent implements OnInit {
     item.currentImageIndex = i >= 0 ? i : item.images.length - 1;
   }
 
- navigateToProduct(item: CartItemWithImages) {
-  if (!item?.productId) return;
+  navigateToProduct(item: CartItemWithImages) {
+    if (!item?.productId) return;
 
-  this.productService1.getProductById(item.productId).subscribe({
-    next: fullProduct => {
-      if (!fullProduct) {
-        this.showToastMessage('❌ Product details not available.');
-        return;
+    this.productService1.getProductById(item.productId).subscribe({
+      next: fullProduct => {
+        if (!fullProduct) {
+          this.showToastMessage('❌ Product details not available.');
+          return;
+        }
+
+        fullProduct.images = fullProduct.images || [fullProduct.image || 'assets/logo.png'];
+        fullProduct.currentImageIndex = 0;
+        fullProduct.selectedQty = 1;
+
+        this.router.navigate(['/product', encodeURIComponent(fullProduct.name)], { state: { product: fullProduct } });
+      },
+      error: err => {
+        console.error('Failed to fetch product details', err);
+        this.showToastMessage('❌ Cannot load product details.');
       }
+    });
+  }
 
-      fullProduct.images = fullProduct.images || [fullProduct.image || 'assets/logo.png'];
-      fullProduct.currentImageIndex = 0;
-      fullProduct.selectedQty = 1;
+  removeItemFromCart(item: CartItemWithImages) {
+    const payload = [{ productId: item.productId, quantity: item.quantity }];
 
-      this.router.navigate(['/product', encodeURIComponent(fullProduct.name)], { state: { product: fullProduct } });
-    },
-    error: err => {
-      console.error('Failed to fetch product details', err);
-      this.showToastMessage('❌ Cannot load product details.');
-    }
-  });
-}
+    this.cartService.removeFromCart(payload).subscribe({
+      next: (res: any) => {
+        this.loadCart(); // reload cart
+        this.showToastMessage('Item removed from cart.');
+      },
+      error: (err) => {
+        console.error('[CartComponent] Error removing item:', err);
+        this.showToastMessage('Failed to remove item.');
+      }
+    });
+  }
 
-removeItemFromCart(item: CartItemWithImages) {
-  const payload = [{ productId: item.productId, quantity: item.quantity ?? 1 }];
-
-  this.cartService.removeFromCart(payload).subscribe({
-    next: (res: any) => {
-      this.loadCart(); // reload cart
-      this.showToastMessage('Item removed from cart.');
-    },
-    error: (err) => {
-      console.error('[CartComponent] Error removing item:', err);
-      this.showToastMessage('Failed to remove item.');
-    }
-  });
-}
-
- removeAllItemsFromCart() {
-    const items = this.cartItems.map(c => ({ productId: c.productId, quantity: c.quantity ?? 1 }));
+  removeAllItemsFromCart() {
+    const items = this.cartItems.map(c => ({ productId: c.productId, quantity: c.quantity }));
     this.cartService.removeFromCart(items).subscribe({
       next: () => {
         this.loadCart();
@@ -210,7 +215,7 @@ removeItemFromCart(item: CartItemWithImages) {
       return;
     }
 
-    const payload = selectedItems.map(i => ({ productId: i.productId, quantity: i.quantity ?? 1 }));
+    const payload = selectedItems.map(i => ({ productId: i.productId, quantity: i.quantity }));
     this.cartService.removeFromCart(payload).subscribe({
       next: () => {
         this.loadCart();
@@ -232,22 +237,22 @@ removeItemFromCart(item: CartItemWithImages) {
     this.selectAll = this.cartItems.every(item => item.selected);
   }
 
-placeOrderSelected() {
-  this.selectedItemsForOrder = this.cartItems.filter(i => i.selected);
+  placeOrderSelected() {
+    this.selectedItemsForOrder = this.cartItems.filter(i => i.selected);
 
-  if (!this.selectedItemsForOrder.length) {
-    this.showToastMessage('⚠️ Please select at least one item.');
-    return;
+    if (!this.selectedItemsForOrder.length) {
+      this.showToastMessage('⚠️ Please select at least one item.');
+      return;
+    }
+
+    this.showOrderModal = true;
+    this.orderConfirmed = false;
+    this.countdown = 20;
+    clearInterval(this.countdownInterval);
+
+    const now = new Date();
+    this.orderTime = now.toLocaleString();
   }
-
-  this.showOrderModal = true;
-  this.orderConfirmed = false;
-  this.countdown = 20;
-  clearInterval(this.countdownInterval);
-
-  const now = new Date();
-  this.orderTime = now.toLocaleString();
-}
 
   confirmPayment() {
     this.orderConfirmed = true;
@@ -279,11 +284,9 @@ placeOrderSelected() {
   getSelectedItemsTotal(): number {
     return this.selectedItemsForOrder.reduce((acc, i) => {
       const price = (i.discountPrice && i.discountPrice > 0) ? i.discountPrice : i.productPrice;
-      const qty = i.quantity ?? 1;
-      return acc + price * qty;
+      return acc + price * i.quantity;
     }, 0);
   }
-
 
   finalizeOrder() {
     clearInterval(this.countdownInterval);
@@ -291,14 +294,14 @@ placeOrderSelected() {
 
     if (this.selectedItemsForOrder.length > 0) {
       const orderData: { [key: number]: number } = {};
-      this.selectedItemsForOrder.forEach(item => orderData[item.productId] = item.quantity ?? 1);
+      this.selectedItemsForOrder.forEach(item => orderData[item.productId] = item.quantity);
 
       this.orderService.createOrder(orderData).subscribe({
         next: () => {
           this.showToastMessage('✅ Order placed successfully!');
           const removePayload = this.selectedItemsForOrder.map(item => ({
             productId: item.productId,
-            quantity: item.quantity ?? 1
+            quantity: item.quantity
           }));
 
           this.cartService.removeFromCart(removePayload).subscribe({
@@ -318,5 +321,4 @@ placeOrderSelected() {
       });
     }
   }
-
 }

@@ -85,7 +85,7 @@ removeSelected() {
 addSelectedToCart() {
   const selected = this.wishlistItems.filter(i => i.selected);
   if (!selected.length) return this.showToastMessage("No items selected.");
-  
+
   const payload = selected
     .map(i => ({ productId: Number(i.productId), quantity: 1 }))
     .filter(p => !isNaN(p.productId));
@@ -95,7 +95,14 @@ addSelectedToCart() {
   this.cartService.addToCart(payload).subscribe({
     next: () => {
       this.showToastMessage('Selected items added to cart!');
-      selected.forEach(i => i.selected = false);
+      const ids = selected.map(i => i.productId);
+
+      // ✅ remove from wishlist on server
+      this.wishlistService.removeFromWishlist(ids).subscribe({
+        next: () => this.loadWishlist(),
+        error: err => console.error('Failed to remove after adding to cart', err)
+      });
+
       this.selectAll = false;
     },
     error: err => {
@@ -114,13 +121,22 @@ addToCart(item: WishlistItemWithImages) {
 
   const payload = [{ productId: pid, quantity: 1 }];
   this.cartService.addToCart(payload).subscribe({
-    next: () => this.showToastMessage(`${item.productName} added to cart!`),
+    next: () => {
+      this.showToastMessage(`${item.productName} added to cart!`);
+
+      // ✅ remove from wishlist on server
+      this.wishlistService.removeFromWishlist([pid]).subscribe({
+        next: () => this.loadWishlist(),
+        error: err => console.error('Failed to remove after adding to cart', err)
+      });
+    },
     error: err => {
       console.error('Failed to add item to cart', err);
       this.showToastMessage('Failed to add item to cart.');
     }
   });
 }
+
 
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {

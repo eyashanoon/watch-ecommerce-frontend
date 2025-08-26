@@ -13,30 +13,22 @@
 
   <div class="overlay-content">
 
-    <!-- Center Content fixed at bottom, hides on scroll -->
-    <div
-      class="center-content"
-      [class.hidden]="!showCenterContent"
-    >
+    <!-- Center Content fixed at bottom -->
+    <div class="center-content" [class.hidden]="!showCenterContent">
       <div class="welcome-text">Welcome to La Royale Watches Store</div>
-      <button (click)="goToProductPage()">Explore Products</button>
     </div>
 
+    <!-- About Section immediately below welcome content -->
     <div id="about" class="about-section">
-  <h2>About La Royale</h2>
-  <div id="typewriter-container"></div>
-</div>
+      <h2>About La Royale</h2>
+      <div id="typewriter-container"></div>
+      <p>
+        At La Royale, we merge classic sophistication with modern craftsmanship to deliver timepieces that are more than accessories — they’re legacies. Each watch in our collection is designed with precision and built to withstand the test of time, combining luxurious materials with timeless design.
+      </p>
+            <button (click)="goToProductPage()">Explore Products</button>
 
-
-    <!-- Scroll Up Arrow Button -->
-    <button
-      id="scroll-to-top"
-      aria-label="Scroll to top"
-      title="Back to top"
-      (click)="scrollToTop()"
-      [class.show]="showScrollTop"
-    >
-      ⬆ 
-    </button>
+    </div>
+    
+    
   </div> <!-- close overlay-content -->
 </div>

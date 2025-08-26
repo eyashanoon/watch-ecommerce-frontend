@@ -10,7 +10,6 @@
     </div>
   </div>
 
-
   <!-- CART CONTENT -->
   <div class="product-container">
     <h1 class="page-title">🛒 My Cart</h1>
@@ -42,12 +41,14 @@
             {{ item.productName }}
           </h3>
           <p class="product-brand">Brand: {{ item.brand || 'Unknown' }}</p>
-          <p>Quantity: {{ item.quantity ?? 1 }}</p>
-          <p>Unit Price: ${{ (item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0) }}</p>
+          <p>Quantity: {{ item.quantity }}</p>
+          <p>
+            Unit Price: ${{ item.discountPrice > 0 ? item.discountPrice : item.productPrice }}
+          </p>
           <p class="item-total">
             Total: ${{
-              ((item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0)) *
-              (item.quantity ?? 1) | number : '1.2-2'
+              (item.discountPrice > 0 ? item.discountPrice : item.productPrice) *
+              item.quantity | number : '1.2-2'
             }}
           </p>
         </div>
@@ -90,12 +91,14 @@
         <img [src]="item.images[0] || 'assets/logo.png'" class="order-item-image" />
         <div class="order-item-details">
           <h4>{{ item.productName }}</h4>
-          <p>Quantity: {{ item.quantity ?? 1 }}</p>
-          <p>Unit: ${{ (item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0) }}</p>
+          <p>Quantity: {{ item.quantity }}</p>
+          <p>
+            Unit: ${{ item.discountPrice > 0 ? item.discountPrice : item.productPrice }}
+          </p>
           <p class="order-item-total">
             Item Total: ${{
-              ((item.discountPrice ?? 0) > 0 ? (item.discountPrice ?? 0) : (item.productPrice ?? 0)) *
-              (item.quantity ?? 1) | number : '1.2-2'
+              (item.discountPrice > 0 ? item.discountPrice : item.productPrice) *
+              item.quantity | number : '1.2-2'
             }}
           </p>
         </div>
@@ -114,7 +117,7 @@
     </div>
 
     <div *ngIf="orderConfirmed" class="modal-buttons">
-      <p class="countdown-text">✅ Order confirmed! ⏳ Auto place in {{ countdown }}s</p>
+      <p class="countdown-text">✅ Waiting for confirmations! ⏳ Auto place in {{ countdown }}s</p>
       <button class="remove-btn" (click)="cancelOrder()">Cancel Order</button>
       <button *ngIf="confirmEnabled" class="place-btn" (click)="finalizeOrder()">Confirm Order Now</button>
     </div>

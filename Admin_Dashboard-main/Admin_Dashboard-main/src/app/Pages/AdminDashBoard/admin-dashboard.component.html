@@ -21,7 +21,6 @@
             <button *ngIf="hasRole('ADMIN')" (click)="goToManageAdminsPage()">Control Admins</button>
             <button *ngIf="hasRole('ADMIN')" (click)="goToProductPage()">Product Management</button>
             <button *ngIf="hasRole('ADMIN')" (click)="goToOrderPage()">Order Management</button>
-            <button *ngIf="hasRole('ADMIN')" (click)="goToReportPage()">Reports</button>
           </ng-template>
         </div>
       </div>
@@ -37,12 +36,12 @@
                  [class.focused]="selectedCard === 0"
                  (click)="$event.stopPropagation(); selectedCard = (selectedCard === 0 ? null : 0)">
               <div class="card">
-                <figure>Yearly Product Report</figure>
+                <figure>Yearly Product Report 📈</figure>
                 <div style="width: 300px; height: 250px;">
                   <canvas baseChart
                           [data]="yearlyProductChartData"
-                          [options]="barChartOptions"
-                          [type]="barChartType">
+                          [options]="lineChartOptions"
+                          [type]="lineChartType">
                   </canvas>
                 </div>
               </div>
@@ -52,12 +51,12 @@
                  [class.focused]="selectedCard === 1"
                  (click)="$event.stopPropagation(); selectedCard = (selectedCard === 1 ? null : 1)">
               <div class="card">
-                <figure>Monthly Product Report</figure>
+                <figure>Monthly Product Report 📈</figure>
                 <div style="width: 300px; height: 250px;">
                   <canvas baseChart
                           [data]="monthlyProductChartData"
-                          [options]="barChartOptions"
-                          [type]="barChartType">
+                          [options]="lineChartOptions"
+                          [type]="lineChartType">
                   </canvas>
                 </div>
               </div>
@@ -67,12 +66,12 @@
                  [class.focused]="selectedCard === 2"
                  (click)="$event.stopPropagation(); selectedCard = (selectedCard === 2 ? null : 2)">
               <div class="card">
-                <figure>Daily Product Report</figure>
+                <figure>Daily Product Report 📈</figure>
                 <div style="width: 300px; height: 250px;">
                   <canvas baseChart
                           [data]="dailyProductChartData"
-                          [options]="barChartOptions"
-                          [type]="barChartType">
+                          [options]="lineChartOptions"
+                          [type]="lineChartType">
                   </canvas>
                 </div>
               </div>
@@ -87,12 +86,12 @@
                  [class.focused]="selectedCard === 3"
                  (click)="$event.stopPropagation(); selectedCard = (selectedCard === 3 ? null : 3)">
               <div class="card">
-                <figure>Yearly Order Report</figure>
+                <figure>Yearly Order Report 📈</figure>
                 <div style="width: 300px; height: 250px;">
                   <canvas baseChart
                           [data]="yearlyOrderChartData"
-                          [options]="barChartOptions"
-                          [type]="barChartType">
+                          [options]="lineChartOptions"
+                          [type]="lineChartType">
                   </canvas>
                 </div>
               </div>
@@ -102,12 +101,12 @@
                  [class.focused]="selectedCard === 4"
                  (click)="$event.stopPropagation(); selectedCard = (selectedCard === 4 ? null : 4)">
               <div class="card">
-                <figure>Monthly Order Report</figure>
+                <figure>Monthly Order Report 📈</figure>
                 <div style="width: 300px; height: 250px;">
                   <canvas baseChart
                           [data]="monthlyOrderChartData"
-                          [options]="barChartOptions"
-                          [type]="barChartType">
+                          [options]="lineChartOptions"
+                          [type]="lineChartType">
                   </canvas>
                 </div>
               </div>
@@ -117,12 +116,12 @@
                  [class.focused]="selectedCard === 5"
                  (click)="$event.stopPropagation(); selectedCard = (selectedCard === 5 ? null : 5)">
               <div class="card">
-                <figure>Daily Order Report</figure>
+                <figure>Daily Order Report 📈</figure>
                 <div style="width: 300px; height: 250px;">
                   <canvas baseChart
                           [data]="dailyOrderChartData"
-                          [options]="barChartOptions"
-                          [type]="barChartType">
+                          [options]="lineChartOptions"
+                          [type]="lineChartType">
                   </canvas>
                 </div>
               </div>

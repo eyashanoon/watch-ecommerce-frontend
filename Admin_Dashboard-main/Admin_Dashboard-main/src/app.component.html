@@ -1,102 +1,71 @@
 <div>
-  <div class="topbar">
-    <div class="topbar-left" (click)="goToHome()" style="cursor: pointer;">
+  <!-- ----------------- Topbar for Logged-in Customer ----------------- -->
+  <div class="topbar" *ngIf="authService.isLoggedIn() && authService.getUserRoles().includes('CUSTOMER')">
+    <div class="topbar-left" (click)="handleLogoClick()" style="cursor: pointer;">
       <img src="/assets/logo.png" alt="Logo" />
       <h1>| La Royale Watches Store</h1>
     </div>
-
-<!-- Home page links -->
-<div class="topbar-links" *ngIf="isHomePage">
-  <a href="#" (click)="scrollToAbout($event)">About</a>
-
-  <!-- Only show if user is NOT signed in -->
-  <ng-container *ngIf="!authService.isLoggedIn()">
-    <a href="#" (click)="goToSignInPage(); $event.preventDefault()">Sign In</a>
-    <a href="#" (click)="goToSignUpPage(); $event.preventDefault()">Sign Up</a>
-  </ng-container>
-
-  <!-- Only show if user IS signed in -->
-  <a *ngIf="authService.isLoggedIn()" href="#" (click)="goToPanel(); $event.preventDefault()">Go to dashboard</a>
-</div>
-
-
-    <!-- Admin profile page -->
-    <div class="topbar-links" *ngIf="isAdminProfilePage">
-      <a href="#" (click)="goToAdminPanel(); $event.preventDefault()">Admin Panel</a>
+    <div class="topbar-links">
+      <a routerLink="/product" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">Products</a>
+      <a routerLink="/customer-profile" routerLinkActive="active-link">Profile</a>
+      <a (click)="goToWishlist()" title="Wishlist" [ngClass]="{'active-link': isWishlistPage}">
+        <i class="fa-solid fa-heart"></i>
+      </a>
+      <a (click)="goToCart()" title="Cart" [ngClass]="{'active-link': isCartPage}">
+        <i class="fa-solid fa-cart-shopping"></i>
+      </a>
+      <a (click)="goToCustomerOrders()" [ngClass]="{'active-link': isOrdersPage}">Orders</a>
+      <a (click)="signOut($event)">Sign Out</a>
     </div>
-
-    <!-- Customer profile page -->
-    <div class="topbar-links" *ngIf="isCustomerProfilePage">
-      <a href="#" (click)="goToCustomerPanel(); $event.preventDefault()">Customer Panel</a>
-    </div>
-
-    <!-- Add Product page -->
-    <div class="topbar-links" *ngIf="isAddProductPage">
-      <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
-    </div>
-
-    <!-- Admin Dashboard -->
-    <div class="topbar-links" *ngIf="isAdminDashBoard">
-      <a routerLink="/admin-profile" href="/admin-profile">Profile</a>
-      <a href="#" (click)="signOut($event)">Sign Out</a>
-    </div>
-
-    <!-- Customer Dashboard -->
-    <div class="topbar-links" *ngIf="isCustomerDashBoard">
-      <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
-      <a routerLink="/customer-profile" href="/customer-profile">Profile</a>
-      <a href="#" (click)="goToCart(); $event.preventDefault()">Cart</a>
-      <a href="#" (click)="goToWishlist(); $event.preventDefault()">Wishlist</a>
-      <!-- ✅ New: Customer Orders link -->
-      <a href="#" *ngIf="isCustomer" (click)="goToCustomerOrders(); $event.preventDefault()">Orders</a>
-      <a href="#" (click)="signOut($event)">Sign Out</a>
-    </div>
-
-    <!-- Products page -->
-    <div class="topbar-links" *ngIf="isProductsPage">
-      <a href="#" (click)="goToPanel(); $event.preventDefault()">Go to dashboard</a>
-      <a *ngIf="isCustomer" href="#" (click)="goToCart(); $event.preventDefault()">Cart</a>
-      <a *ngIf="isCustomer" href="#" (click)="goToWishlist(); $event.preventDefault()">Wishlist</a>
-      <!-- ✅ Customer Orders also here -->
-      <a *ngIf="isCustomer" href="#" (click)="goToCustomerOrders(); $event.preventDefault()">Orders</a>
-    </div>
-
-    <!-- Manage Admins / Control Admins -->
-    <div class="topbar-links" *ngIf="isManageAdmins || isControlAdmins">
-      <a href="#" (click)="goToAdminPanel(); $event.preventDefault()">Go to Admin Panel</a>
-    </div>
-    <div class="topbar-links" *ngIf="isOrdersPage">
-      <a href="#" (click)="goToAdminPanel(); $event.preventDefault()">Go to Admin Panel</a>
-    </div>
-
-    <!-- Product details pages -->
-    <div class="topbar-links" *ngIf="isAdminProductDetails || isCustomerProductDetails">
-      <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
-      <a href="#" (click)="goToPanel(); $event.preventDefault()">Go to dashboard</a>
-    </div>
-
-    <!-- Wishlist page -->
-    <div class="topbar-links" *ngIf="isWishlistPage">
-      <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
-      <a href="#" (click)="goToCustomerDashboard(); $event.preventDefault()">Dashboard</a>
-      <a routerLink="/customer-profile" href="/customer-profile">Profile</a>
-      <a href="#" (click)="signOut($event)">Sign Out</a>
-      <!-- ✅ Customer Orders -->
-      <a *ngIf="isCustomer" href="#" (click)="goToCustomerOrders(); $event.preventDefault()">Orders</a>
-    </div>
-    <!-- Cart page -->
-    <div class="topbar-links" *ngIf="isCartPage">
-      <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
-      <a href="#" (click)="goToCustomerDashboard(); $event.preventDefault()">Dashboard</a>
-      <a routerLink="/customer-profile" href="/customer-profile">Profile</a>
-      <a href="#" (click)="signOut($event)">Sign Out</a>
+    <!-- User Name Display -->
+    <div class="topbar-user" *ngIf="authService.isLoggedIn()">
+      <span class="user-name">👤 {{ userName }}</span>
     </div>
   </div>
 
-  <!-- Main router outlet -->
-  <router-outlet></router-outlet>
+  <!-- ----------------- Topbar for Logged-in Admin ----------------- -->
+  <div class="topbar" *ngIf="authService.isLoggedIn() && authService.getUserRoles().includes('ADMIN')">
+    <div class="topbar-left" (click)="handleLogoClick()" style="cursor: pointer;">
+      <img src="/assets/logo.png" alt="Logo" />
+      <h1>| La Royale Admin Panel</h1>
+    </div>
+    <div class="topbar-links">
+      <a routerLink="/admin" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/admin-profile" routerLinkActive="active-link">Profile</a>
+      <a (click)="signOut($event)">Sign Out</a>
+    </div>
+    <!-- User Name Display -->
+    <div class="topbar-user" *ngIf="authService.isLoggedIn()">
+      <span class="user-name">👤 {{ userName }}</span>
+    </div>
+  </div>
 
-  <!-- Footer -->
+  <!-- ----------------- Topbar for Sign In / Sign Up pages ----------------- -->
+  <div class="topbar" *ngIf="isSignInPage || isSignUpPage">
+    <div class="topbar-left" (click)="handleLogoClick()" style="cursor: pointer;">
+      <img src="/assets/logo.png" alt="Logo" />
+      <h1>| La Royale Watches Store</h1>
+    </div>
+  </div>
+
+  <!-- ----------------- Topbar for Not Logged-in Users ----------------- -->
+  <div class="topbar" *ngIf="!authService.isLoggedIn() && !isSignInPage && !isSignUpPage">
+    <div class="topbar-left" (click)="handleLogoClick()" style="cursor: pointer;">
+      <img src="/assets/logo.png" alt="Logo" />
+      <h1>| La Royale Watches Store</h1>
+    </div>
+    <div class="topbar-links">
+      <a (click)="goToSignInPage()">Sign In</a>
+      <a (click)="goToSignUpPage()">Sign Up</a>
+    </div>
+  </div>
+
+  <!-- ----------------- Page Content ----------------- -->
+  <div class="page-content">
+    <router-outlet></router-outlet>
+  </div>
+
+  <!-- ----------------- Footer ----------------- -->
   <footer class="footer">
     <p>
       Need help? Contact our support:

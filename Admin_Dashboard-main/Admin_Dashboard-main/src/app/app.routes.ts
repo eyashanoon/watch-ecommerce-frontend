@@ -3,9 +3,7 @@ import { AdminDashboardComponent } from './Pages/AdminDashBoard/admin-dashboard.
 import { ProductsComponent } from './Pages/products/products.component';
 import { AdminOrdersComponent } from './Pages/orders/orders.component';
 import { HomeComponent } from './Pages/home/home.component';
-import { CustomerProductsComponent } from './Pages/customer-products/customer-products.component';
 import { AddProductComponent } from './Pages/add-product/add-product.component';
-import { ChartsComponent } from './Pages/charts/charts.component';
 import { AdminGuard } from './Pages/guards/admin-guard';
 import { CustomerGuard } from './Pages/customer-guards/customer-guard';
 
@@ -18,7 +16,6 @@ export const routes: Routes = [
   { path: 'product', component: ProductsComponent },
   { path: '', component: HomeComponent },
   { path: 'orders', component: AdminOrdersComponent, canActivate: [AdminGuard] },
-  { path: 'customer', component: CustomerProductsComponent,canActivate: [CustomerGuard] },
 
   {
     path: 'report',
@@ -35,10 +32,6 @@ export const routes: Routes = [
     loadComponent: () => import('./Pages/sign-in/sign-in.component').then(m => m.SignInComponent)
   },
 
-  {
-    path: 'customer-dash-board',
-    loadComponent: () => import('./Pages/customer-dash-board/customer-dash-board.component').then(m => m.CustomerDashBoardComponent),canActivate: [CustomerGuard]
-  },
 
   {
     path: 'sign-up',
@@ -51,10 +44,7 @@ export const routes: Routes = [
   },
 
 
-  {
-    path: 'customer-product',
-    loadComponent: () => import('./Pages/customer-products/customer-products.component').then(m => m.CustomerProductsComponent)
-  },
+
 
   {
     path: 'customer-profile',
@@ -93,10 +83,6 @@ export const routes: Routes = [
   loadComponent: () => import('./Pages/customer-orders/customer-orders.component').then(m => m.CustomerOrdersComponent)
 }
 ,
-{
-  path: 'chart',
-  loadComponent: () => import('./Pages/charts/charts.component').then(m => m.ChartsComponent), canActivate: [AdminGuard]
-},
 
 {
   path: 'recommendation',

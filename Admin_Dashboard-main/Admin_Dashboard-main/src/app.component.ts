@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './app/Service/auth.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterModule, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -27,7 +28,8 @@ export class AppComponent implements OnInit {
   isCustomerProductDetails = false;
    isWishlistPage = false; 
   isCartPage = false;
- 
+ isSignInPage = false;
+  isSignUpPage = false;
   isOrdersPage = false;
 
   // User info
@@ -50,50 +52,92 @@ export class AppComponent implements OnInit {
       this.loadUserInfo();
     });
   }
-
-  loadUserInfo() {
-    if (!this.authService.isLoggedIn()) {
-      this.userName = this.userEmail = this.userRole = '';
-      return;
-    }
-
-    this.userEmail = this.authService.getEmailFromToken() || '';
+handleLogoClick() {
+  if (this.authService.isLoggedIn()) {
     const roles = this.authService.getUserRoles();
-    this.userRole = roles.includes('ADMIN') ? 'Admin' : 'Customer';
-    const userId = this.authService.getUserId();
-
-    if (!userId) return;
-
     if (roles.includes('ADMIN')) {
-      this.authService.getAdminById(userId).subscribe({
-        next: (res: any) => this.userName = res.name || res.username || 'Admin',
-        error: () => this.userName = 'Admin'
-      });
+      this.router.navigateByUrl('/admin', { skipLocationChange: false });
+    } else if (roles.includes('CUSTOMER')) {
+      this.router.navigateByUrl('/home', { skipLocationChange: false });
     } else {
-      this.authService.getCustomerById(userId).subscribe({
-        next: (res: any) => this.userName = res.name || res.username || 'Customer',
-        error: () => this.userName = 'Customer'
-      });
+      location.reload();
     }
+  } else {
+          this.router.navigateByUrl('/home', { skipLocationChange: false });
   }
+}
 
-  updatePageFlags(url: string) {
-    this.isAdminProfilePage = url === '/admin-profile';
-    this.isCustomerProfilePage = url === '/customer-profile';
-    this.isHomePage = url === '/home' || url === '/';
-    this.isAddProductPage = url.includes('/add-product');
-    this.isAdminDashBoard = url === '/admin';
-    this.isCustomerDashBoard = url === '/customer-dash-board';
-    this.isProductsPage = url === '/product';
-    this.isManageAdmins = url.includes('admin/manage');
-    this.isAdminProductDetails = url.startsWith('/admin-product/');
-    this.isCustomerProductDetails = url.startsWith('/product/') && !this.isProductsPage;
-    this.isControlAdmins = url === '/control-admins';
-     this.isWishlistPage = url === '/wishlist'; 
-    this.isCartPage = url === '/cart';          
-    this.isOrdersPage = url === '/orders';  
- 
+
+
+loadUserInfo() {
+  if (!this.authService.isLoggedIn()) {
+    this.userName = '';
+    return;
   }
+  const userId = this.authService.getUserId();
+  if (!userId) return;
+
+  const roles = this.authService.getUserRoles();
+  
+
+  if (roles.includes('ADMIN')) {
+    this.authService.getAdminById(userId).subscribe({
+      next: (res: any) => {
+        console.log('Admin data:', res);
+        this.userName = res.name || res.username || this.generateNameFromEmail(this.authService.getEmailFromToken() || '');
+        
+      },
+      error: () => {
+        this.userName = this.generateNameFromEmail(this.authService.getEmailFromToken() || '');
+      }
+    });
+  } else {
+this.authService.getCustomerById(userId).subscribe({
+  next: (res: any) => {
+    console.log('Customer data:', res);
+    this.userName = res.username || res.name || this.generateNameFromEmail(this.authService.getEmailFromToken() || '');
+  },
+  error: (err) => {
+    console.error('Failed to fetch customer:', err);
+    this.userName = this.generateNameFromEmail(this.authService.getEmailFromToken() || '');
+  }
+});
+
+  }
+}
+
+
+
+// 🔹 Utility to generate a name from email
+generateNameFromEmail(email: string): string {
+  if (!email) return '';
+  const namePart = email.split('@')[0];       // "d.d" from "d@d.d"
+  return namePart.replace('.', ' ').replace('_', ' ').replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+
+
+updatePageFlags(url: string) {
+  this.isSignInPage = url === '/sign-in';
+  this.isSignUpPage = url === '/sign-up';
+
+  // existing flags...
+  this.isAdminProfilePage = url === '/admin-profile';
+  this.isCustomerProfilePage = url === '/customer-profile';
+  this.isHomePage = url === '/home' || url === '/';
+  this.isAddProductPage = url.includes('/add-product');
+  this.isAdminDashBoard = url === '/admin';
+  this.isCustomerDashBoard = url === '/home';
+  this.isProductsPage = url === '/product';
+  this.isManageAdmins = url.includes('admin/manage');
+  this.isAdminProductDetails = url.startsWith('/admin-product/');
+  this.isCustomerProductDetails = url.startsWith('/product/') && !this.isProductsPage;
+  this.isControlAdmins = url === '/control-admins';
+  this.isWishlistPage = url === '/wishlist'; 
+  this.isCartPage = url === '/cart';          
+  this.isOrdersPage = url === '/orders';
+}
+
 
   // 🔹 Navigation
   goToHome() { this.router.navigate(['/home']); }
@@ -101,27 +145,17 @@ export class AppComponent implements OnInit {
   goToCart() { this.router.navigate(['/cart']); }         
   goToWishlist() { this.router.navigate(['/wishlist']); }
   goToAdminPanel() { this.router.navigate(['/admin']); }
-  goToCustomerPanel() { this.router.navigate(['/customer-dash-board']); }
-  goToCustomerDashboard() { this.router.navigate(['/customer-dash-board']); } // ✅ new
+  goToCustomerPanel() { this.router.navigate(['/home']); }
+  goToCustomerDashboard() { this.router.navigate(['/home']); } // ✅ new
   goToSignInPage() { this.router.navigate(['/sign-in']); }
   goToSignUpPage() { this.router.navigate(['/sign-up']); }
 goToCustomerOrders() { this.router.navigate(['/customer/orders']); }
 
 
-  // 🔹 Utility
-  scrollToAbout(event: Event) {
-    event.preventDefault();
-    if (this.isHomePage) {
-      const el = document.querySelector('#about');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      this.router.navigate(['/home'], { fragment: 'about' });
-    }
-  }
 
   goToPanel() {
     const roles = this.authService.getUserRoles();
-    if (roles.includes('CUSTOMER')) this.router.navigate(['/customer-dash-board']);
+    if (roles.includes('CUSTOMER')) this.router.navigate(['/home']);
     else if (roles.includes('ADMIN')) this.router.navigate(['/admin']);
     else this.router.navigate(['/home']);
   }
