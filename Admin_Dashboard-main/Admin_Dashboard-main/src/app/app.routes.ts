@@ -5,6 +5,8 @@ import { AdminOrdersComponent } from './Pages/orders/orders.component';
 import { HomeComponent } from './Pages/home/home.component';
 import { CustomerProductsComponent } from './Pages/customer-products/customer-products.component';
 import { AddProductComponent } from './Pages/add-product/add-product.component';
+import { ChartsComponent } from './Pages/charts/charts.component';
+
 
 export const routes: Routes = [
   { path: 'admin', component: AdminDashboardComponent },
@@ -88,6 +90,11 @@ export const routes: Routes = [
 {
   path: 'customer/orders',
   loadComponent: () => import('./Pages/customer-orders/customer-orders.component').then(m => m.CustomerOrdersComponent)
+}
+,
+{
+  path: 'chart',
+  loadComponent: () => import('./Pages/charts/charts.component').then(m => m.ChartsComponent)
 }
 
 

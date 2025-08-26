@@ -15,6 +15,8 @@ import { ReportComponent } from './Pages/report/report.component';
 import { ControlAdminsComponent } from './Pages/control-admins/control-admins.component';
 import { SignInComponent } from './Pages/sign-in/sign-in.component';
 import { SignUpComponent } from './Pages/sign-up/sign-up.component';
+import { ChartsComponent } from './Pages/charts/charts.component';
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -38,5 +40,6 @@ export const appImports = [
   ReportComponent,
   ControlAdminsComponent,
   SignInComponent,
-  SignUpComponent
+  SignUpComponent,
+  ChartsComponent
 ];
