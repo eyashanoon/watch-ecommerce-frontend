@@ -16,9 +16,10 @@ export class ManageAdminsComponent implements OnInit {
   admins: any[] = [];
      hovering: boolean = false;
    toastMessage: string = '';
- 
+   showToast: boolean = false;
+
   constructor(
-    private adminService: AdminService, 
+    private adminService: AdminService,
     private router: Router,
     public authService: AuthService
   ) {}
@@ -28,7 +29,7 @@ canSeeAdmins: boolean = false;
   this.canSeeAdmins = this.authService.hasAnyRole([
     'SEE_ADMIN',
     'UPDATE_ADMIN',
-    'REMOVE_ADMIN', 
+    'REMOVE_ADMIN',
     'OWNER'
   ]);
 
@@ -53,8 +54,8 @@ canSeeAdmins: boolean = false;
     this.adminService.getAllAdmins().subscribe({
       next: (data) => {
         this.admins = data.content || [];
- 
-        const currentId = Number(localStorage.getItem('id')); 
+
+        const currentId = Number(localStorage.getItem('id'));
         this.admins = this.admins.filter(admin => admin.id !== currentId);
         console.log(this.admins);
       },

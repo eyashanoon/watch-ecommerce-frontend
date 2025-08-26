@@ -86,7 +86,7 @@
 
 .product-section {
   display: flex;
-  align-items: flex-start; 
+  align-items: flex-start;
   gap: 2rem;
   padding: 0;
   max-width: 100%;
@@ -435,4 +435,41 @@
   .search-wrapper { width: 100%; }
   .Price-quan-con { bottom: 15px; }
   .product-card.hovered { transform: scaleX(1) translateY(-50px); height: auto; }
+}
+
+
+.change-page {
+  width: 30%;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 200px;
+   margin-left: 16%;
+    position: relative;
+ }
+
+.carousel-arrowNP {
+  background: rgba(0,0,0,0.5);
+  color: white;
+  border: none;
+  font-size: 18px;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  user-select: none;
+  transition: opacity 0.3s ease;
+  position: absolute;
+}
+.carousel-arrowNP.left { left: 5px; }
+.carousel-arrowNP.right { right: 5px; }
+.page-index {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  border-radius: 10px;
+  background-color: rgba(0,0,0,0.1);
+  width: 40px;
+  height: 30px;
+  text-align: center;
 }

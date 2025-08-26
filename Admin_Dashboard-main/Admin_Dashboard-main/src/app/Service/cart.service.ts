@@ -56,28 +56,28 @@ export class CartService {
 }
 
 
-removeFromCart(items: { productId: number; quantity?: number }[] | number[]): Observable<CartDto> {
+removeFromCart(
+  items: number[] | { productId: number; quantity?: number }[]
+): Observable<any> {
   const token = this.authService.getToken();
   if (!token) {
     console.error('[CartService] removeFromCart called without auth token');
     return throwError(() => ({ status: 401, message: 'Not authenticated' }));
   }
 
-  // Normalize to array of objects { productId, quantity }
-  const payload = Array.isArray(items)
-    ? typeof items[0] === 'number'
-      ? (items as number[]).map(id => ({ productId: id, quantity: 1 }))
-      : (items as { productId: number; quantity?: number }[]).map(i => ({ productId: i.productId, quantity: i.quantity ?? 1 }))
-    : [{ productId: items as number, quantity: 1 }];
+  // Normalize items to array of { productId, quantity }
+  const payload = (Array.isArray(items) ? items : [items]).map(i =>
+    typeof i === 'number' ? { productId: i, quantity: 1 } : { productId: i.productId, quantity: i.quantity ?? 1 }
+  );
 
-  console.log('[CartService] Removing items (body style):', payload);
+  console.log('[CartService] Removing items (payload):', payload);
 
   const headers = new HttpHeaders({
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`
+    Authorization: `Bearer ${token}`,
   });
 
-  return this.http.put<CartDto>(`${this.apiUrl}/remove`, payload, { headers }).pipe(
+  return this.http.put<any>(`${this.apiUrl}/remove`, payload, { headers }).pipe(
     map(resp => {
       console.log('[CartService] remove response:', resp);
       return resp;
@@ -88,7 +88,6 @@ removeFromCart(items: { productId: number; quantity?: number }[] | number[]): Ob
     })
   );
 }
-
 
 
   // Optionally get wishlist of another customer

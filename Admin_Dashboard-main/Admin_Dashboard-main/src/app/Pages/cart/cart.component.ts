@@ -174,19 +174,20 @@ export class CartComponent implements OnInit {
   });
 }
 
- removeItemFromCart(item: CartItemWithImages) {
-    const payload = [{ productId: item.productId, quantity: item.quantity ?? 1 }];
-    this.cartService.removeFromCart(payload).subscribe({
-      next: () => {
-        this.loadCart();
-        this.showToastMessage('Item removed from cart.');
-      },
-      error: (err) => {
-        console.error('Error removing item:', err);
-        this.showToastMessage('Failed to remove item.');
-      }
-    });
-  }
+removeItemFromCart(item: CartItemWithImages) {
+  const payload = [{ productId: item.productId, quantity: item.quantity ?? 1 }];
+
+  this.cartService.removeFromCart(payload).subscribe({
+    next: (res: any) => {
+      this.loadCart(); // reload cart
+      this.showToastMessage('Item removed from cart.');
+    },
+    error: (err) => {
+      console.error('[CartComponent] Error removing item:', err);
+      this.showToastMessage('Failed to remove item.');
+    }
+  });
+}
 
  removeAllItemsFromCart() {
     const items = this.cartItems.map(c => ({ productId: c.productId, quantity: c.quantity ?? 1 }));
