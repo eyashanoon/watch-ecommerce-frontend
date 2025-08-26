@@ -15,11 +15,13 @@
   overflow-x: hidden;
   gap: 50px;
   padding: 20px 50px;
+    transition: transform 0.5s  ; /* smooth animation */
+
 }
 
 .product-wrapper {
   position: relative;
-  width:25%;
+  width: 30%;
   height: 450px;
   overflow: visible;
   box-sizing: border-box;

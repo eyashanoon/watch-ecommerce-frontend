@@ -154,8 +154,9 @@
     <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
   </div>
 
-  <div class="ff">
-    <app-recommendation></app-recommendation>
+ 
+  <div class="ff" *ngIf="isCustomer">
+     <app-recommendation></app-recommendation>
   </div>
 
 </div>

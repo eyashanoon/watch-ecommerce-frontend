@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
-    apiBaseUrl: 'http://82.205.88.68:8080'
- };
+ 
+    apiBaseUrl: 'http://192.168.1.11:8080'
+  };
 
 

@@ -68,7 +68,7 @@ export class ProductsDetailsComponent implements AfterViewInit {
   productID:number=0;
   colorCombinations!:ClorCombinations[];
    myWishlistIds: Set<number> = new Set();
-
+   isCustomer?:boolean;
 
     // Toast state
   toastMessage: string = '';
@@ -81,6 +81,7 @@ export class ProductsDetailsComponent implements AfterViewInit {
     this.loadProduct(this.productID);
     this.loadProductImages(this.productID);
         this.loadWishlist();
+   this.isCustomer =this.authService.getUserRoles().includes("CUSTOMER");
 
 
     if (!stateProduct) {
