@@ -1,3 +1,4 @@
+ 
 
 /* Topbar */
 .topbar {
@@ -134,7 +135,7 @@
 
 
 
-/* Buttons */
+ /* Buttons */
 button {
    width: 100%;
   background-color: #9F998A;
@@ -235,12 +236,8 @@ button.cancel-btn {
 
 .admin-info >div:hover>div:first-child {
   translate:-100% ;
-  visibility: hidden;
-
 
  }
-
-
 
 .admin-info > div > div:nth-child(2) {
   opacity: 0;
@@ -282,6 +279,45 @@ button.cancel-btn {
  border-radius: 10;
 
  }
+
+.roles-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* Collapsed placeholder */
+.roles-collapsed {
+  background-color: rgba(3,3,3,0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: opacity 0.3s ease;
+}
+
+/* Expanded roles */
+.roles-expanded {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(3,3,3,0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
+  opacity: 0;               /* hidden initially */
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+/* Hover behavior */
+.roles-container:hover .roles-collapsed {
+  opacity: 0;               /* hide placeholder */
+}
+
+.roles-container:hover .roles-expanded {
+  opacity: 1;               /* show roles list */
+  pointer-events: auto;
+}
 
 
 

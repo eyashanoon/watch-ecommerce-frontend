@@ -14,15 +14,16 @@ import { Router } from '@angular/router';
 })
 export class ManageAdminsComponent implements OnInit {
   admins: any[] = [];
-  toastMessage: string = '';
-  showToast: boolean = false;
-
+     hovering: boolean = false;
+   toastMessage: string = '';
+ 
   constructor(
     private adminService: AdminService, 
     private router: Router,
     public authService: AuthService
   ) {}
 canSeeAdmins: boolean = false;
+
   ngOnInit() {
   this.canSeeAdmins = this.authService.hasAnyRole([
     'SEE_ADMIN',

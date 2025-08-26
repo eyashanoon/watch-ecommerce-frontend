@@ -5,12 +5,20 @@
       <h1>| La Royale Watches Store</h1>
     </div>
 
-    <!-- Home page links -->
-    <div class="topbar-links" *ngIf="isHomePage">
-      <a href="#" (click)="scrollToAbout($event)">About</a>
-      <a href="#" (click)="goToSignInPage(); $event.preventDefault()">Sign In</a>
-      <a href="#" (click)="goToSignUpPage(); $event.preventDefault()">Sign Up</a>
-    </div>
+<!-- Home page links -->
+<div class="topbar-links" *ngIf="isHomePage">
+  <a href="#" (click)="scrollToAbout($event)">About</a>
+
+  <!-- Only show if user is NOT signed in -->
+  <ng-container *ngIf="!authService.isLoggedIn()">
+    <a href="#" (click)="goToSignInPage(); $event.preventDefault()">Sign In</a>
+    <a href="#" (click)="goToSignUpPage(); $event.preventDefault()">Sign Up</a>
+  </ng-container>
+
+  <!-- Only show if user IS signed in -->
+  <a *ngIf="authService.isLoggedIn()" href="#" (click)="goToPanel(); $event.preventDefault()">Go to dashboard</a>
+</div>
+
 
     <!-- Admin profile page -->
     <div class="topbar-links" *ngIf="isAdminProfilePage">
@@ -75,6 +83,13 @@
       <a href="#" (click)="signOut($event)">Sign Out</a>
       <!-- ✅ Customer Orders -->
       <a *ngIf="isCustomer" href="#" (click)="goToCustomerOrders(); $event.preventDefault()">Orders</a>
+    </div>
+    <!-- Cart page -->
+    <div class="topbar-links" *ngIf="isCartPage">
+      <a href="#" (click)="goToProducts(); $event.preventDefault()">Products</a>
+      <a href="#" (click)="goToCustomerDashboard(); $event.preventDefault()">Dashboard</a>
+      <a routerLink="/customer-profile" href="/customer-profile">Profile</a>
+      <a href="#" (click)="signOut($event)">Sign Out</a>
     </div>
   </div>
 

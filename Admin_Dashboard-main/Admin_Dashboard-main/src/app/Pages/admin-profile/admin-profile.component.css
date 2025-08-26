@@ -1,17 +1,25 @@
+/* ----------------- Global Fix ----------------- */
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden; /* prevent horizontal scroll */
+}
+
+/* ----------------- Profile Container ----------------- */
 .profile-container {
-  margin-top: 80px; /* Add space above container */
+  margin: 5rem auto 3rem auto; /* space above and below */
   padding: 2rem;
   background: #fefefe;
+  width: 90%; /* relative width for mobile */
   max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 3rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   border-radius: 16px;
   font-family: 'Segoe UI', sans-serif;
   transition: box-shadow 0.3s ease;
 }
 
+ 
 .toast-container {
   position: fixed;
   top: 20px;
@@ -88,7 +96,7 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
-.profile-container:hover {
+ .profile-container:hover {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -116,6 +124,7 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
+  flex-wrap: wrap; /* allow buttons to wrap on small screens */
 }
 
 button {
@@ -125,6 +134,7 @@ button {
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  flex: 1 1 auto; /* make buttons flexible on small screens */
 }
 
 button.edit {
@@ -152,27 +162,30 @@ input {
   margin: 0.3rem 0 1rem;
   border: 1px solid #ccc;
   border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
 /* Password wrapper for relative positioning */
 .password-wrapper {
   position: relative;
-  display: inline-block;
+  display: block; /* changed to block for mobile stacking */
   margin-bottom: 12px;
+  width: 100%;
 }
 
-/* Input inside password wrapper */
 .password-wrapper input[type='password'],
 .password-wrapper input[type='text'] {
-  padding-right: 30px;
-  width: 250px;
-  font-size: 14px;
+  padding-right: 50px; /* enough space for icons */
+  width: 100%;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
 /* Eye icon style */
 .eye-icon {
   position: absolute;
-  right: 40px;  /* Shifted left to make room for edit icon */
+  right: 40px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
@@ -207,7 +220,6 @@ input {
 
 /* Edit icon button spacing and style */
 .password-wrapper button {
-  margin-left: 12px; /* space between eye and edit */
   cursor: pointer;
   background: none;
   border: none;
@@ -215,7 +227,7 @@ input {
   padding: 0;
   vertical-align: middle;
   position: absolute;
-  right: 8px; /* keep it on the right edge */
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   color: #555;
@@ -225,28 +237,11 @@ input {
 .password-wrapper button:hover {
   color: #000;
 }
-/* Style for the Change Password button */
-.change-password-btn {
-  background-color: #232526;
-;    /* Bright blue */
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-size: 14px;
-  user-select: none;
-}
 
-.change-password-btn:hover {
-  background-color: #383b3d;    /* Darker blue on hover */
-}
-
-/* Style for the Cancel Password Change button */
+/* Style for Change/Cancel Password buttons */
+.change-password-btn,
 .cancel-password-btn {
-  background-color: #232526;    /* Bootstrap's red */
+  background-color: #232526;
   color: white;
   border: none;
   padding: 8px 14px;
@@ -256,12 +251,18 @@ input {
   transition: background-color 0.3s ease;
   font-size: 14px;
   user-select: none;
+}
+
+.change-password-btn:hover,
+.cancel-password-btn:hover {
+  background-color: #383b3d;
+}
+
+.cancel-password-btn {
   margin-top: 10px;
 }
 
-.cancel-password-btn:hover {
-  background-color: #383b3d;    /* Darker red on hover */
-}
+/* Background video & overlay */
 .background-video {
   position: fixed;
   top: 0;
@@ -272,7 +273,6 @@ input {
   z-index: -2;
 }
 
-/* Overlay to darken video for text readability */
 .overlay {
   position: fixed;
   top: 0; 
@@ -283,58 +283,60 @@ input {
   z-index: -1;
 }
 
-/* Topbar */
-.topbar {
-  top: 20px;       
-  left: 20px;      
-  right: 20px;     
-  height: 80px;
-  background-color: #B6B09F;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  padding: 0 28px;
-  box-shadow: 0 10px 25px rgba(255,255,255,0.2),
-              0 4px 8px rgba(255,255,255,0.1);
-  color: #232526;
-  z-index: 1000;
+/* ----------------- Responsive ----------------- */
+@media (max-width: 768px) {
+  .profile-container {
+    width: 95%;
+    padding: 1.5rem;
+  }
 
+  .profile-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .profile-details p {
+    font-size: 1rem;
+  }
+
+  .password-wrapper input[type='password'],
+  .password-wrapper input[type='text'] {
+    font-size: 0.95rem;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  button {
+    width: 100%;
+    font-size: 0.95rem;
+  }
 }
 
-/* Topbar left section */
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+@media (max-width: 480px) {
+  .profile-container {
+    width: 100%;
+    margin: 4rem 0 2rem 0;
+    padding: 1rem;
+  }
 
-.topbar-left img {
-  width: 80px;
-}
+  .profile-container h2 {
+    font-size: 1.4rem;
+  }
 
-.topbar-left h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  margin: 0;
-}
+  .profile-details p {
+    font-size: 0.95rem;
+  }
 
-/* Topbar links on right */
-.topbar-links {
-  margin-left: auto;
-  display: flex;
-  gap: 20px;
-}
+  .password-wrapper input[type='password'],
+  .password-wrapper input[type='text'] {
+    font-size: 0.9rem;
+    padding-right: 40px;
+  }
 
-.topbar-links a {
-  color: #232526;
-  font-weight: 600;
-  text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
-}
-
-.topbar-links a:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
 }

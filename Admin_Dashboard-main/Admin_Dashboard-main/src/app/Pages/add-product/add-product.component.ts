@@ -118,6 +118,7 @@ export class AddProductComponent implements OnInit {
     if (index < this.loadedImages.length) {
       // Existing image marked for deletion
       const img = this.loadedImages[index];
+      console.log('Marking image for deletion:', img);
       this.deletedImageIds.push(img.id);
       this.loadedImages.splice(index, 1);
     } else {
@@ -125,7 +126,7 @@ export class AddProductComponent implements OnInit {
       this.imageFiles.splice(index - this.loadedImages.length, 1);
     }
     this.images.removeAt(index);
-  }
+   }
 
   loadFeatures() {
     this.featuresService.getAllColors().subscribe((colorsObj: ColorsResponse) => {
@@ -235,7 +236,7 @@ export class AddProductComponent implements OnInit {
         error: err => console.error('Error adding product:', err)
       });
     } else {
-       console.log('Updating product with ID:', formData);
+       console.log('Updating product with ID:', this.productId);
  
       this.productService.updateProduct(this.productId!, formData).subscribe({
         next: () => {
@@ -252,12 +253,12 @@ export class AddProductComponent implements OnInit {
           });
 
           // Delete images marked for deletion
-          /*this.deletedImageIds.forEach(id => {
+          this.deletedImageIds.forEach(id => {
             this.imageService.deleteImage(id).subscribe({
               next: () => console.log('Deleted image', id),
               error: err => console.error('Failed to delete image', err)
             });
-          });*/
+          });
 
           this.imageFiles = [];
           this.deletedImageIds = [];

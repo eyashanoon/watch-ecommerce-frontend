@@ -1,75 +1,9 @@
-/* Make topbar fixed at top, full width */
-.topbar {
-  position: fixed;
-    top: 20px; /* Pushes it 20px from the top of the screen */
-  left: 0;
-  right: 0;
-  height: 80px;
-  background-color: #B6B09F;
-  color: #232526;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2),
-              0 4px 8px rgba(255, 255, 255, 0.1);
-  z-index: 1000; /* on top */
-}
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #fff; /* or your color */
-  padding: 0 20px; /* <-- this adds space on left & right */
-  box-sizing: border-box;
-}
-
 /* Push container down below topbar */
 .container {
   height: calc(100vh - 80px); /* full viewport height minus topbar */
   margin-top: 80px; /* optional - safer for scroll */
   display: flex;
   overflow: hidden;
-}
-
-/* Optional: style inside topbar same as before */
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.topbar-left img {
-  width: 90px;
-  display: block;
-}
-
-.topbar-left h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #232526;
-  margin: 0;
-  text-shadow: 0 1px 8px #cccccc44;
-}
-
-.topbar-links {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-
-.topbar-links a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
-}
-
-.topbar-links a:hover {
-  background-color: #ddd;
 }
 
 .left-panel {
@@ -178,22 +112,6 @@ select option {
   display: flex;
   flex-direction: column;
   height: 100vh;
-}
-
-/* Top bar stays at the top */
-.topbar {
-  flex-shrink: 0;
-  height: 80px;
-  margin: 0;
-  width: 100%;
-  background-color: #B6B09F;
-  color: #232526;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2),
-              0 4px 8px rgba(255, 255, 255, 0.1);
 }
 
 /* Make container fill the remaining space */
@@ -440,4 +358,72 @@ input::placeholder {
   display: block;        /* Allows margin below */
   margin-bottom: 20px;   /* Adds space under it */
   color: #333;           /* Optional: darker text */
+}
+/* =========================
+   RESPONSIVE LAYOUTS
+   ========================= */
+@media (max-width: 1200px) {
+  .container {
+    max-width: 95%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;       /* stack panels vertically */
+    height: auto;                 /* allow flexible height */
+    align-items: center;          /* center horizontally */
+    justify-content: center;      /* center vertically */
+  }
+  .left-panel, .right-panel {
+    width: 100%;                  /* full width */
+    height: auto;                 /* auto height to fit content */
+    padding: 20px;
+  }
+  .overlay {
+    font-size: 20px;
+    padding-left: 20px;
+    padding-bottom: 30px;
+    max-width: 100%;
+    text-align: center;
+  }
+  .form-container {
+    max-width: 90%;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .overlay {
+    font-size: 18px;
+    padding-left: 15px;
+    padding-bottom: 20px;
+  }
+  .form-container {
+    max-width: 95%;
+    padding: 15px;
+  }
+  .sign-in-button, input[type="email"], input[type="password"], input[type="text"], select {
+    font-size: 14px;
+    padding: 10px;
+  }
+  .form-container h2 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    font-size: 16px;
+    padding-left: 10px;
+    padding-bottom: 15px;
+  }
+  .form-container h2 {
+    font-size: 20px;
+  }
+  .sign-in-button, input[type="email"], input[type="password"], input[type="text"], select {
+    font-size: 13px;
+    padding: 8px;
+  }
 }

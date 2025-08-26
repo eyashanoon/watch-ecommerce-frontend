@@ -291,6 +291,15 @@
     flex-direction: column;   /* stack main image + thumbnails */
     align-items: center;
   }
+.heart-icon {
+  transition: transform 0.2s ease;
+  font-size: 24px;
+  cursor: pointer;
+}
+.heart-icon.active {
+  color: red;
+  transform: scale(1.2);
+}
 
   .main-image-container {
     width: 100%;
