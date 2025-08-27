@@ -5,6 +5,7 @@ import { forkJoin, Observable, map } from 'rxjs';
 import { OrderService } from '../../Service/order.service';
 import { ProductService1 } from '../../Service/product1.service';
 import { ImageService } from '../../Service/image.service';
+import { Router } from '@angular/router';
 
 export interface Image {
   id: number;
@@ -46,6 +47,7 @@ export class CustomerOrdersComponent implements OnInit {
   toastMessage: string = '';
   showToast: boolean = false;
   constructor(
+    private router: Router,
     private orderService: OrderService,
     private productService: ProductService1,
     private imageService: ImageService
@@ -140,5 +142,20 @@ export class CustomerOrdersComponent implements OnInit {
     setTimeout(() => {
       this.showToast = false;
     }, 5000);
+  }
+  goToProduct(item: OrderItem) {
+    const encodedName = encodeURIComponent(item.productName);
+
+    this.productService.getProductById(item.productId).subscribe({
+      next: (res) => {
+        const product = res;
+
+        // Navigate only after the product is loaded
+        this.router.navigate(['/admin-product', encodedName], { state: { product } });
+      },
+      error: (err) => {
+        console.error('Failed to load product', err);
+      }
+    });
   }
 }

@@ -73,14 +73,15 @@ selectedQuantity: number = 1; // for cart
 
 constructor(
   private router: Router,
-  private productService1: ProductService1,
+   private productService1: ProductService1,
+ 
   private imageService: ImageService,
   private featuresService: FeaturesService,
 public authService: AuthService,
   private cartService: CartService,
   private wishlistService: WishlistService
 ) {}
- 
+
 
   product: any[] = [];
 
@@ -443,7 +444,7 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
 
 
 
-  
+
   saveEdit(product: any) {
     if (!Number.isInteger(product.quantity)) {
       this.showToastMessage("Quantity must be a whole number.");
@@ -577,9 +578,9 @@ this.loadProducts();
 }
 
 
-  
 
- 
+
+
 
 resetFilters(){
    this.filters = { ...this.defaultFilters };
@@ -656,7 +657,7 @@ toggleCart(product: Product) {
       next: () => {
         this.showToastMessage('🛒 Product removed from cart');
       },
-      error: err => { 
+      error: err => {
         console.error(err);
         this.cartProductIds.add(pid);
         this.showToastMessage('Failed to remove from cart');

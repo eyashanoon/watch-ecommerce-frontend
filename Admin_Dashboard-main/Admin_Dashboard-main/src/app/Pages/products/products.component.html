@@ -192,8 +192,9 @@
 
 <!-- Product Grid -->
 <div class="product-grid">
- 
-      <div class="product-wrapper" *ngFor="let product of productsWithImages; trackBy: trackByProduct">    <div class="product-card"  >
+
+      <div class="product-wrapper" *ngFor="let product of productsWithImages; trackBy: trackByProduct">
+        <div class="product-card"  >
        <div class="product-content">
 
         <div class="image-wrapper" #imageContainer>
@@ -222,13 +223,13 @@
         <div class="Price-quan-con">
   <!-- Out of Stock Indicator -->
     <p class="product-price">{{ product.originalPrice | currency }}</p>
-  <p 
-    class="stock-status" 
+  <p
+    class="stock-status"
     *ngIf="product.quantity === 0">
     OUT OF STOCK
   </p>
 
-<div class="product-actions">
+ <div class="product-actions">
 
   <!-- Admin / Owner Actions -->
   <ng-container *ngIf="hasRole('UPDATE_PRODUCT') || hasRole('DELETE_PRODUCT') || hasRole('OWNER')">
@@ -265,12 +266,13 @@
     </button>
   </ng-container>
 
+ 
 </div>
 
 
 
   <!-- Price -->
- 
+
 </div>
 
 

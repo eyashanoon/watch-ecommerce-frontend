@@ -161,6 +161,7 @@
   background: #fff9f3;
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   transition: background 0.2s;
+  cursor: pointer;
 }
 .order-item-card:hover {
   background: #fff2e6;

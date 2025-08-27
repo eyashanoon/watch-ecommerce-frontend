@@ -303,11 +303,17 @@ input {
 /* Overlay to darken video for text readability */
 .overlay {
   position: fixed;
-  top: 0; 
+  top: 0;
   left: 0;
-  width: 100vw; 
+  width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: -1;
 }
 
+.show-payment-info{
+  margin-left: 33%;
+}
+.ff{
+  
+}

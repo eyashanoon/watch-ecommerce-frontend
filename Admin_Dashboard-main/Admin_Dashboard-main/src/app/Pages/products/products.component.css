@@ -54,7 +54,7 @@
 
 
 .stock-status {
-  width: 328px;
+  width:90%;
   font-size: 1.2rem;           /* match product price size */
   font-weight: bold;            /* match product price */
   color: #ffffff;               /* white text for contrast */
@@ -66,7 +66,8 @@
   text-transform: uppercase;    /* makes it more noticeable */
   box-shadow: 0 0 6px rgba(220, 53, 69, 0.4); /* subtle glow */
   line-height: 2rem;            /* ensure proper height alignment */
-  margin: 0;                     /* remove all vertical spacing */
+  margin: auto;
+  margin-left:5px ;                  /* remove all vertical spacing */
 }
 .product-actions {
   display: flex;         /* put buttons next to each other */
@@ -195,7 +196,7 @@
 .normal-grey-text {
   font-weight: normal;       /* normal font weight */
   color: #4a4a4a;            /* dark grey color */
-  font-size: 1rem;           /* standard readable size */
+  font-size: 1.3rem;           /* standard readable size */
   line-height: 1.5;          /* comfortable line height */
 }
 

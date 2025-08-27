@@ -15,16 +15,20 @@
     <h2>No orders found 😔</h2>
     <p>Looks like there are no customer orders yet.</p>
   </div>
+    <div *ngIf="loading" class="empty-orders">
+    <h2>loading ⌛</h2>
+    <p>this will not take long.</p>
+  </div>
 
   <!-- Customer orders list -->
   <div *ngIf="orders.length > 0" class="customers-list">
     <ng-container *ngFor="let order of orders">
       <!-- Show customer only if they have orders matching the filter -->
- 
+
           <!-- Customer Header -->
- 
+
           <!-- Orders for this customer -->
-             
+
               <div *ngIf="filterStatus === 'ALL' || order.status === filterStatus" class="order-card">
                 <div class="order-info">
                   <div class="order-info-top">
@@ -86,7 +90,7 @@
                 </div>
 
               </div>
-  
+
     </ng-container>
   </div>
 </div>

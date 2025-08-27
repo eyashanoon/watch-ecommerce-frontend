@@ -31,7 +31,7 @@
 
       <!-- Items -->
       <div *ngIf="expandedOrderId === order.displayOrderId" class="order-items">
-        <div *ngFor="let item of order.items" class="order-item-card">
+        <div *ngFor="let item of order.items" class="order-item-card" (click)="goToProduct(item)">
           <img [src]="item.images[0]" alt="{{ item.productName }}" class="order-item-image" />
           <div class="order-item-details">
             <h4>{{ item.productName }}</h4>

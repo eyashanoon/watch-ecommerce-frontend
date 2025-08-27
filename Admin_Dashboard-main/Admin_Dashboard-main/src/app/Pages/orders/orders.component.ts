@@ -54,6 +54,7 @@ export class AdminOrdersComponent implements OnInit {
   canEditStatus = false;
   filterStatus: string = 'ALL';
   statusOptions = ['REQUESTED','PROCESSING','READY','DELIVERED','REJECTED','CANCELLED'];
+  loading:boolean=true;
 
   constructor(
     private router: Router,
@@ -69,6 +70,7 @@ export class AdminOrdersComponent implements OnInit {
   }
 
 loadOrders(): void {
+  this.loading=true;
   this.orderService.getOrders().subscribe({
     next: (res: any[]) => {
       this.orders = res.map(o => ({
@@ -95,6 +97,7 @@ loadOrders(): void {
 
       // Sort orders by orderTime (newest first)
       this.orders.sort((a, b) => new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime());
+      this.loading=false;
     },
     error: err => console.error('Failed to load orders', err)
   });
