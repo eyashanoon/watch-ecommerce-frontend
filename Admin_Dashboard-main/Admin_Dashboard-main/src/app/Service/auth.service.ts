@@ -135,10 +135,12 @@ getUsernameFromToken(): string | null {
 
   // --- Customer API ---
   getCustomerById(id: number): Observable<any> {
+    
     return this.http.get(`${environment.apiBaseUrl}/api/customers/me`, {
       headers: this.getAuthHeaders()
     });
   }
+  
 
   updateCustomerProfile(id: number, data: any): Observable<any> {
     console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");

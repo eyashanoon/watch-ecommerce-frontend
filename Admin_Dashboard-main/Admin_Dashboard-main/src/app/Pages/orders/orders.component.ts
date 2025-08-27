@@ -6,6 +6,7 @@ import { OrderService } from '../../Service/order.service';
 import { ProductService1 } from '../../Service/product1.service';
 import { ImageService } from '../../Service/image.service';
 import { AuthService } from '../../Service/auth.service';
+import { Router } from '@angular/router';
 
 export interface Image { id: number; filename: string; data: string; product?: any; }
 
@@ -20,8 +21,7 @@ export interface OrderItem {
 }
 
 export interface CustomerOrder {
-  displayOrderId: number;
-  orderId: number;
+   orderId: number;
   customerName: string;
   customerEmail?: string;
   customerPhone?: string;
@@ -56,6 +56,7 @@ export class AdminOrdersComponent implements OnInit {
   statusOptions = ['REQUESTED','PROCESSING','READY','DELIVERED','REJECTED','CANCELLED'];
 
   constructor(
+    private router: Router,
     private orderService: OrderService,
     private productService: ProductService1,
     private imageService: ImageService,
@@ -67,86 +68,53 @@ export class AdminOrdersComponent implements OnInit {
     this.loadOrders();
   }
 
-  loadOrders(): void {
-    this.orderService.getOrders().subscribe({
-      next: (res: any[]) => {
-        const ordersTemp: CustomerOrder[] = res.map((o, index) => ({
-          displayOrderId: index + 1,
-          orderId: o.orderId,
-          customerName: o.customerName,
-          customerEmail: o.email || 'N/A',
-          customerPhone: o.phone || 'N/A',
-          orderTime: o.placedAt,
-          totalAmount: o.totalPrice,
-          status: o.status,
-          showItems: false,
-          editingStatus: false,
-          items: o.items.map((i: any) => ({
-            productId: i.productId,
-            quantity: i.quantity,
-            unitPrice: i.priceAtPurchase,
-            discountPrice: undefined,
-            productName: '',
-            brand: '',
-            images: ['assets/logo.png']
-          }))
-        }));
+loadOrders(): void {
+  this.orderService.getOrders().subscribe({
+    next: (res: any[]) => {
+      this.orders = res.map(o => ({
+        orderId: o.orderId,
+        customerName: o.customerName,
+        customerEmail: o.customerEmail || 'N/A',
+        customerPhone: o.customerPhone || 'N/A',
+        orderTime: o.placedAt,
+        totalAmount: o.totalPrice,
+        status: o.status,
+        showItems: false,
+        editingStatus: false,
 
-        const allObservables: Observable<void>[] = [];
-        ordersTemp.forEach(order => {
-          order.items.forEach(item => {
-            const obs = this.productService.getProductById(item.productId).pipe(
-              map(prod => {
-                item.productName = prod.name ?? 'Unknown';
-                item.brand = prod.brand ?? 'Unknown';
-                this.imageService.getAllImagesByProductID(item.productId).subscribe({
-                  next: (imgs: Image[]) => {
-                    if (imgs && imgs.length > 0) item.images = [`data:image/jpeg;base64,${imgs[0].data}`];
-                  },
-                  error: () => { item.images = ['assets/logo.png']; }
-                });
-              })
-            );
-            allObservables.push(obs);
-          });
-        });
+        items: o.items.map((i: any) => ({
+          productId: i.productId,
+          quantity: i.quantity,
+          unitPrice: i.priceAtPurchase,
+          discountPrice: undefined,
+          productName: '',
+          brand: '',
+          images: ['assets/logo.png']
+        }))
+      }));
 
-        forkJoin(allObservables).subscribe({
-          next: () => {
-            this.orders = ordersTemp;
-            this.groupOrdersByCustomer();
-          },
-          error: () => {
-            this.orders = ordersTemp;
-            this.groupOrdersByCustomer();
-          }
-        });
+      // Sort orders by orderTime (newest first)
+      this.orders.sort((a, b) => new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime());
+    },
+    error: err => console.error('Failed to load orders', err)
+  });
+}
+
+
+toggleItems(order: CustomerOrder): void {
+  order.showItems = !order.showItems;
+
+  order.items.forEach(item => {
+    this.imageService.getAllImagesByProductID(item.productId).subscribe({
+      next: (res) => {
+        item.images = res.map(img=>'data:image/jpeg;base64,' + img.data);
       },
-      error: err => console.error('Failed to load orders', err)
+      error: (err) => {
+        console.error('Error fetching images:', err);
+      }
     });
-  }
-
-  private groupOrdersByCustomer(): void {
-    const grouped: { [key: string]: CustomerOrder[] } = {};
-    this.orders.forEach(order => {
-      if (!grouped[order.customerName]) grouped[order.customerName] = [];
-      grouped[order.customerName].push(order);
-    });
-    this.groupedOrders = Object.keys(grouped).map(name => {
-      const sampleOrder = grouped[name][0];
-      return {
-        customerName: name,
-        customerEmail: sampleOrder.customerEmail,
-        customerPhone: sampleOrder.customerPhone,
-        orders: grouped[name]
-      };
-    });
-  }
-
-  toggleItems(order: CustomerOrder): void {
-    this.groupedOrders.forEach(cust => cust.orders.forEach(o => { if (o !== order) o.showItems = false; }));
-    order.showItems = !order.showItems;
-  }
+  });
+}
 
 saveStatus(order: CustomerOrder) {
   if (!order.orderId) return;
@@ -154,14 +122,15 @@ saveStatus(order: CustomerOrder) {
   this.orderService.updateOrderStatus(order.orderId, order.status).subscribe({
     next: (updatedOrder) => {
       order.editingStatus = false;
-      order.status = updatedOrder.status; // TypeScript now knows status exists
-      console.log(`Order #${order.displayOrderId} status updated to ${order.status}`);
+      order.status = updatedOrder.status;
+      console.log(`Order #${order.orderId} status updated to ${order.status}`);
     },
     error: (err) => {
-      console.error(`Failed to update Order #${order.displayOrderId} status`, err);
+      console.error( err);
     }
   });
 }
+
 
   cancelEdit(order: CustomerOrder) {
     order.editingStatus = false;
@@ -187,6 +156,21 @@ saveStatus(order: CustomerOrder) {
   isCustomerVisible(customer: GroupedCustomerOrders): boolean {
   if (this.filterStatus === 'ALL') return customer.orders.length > 0;
   return customer.orders.some(order => order.status === this.filterStatus);
+}
+goToProduct(item: OrderItem) {
+  const encodedName = encodeURIComponent(item.productName);
+
+  this.productService.getProductById(item.productId).subscribe({
+    next: (res) => {
+      const product = res;
+
+      // Navigate only after the product is loaded
+      this.router.navigate(['/admin-product', encodedName], { state: { product } });
+    },
+    error: (err) => {
+      console.error('Failed to load product', err);
+    }
+  });
 }
 
 

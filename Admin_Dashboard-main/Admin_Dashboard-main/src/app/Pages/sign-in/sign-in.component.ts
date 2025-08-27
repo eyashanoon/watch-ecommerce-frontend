@@ -100,7 +100,7 @@ onSubmit() {
           console.log('Admin logged in');
           this.router.navigate(['/admin']);
         } else if (roles.includes('CUSTOMER')) {
-          this.router.navigate(['/customer-dash-board']);
+          this.router.navigate(['/home']);
         } else {
           this.showToastMessage('Unknown user role.');
         }

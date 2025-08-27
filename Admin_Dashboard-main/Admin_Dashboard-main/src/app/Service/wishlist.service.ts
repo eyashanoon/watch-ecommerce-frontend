@@ -4,12 +4,14 @@ import { Observable } from 'rxjs';
 import { WishlistDto, WishlistItem } from '../models/wishlist.model';
 import { AuthService } from './auth.service';
 import { HttpHeaders } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WishlistService {
-  private apiUrl = 'http://10.10.33.90:8080/api/wishlist';
+   private apiUrl = environment.apiBaseUrl + '/api/wishlist';
+ 
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

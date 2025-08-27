@@ -39,7 +39,7 @@ export class RecommendationComponent implements OnInit {
       if (!recs || recs.length === 0) return;
 
       // Limit to 5 products
-      const recommendedFive = recs.slice(0, 5);
+      const recommendedFive = recs ;
 
       const productRequests = recommendedFive.map(rec => this.productService1.getProductById(rec.id));
       forkJoin(productRequests).subscribe((products: Product[]) => {

@@ -11,36 +11,40 @@
   </div>
 
   <!-- Empty orders -->
-  <div *ngIf="groupedOrders.length === 0" class="empty-orders">
+  <div *ngIf="orders.length === 0" class="empty-orders">
     <h2>No orders found 😔</h2>
     <p>Looks like there are no customer orders yet.</p>
   </div>
 
   <!-- Customer orders list -->
-  <div *ngIf="groupedOrders.length > 0" class="customers-list">
-    <ng-container *ngFor="let customer of groupedOrders">
+  <div *ngIf="orders.length > 0" class="customers-list">
+    <ng-container *ngFor="let order of orders">
       <!-- Show customer only if they have orders matching the filter -->
-        <ng-container *ngIf="isCustomerVisible(customer)">
-        <div class="customer-card">
-
+ 
           <!-- Customer Header -->
-          <div class="customer-header">
-            <div>
-              <h2>{{ customer.customerName }}</h2>
-              <p>Email: {{ customer.customerEmail }}</p>
-              <p>Phone: {{ customer.customerPhone }}</p>
-              <p>Total Orders: <strong>{{ customer.orders.length }}</strong></p>
-            </div>
-          </div>
-
+ 
           <!-- Orders for this customer -->
-          <div class="orders-list">
-            <ng-container *ngFor="let order of customer.orders">
+             
               <div *ngIf="filterStatus === 'ALL' || order.status === filterStatus" class="order-card">
                 <div class="order-info">
-                  <h3>Order #{{ order.displayOrderId }}</h3>
-                  <p>Placed on: {{ order.orderTime | date:'medium' }}</p>
-                  <p>Total Amount: <strong class="highlight">${{ order.totalAmount | number:'1.2-2' }}</strong></p>
+                  <div class="order-info-top">
+                      <div>
+                        <h3>Order #{{ order.orderId }}</h3>
+                        <p>Placed on: {{ order.orderTime | date:'medium' }}</p>
+                        <p>Total Amount: <strong class="highlight">${{ order.totalAmount | number:'1.2-2' }}</strong></p>
+                      </div>
+                      <div class="barrier"></div>
+                      <div class="customer-header">
+                      <h2>customer name: {{ order.customerName }}</h2>
+
+                          <div>
+                            <p>Email: {{ order.customerEmail }}</p>
+                            <p>Phone: {{ order.customerPhone }}</p>
+                          </div>
+                        </div>
+
+
+                  </div>
 
                   <!-- Status -->
                   <p>Status:
@@ -68,8 +72,8 @@
                 </div>
 
                 <!-- Order items -->
-                <div class="order-items" *ngIf="order.showItems">
-                  <div *ngFor="let item of order.items" class="order-item-card">
+                <div class="order-items" *ngIf="order.showItems" >
+                  <div *ngFor="let item of order.items" class="order-item-card" (click)="goToProduct(item)">
                     <img [src]="item.images[0]" alt="{{ item.productName }}" class="order-item-image" />
                     <div class="order-item-details">
                       <h4>{{ item.productName }}</h4>
@@ -82,11 +86,7 @@
                 </div>
 
               </div>
-            </ng-container>
-          </div>
-
-        </div>
-      </ng-container>
+  
     </ng-container>
   </div>
 </div>

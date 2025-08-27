@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
  import { ProductService1} from '../../Service/product1.service';
-import { ProductService} from '../../Service/product.service';
 import { AuthService } from '../../Service/auth.service';
 import { CartService } from '../../Service/cart.service';
 import { WishlistService } from '../../Service/wishlist.service';
@@ -60,7 +59,7 @@ type Filters = {
 
 
 export class ProductsComponent implements OnInit {
-cartProductIds: Set<number> = new Set();
+ cartProductIds: Set<number> = new Set();
 
 toastMessage: string = '';
 showToast: boolean = false;
@@ -82,7 +81,7 @@ public authService: AuthService,
   private cartService: CartService,
   private wishlistService: WishlistService
 ) {}
-
+ 
 
   product: any[] = [];
 
@@ -469,7 +468,6 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
     }
 
     product.editMode = false;
-    this.productService.saveProducts(this.product);
   }
   trackByProduct(index: number, product: ProductWithImages): number {
   return product.id; // make sure each product has a unique ID
@@ -483,7 +481,6 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
 
   deleteProduct(index: number) {
     this.product.splice(index, 1);
-    this.productService.saveProducts(this.product);
   }
 
   scrollToAddWatch() {

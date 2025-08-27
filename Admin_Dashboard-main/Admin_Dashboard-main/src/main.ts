@@ -3,8 +3,7 @@ import { AppComponent } from './app.component';  // <-- note the double app/app 
 import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
 import { provideHttpClient } from '@angular/common/http';
- import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
-import { ChartsComponent } from './app/Pages/charts/charts.component';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 bootstrapApplication(AppComponent, {
   providers: [provideRouter(routes),   provideHttpClient()]

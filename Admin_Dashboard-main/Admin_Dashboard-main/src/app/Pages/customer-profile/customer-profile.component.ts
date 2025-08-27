@@ -453,6 +453,6 @@ formatExpirationForView(date: string): string {
   }
 
   goToDashBoard() {
-    this.router.navigate(['/customer-dash-board'], { state: { source: 'dashboard' } });
+    this.router.navigate(['/home'], { state: { source: 'dashboard' } });
   }
 }
