@@ -62,9 +62,10 @@ type Filters = {
 export class ProductsComponent implements OnInit {
 cartProductIds: Set<number> = new Set();
 
-    // Toast state
-  toastMessage: string = '';
-  showToast: boolean = false;
+toastMessage: string = '';
+showToast: boolean = false;
+private toastTimeout: any; // prevents duplicate toasts
+
 // inside the class:
 myWishlistIds: Set<number> = new Set();
 wishlistLoaded = false;
@@ -169,15 +170,22 @@ public authService: AuthService,
 justAddedToCartSet: Set<number> = new Set();
 justAddedToWishlistSet: Set<number> = new Set();
 
-
-  /** TOAST UTILITY */
-  showToastMessage(message: string) {
-    this.toastMessage = message;
-    this.showToast = true;
-    setTimeout(() => {
-      this.showToast = false;
-    }, 5000);
+showToastMessage(message: string) {
+  // Clear previous toast if still active
+  if (this.toastTimeout) {
+    clearTimeout(this.toastTimeout);
   }
+
+  this.toastMessage = message;
+  this.showToast = true;
+
+  // Hide toast after 5 seconds
+  this.toastTimeout = setTimeout(() => {
+    this.showToast = false;
+    this.toastTimeout = null;
+  }, 5000);
+}
+
  mapFiltersToBackend1(filters: Filters) {
   const backendFilters: any = {};
 
@@ -583,31 +591,9 @@ loadWishlist() {
   });
 }
 
-toggleWishlist(product: any) {
-  if (!product?.id || !this.authService.isLoggedIn()) return;
 
-  const pid = product.id;
-  const inList = this.myWishlistIds.has(pid);
 
-  // Optimistically update the UI
-  if (inList) this.myWishlistIds.delete(pid);
-  else this.myWishlistIds.add(pid);
 
-  // Call backend
-  const obs = inList
-    ? this.wishlistService.removeFromWishlist([pid])
-    : this.wishlistService.addToWishlist([pid]);
-
-  obs.subscribe({
-    next: () => {},
-    error: err => {
-      console.error('Wishlist operation failed', err);
-      if (inList) this.myWishlistIds.add(pid);
-      else this.myWishlistIds.delete(pid);
-      this.showToastMessage('Wishlist operation failed.');
-    }
-  });
-}
 
 // returns true if icon should be highlighted
 isCartIconActive(product: ProductWithImages): boolean {
@@ -615,21 +601,19 @@ isCartIconActive(product: ProductWithImages): boolean {
 }
 
 
-
-// Add to cart
 addToCart(product: ProductWithImages) {
   if (product.quantity === 0 || !this.authService.isLoggedIn()) return;
 
-  const quantity = 1;
+  const quantityToAdd = 1; // default
 
-  this.cartService.addToCart([{ productId: product.id, quantity }])
+  this.cartService.addToCart([{ productId: product.id, quantity: quantityToAdd }])
     .subscribe({
       next: (res: CartDto) => {
-        this.showToastMessage(`🛒 Added to cart (Qty: ${quantity})`);
-
-        // Highlight button
         this.justAddedToCartSet.add(product.id);
         this.cartProductIds.add(product.id);
+
+        // Show single toast
+        this.showToastMessage(`🛒 Added to cart (Qty: ${quantityToAdd})`);
 
         setTimeout(() => this.justAddedToCartSet.delete(product.id), 1500);
       },
@@ -641,49 +625,68 @@ addToCart(product: ProductWithImages) {
 }
 
 
+
+
 isInWishlist(product: any): boolean {
   return product.id ? this.myWishlistIds.has(product.id) : false;
 }
-
-toggleCart(product: ProductWithImages) {
-  if (!product?.id || !this.authService.isLoggedIn() || product.quantity === 0) return;
-
+toggleCart(product: Product) {
   const pid = product.id;
   const inCart = this.cartProductIds.has(pid);
 
   if (inCart) {
-    // Remove from cart
-    this.cartProductIds.delete(pid); // remove highlight
+    this.cartProductIds.delete(pid);
     this.cartService.removeFromCart([pid]).subscribe({
-      next: () => {},
-      error: err => {
-        console.error('Failed to remove from cart', err);
-        this.cartProductIds.add(pid); // revert
-        this.showToastMessage('Failed to remove from cart.');
+      next: () => {
+        this.showToastMessage('🛒 Product removed from cart');
+      },
+      error: err => { 
+        console.error(err);
+        this.cartProductIds.add(pid);
+        this.showToastMessage('Failed to remove from cart');
       }
     });
   } else {
-    // Add to cart
-    this.cartProductIds.add(pid); // show highlight
+    this.cartProductIds.add(pid);
     this.cartService.addToCart([{ productId: pid, quantity: 1 }]).subscribe({
-      next: () => {},
+      next: () => {
+        this.showToastMessage('🛒 Product added to cart');
+      },
       error: err => {
-        console.error('Failed to add to cart', err);
-        this.cartProductIds.delete(pid); // revert
-        this.showToastMessage('Failed to add to cart.');
+        console.error(err);
+        this.cartProductIds.delete(pid);
+        this.showToastMessage('Failed to add to cart');
       }
     });
   }
 }
 
-isInCart(product: ProductWithImages): boolean {
-  return product.id ? this.cartProductIds.has(product.id) : false;
+toggleWishlist(product: Product) {
+  const pid = product.id;
+  const inList = this.myWishlistIds.has(pid);
+
+  if (inList) this.myWishlistIds.delete(pid);
+  else this.myWishlistIds.add(pid);
+
+  const obs = inList
+    ? this.wishlistService.removeFromWishlist([pid])
+    : this.wishlistService.addToWishlist([pid]);
+
+  obs.subscribe({
+    next: () => {
+      const action = inList ? 'removed from' : 'added to';
+      this.showToastMessage(`❤️ Product ${action} wishlist`);
+    },
+    error: err => {
+      console.error(err);
+      if (inList) this.myWishlistIds.add(pid);
+      else this.myWishlistIds.delete(pid);
+      this.showToastMessage('Wishlist operation failed.');
+    }
+  });
 }
 
 
-isJustAddedToCart(product: ProductWithImages): boolean {
-  return product.id ? this.justAddedToCartSet.has(product.id) : false;
-}
 
 
 }

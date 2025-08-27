@@ -1,5 +1,8 @@
 <!-- Floating Add Button -->
 <!-- Floating Add Button -->
+ <div class="product-container">
+        <!-- TOAST CONTAINER -->
+
 <button
   *ngIf="canAddProduct"
   class="floating-add-button"
@@ -8,15 +11,13 @@
   ➕
 </button>
 <!-- Product Section -->
-<div class="product-container">
-        <!-- TOAST CONTAINER -->
-  <div class="toast-container" *ngIf="showToast">
-    <div class="toast show">
-      {{ toastMessage }}
-    </div>
-  </div>
-  <h2 class="title">Our Collection</h2>
 
+  <h2 class="title">Our Collection</h2>
+<div class="toast-container" *ngIf="showToast">
+  <div class="toast show">
+    {{ toastMessage }}
+  </div>
+</div>
   <!-- Search Bar -->
   <div class="search-wrapper">
     <span class="search-icon">🔍</span>
@@ -240,21 +241,9 @@
 
   <button class="wishlist-btn icon-btn" (click)="toggleWishlist(product)">
     <span class="heart-icon" [class.active]="isInWishlist(product)">
-  {{ isInWishlist(product) ? '❤️' : '♡' }}
-</span>
-
+      {{ isInWishlist(product) ? '❤️' : '♡' }}
+    </span>
   </button>
-</div>
-
-
-
-
-
-<!-- Toast -->
-<div class="toast-container" *ngIf="showToast">
-  <div class="toast">
-    {{ toastMessage }}
-  </div>
 </div>
 
 
