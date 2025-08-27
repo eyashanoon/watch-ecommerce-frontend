@@ -29,17 +29,10 @@
 
       <!-- Sign-up Form -->
       <form [formGroup]="SignUpForm" (ngSubmit)="onSubmit()">
-          <mat-form-field appearance="outline"
-                    formControlName="username"
->
-    <mat-label>Outline form field</mat-label>
-    <input matInput placeholder="Placeholder">
-    <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
-    <mat-hint>Hint</mat-hint>
-  </mat-form-field>
         <input
           type="text"
           placeholder="Username"
+          formControlName="username"
         />
         <input
           type="email"
