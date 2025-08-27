@@ -257,3 +257,55 @@
 .product-grid::-webkit-scrollbar-track {
   background: transparent;
 }
+/* Clickable */
+.clickable {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.clickable:hover { transform: scale(1.02); }
+
+/* Grey text (brand) */
+.normal-grey-text {
+  color: #777;
+  font-size: 14px;
+}
+
+/* Stock status */
+.stock-status {
+  font-size: 13px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+.stock-status.low-stock { color: #d9534f; }
+.stock-status.in-stock { color: #28a745; }
+
+/* Action buttons */
+.product-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.icon-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 5px;
+  transition: transform 0.2s, color 0.2s;
+}
+.icon-btn:hover { transform: scale(1.2); }
+
+/* Cart button */
+.cart-icon-btn { color: #007bff; }
+.cart-icon-btn.in-cart { color: #28a745; }
+
+/* Wishlist button */
+.wishlist-btn { color: #ff4081; }
+.wishlist-btn.in-wishlist { color: #e60073; }
+
+/* Heart icon */
+.heart-icon {
+  font-size: 22px;
+  transition: color 0.2s;
+}

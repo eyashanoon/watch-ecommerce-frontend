@@ -7,33 +7,63 @@
   <div class="product-grid">
     <div class="product-wrapper"
          *ngFor="let product of productsWithImages.slice(visibleStartIndex, visibleStartIndex + 4); trackBy: trackByProduct">
-      <div class="product-card">
-        <div class="product-content">
+<div class="product-card">
+  <div class="product-content">
 
-          <!-- Image Carousel -->
-          <div class="image-wrapper">
-            <div class="image-strip" [style.transform]="'translateX(-' + (product.currentImageIndex * 100) + '%)'">
-              <img *ngFor="let img of product.images"
-                   [src]="img"
-                   alt="{{ product.name }}"
-                   class="clickable"
-                   (click)="goToProductDetails(product)" />
-            </div>
-            <button class="carousel-arrow left" (click)="scrollImageLeft(product, $event)">&#10094;</button>
-            <button class="carousel-arrow right" (click)="scrollImageRight(product, $event)">&#10095;</button>
-          </div>
-
-          <!-- Product Info -->
-          <h3 class="product-name clickable" (click)="goToProductDetails(product)">
-            {{ product.name }}
-          </h3>
-          <div class="Price-quan-con">
-            <p class="product-price">{{ product.quantity }} unit</p>
-            <p class="product-price">{{ product.originalPrice | currency }}</p>
-          </div>
-
-        </div>
+    <!-- Image Carousel -->
+    <div class="image-wrapper">
+      <div class="image-strip"
+           [style.transform]="'translateX(-' + (product.currentImageIndex * 100) + '%)'">
+        <img *ngFor="let img of product.images"
+             [src]="img"
+             alt="{{ product.name }}"
+             class="clickable"
+             (click)="goToProductDetails(product)" />
       </div>
+      <button class="carousel-arrow left" (click)="scrollImageLeft(product, $event)">&#10094;</button>
+      <button class="carousel-arrow right" (click)="scrollImageRight(product, $event)">&#10095;</button>
+    </div>
+
+    <!-- Product Info -->
+    <h3 class="product-name clickable" (click)="goToProductDetails(product)">
+      {{ product.name }}
+    </h3>
+
+    <!-- Brand -->
+    <p class="normal-grey-text">{{ product.brand }}</p>
+
+    <!-- Price -->
+    <p class="product-price">{{ product.originalPrice | currency }}</p>
+
+    <!-- Stock Status -->
+    <p class="stock-status"
+       [ngClass]="{
+         'low-stock': product.quantity < 5 && product.quantity > 0,
+
+       }">
+       {{ product.quantity === 0 ? 'Out of Stock' :''}}
+    </p>
+
+    <!-- Action Buttons -->
+    <div class="product-actions">
+      <!-- Cart -->
+      <button class="icon-btn cart-icon-btn"
+              [ngClass]="{ 'in-cart': cartProductIds.includes(product.id) }"
+              (click)="toggleCart(product)">
+        🛒
+      </button>
+
+      <!-- Wishlist -->
+      <button class="icon-btn wishlist-btn"
+              [ngClass]="{ 'in-wishlist': wishlistProductIds.includes(product.id) }"
+              (click)="toggleWishlist(product)">
+        ❤️
+      </button>
+    </div>
+
+  </div>
+</div>
+
     </div>
   </div>
 

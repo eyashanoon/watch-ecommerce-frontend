@@ -216,7 +216,7 @@ body {
   height: 100%;
   background: transparent;
   transition: transform 0.3s ease;
-}
+ }
 
 .sidebar button {
   width: 200px;
@@ -239,6 +239,9 @@ body {
   border: 1.5px solid #9ca3af;
   transform: translateY(-2px) scale(1.04);
   box-shadow: 0 4px 12px rgba(44,62,80,0.13);
+}
+.sidebar-content{
+margin-left:10px ;
 }
 
 /* =========================

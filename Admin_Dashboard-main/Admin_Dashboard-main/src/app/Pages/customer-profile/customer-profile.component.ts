@@ -20,6 +20,7 @@ export class CustomerProfileComponent implements AfterViewInit, OnInit {
 
   loading = true;
   errorMsg = '';
+  flag:boolean=false;
 
   user: any = null; // profile data
   editMode = false;
@@ -187,6 +188,7 @@ formatExpirationForView(date: string): string {
       next: (response) => {
         console.log('Card created successfully:', response);
         this.createdCrd = true;
+        this.flag=true;
       },
       error: (error) => {
         console.error('Error creating card:', error);
@@ -197,7 +199,10 @@ formatExpirationForView(date: string): string {
   getCardInfo() {
     this.authService.getMyCard().subscribe({
       next: (response) => {
+                 console.log("mm",response)
+
         if (response) {
+          this.flag=true;
           this.myCard = response;
           this.myCard.expirationDate = this.myCard.expiryDate;
           this.createdCrd = true;
@@ -221,6 +226,7 @@ formatExpirationForView(date: string): string {
       },
       error: (error) => {
         console.error('Error fetching card info:', error);
+         this.flag=false;
         this.myCard = {
           cardType: '',
           cardHolderName: '',
