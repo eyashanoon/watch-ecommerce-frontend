@@ -28,10 +28,13 @@
     <p><strong>Email:</strong> {{ user.email }}</p>
     <p><strong>Phone Number:</strong> {{ user.phone }}</p>
     <!-- Password NOT shown in view mode -->
-    <p><strong>Role:</strong> {{ user.roles }}</p>
-
+<div class="roles">
+    <h3>Roles:</h3>
+    <div class="role-chips">
+      <span *ngFor="let role of roles" class="chip">{{ role }}</span>
+    </div>
+  </div>
     <button (click)="enterEditMode()">✏️ Edit</button>
-    <button (click)="deleteAccount()">🗑️ Delete Account</button>
   </div>
 
   <!-- Edit Mode -->

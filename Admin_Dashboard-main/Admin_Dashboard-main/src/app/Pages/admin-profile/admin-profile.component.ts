@@ -17,13 +17,15 @@ export class AdminProfileComponent implements AfterViewInit, OnInit {
   editingPassword = false;
   showPassword = false;
   showConfirmPassword = false;
-// at the top of AdminProfileComponent
-errorMsg: string = '';
+  errorMsg: string = '';
 
   loading = true;
   user: any = null; // profile data
   editMode = false;
   editableUser: any = {};
+
+  // 👇 new property for roles
+  roles: string[] = [];
 
   // Toast state
   toastMessage: string = '';
@@ -54,6 +56,14 @@ errorMsg: string = '';
     this.authService.getAdminById(idNum).subscribe({
       next: (profile) => {
         this.user = profile;
+
+        // 👇 split roles into array
+        if (this.user.roles && typeof this.user.roles === 'string') {
+          this.roles = this.user.roles.split(',');
+        } else if (Array.isArray(this.user.roles)) {
+          this.roles = this.user.roles;
+        }
+
         this.loading = false;
       },
       error: (err) => {
@@ -92,7 +102,6 @@ errorMsg: string = '';
   }
 
   saveChanges(): void {
-    // Validate required fields
     if (!this.editableUser.username || this.editableUser.username.trim().length < 3) {
       this.showToastMessage('⚠️ Full Name is required and must be at least 3 characters.');
       return;
@@ -119,7 +128,6 @@ errorMsg: string = '';
 
     this.loading = true;
 
-    // Update profile
     this.authService.updateAdminProfile(idNum, {...this.editableUser, newPassword: this.editableUser.password}).subscribe({
       next: (admin: any) => {
         this.showToastMessage('✅ Profile updated successfully.');

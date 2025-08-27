@@ -4,14 +4,14 @@
   </video>
 
   <div class="product-section">
-      <!-- TOAST CONTAINER -->
-      <!-- TOAST CONTAINER -->
-  <div class="toast-container" *ngIf="showToast">
-    <div class="toast show">
-      {{ toastMessage }}
+    <div class="toast-container" *ngIf="showToast">
+      <div class="toast show">
+        {{ toastMessage }}
+      </div>
     </div>
-  </div>
+
     <div class="product-container">
+      <h1 class="page-title">💖 My Wishlist</h1>
 
       <!-- Empty Wishlist -->
       <div *ngIf="wishlistItems.length === 0" class="empty-wishlist">
@@ -22,12 +22,8 @@
 
       <!-- Wishlist List -->
       <div *ngIf="wishlistItems.length > 0" class="wishlist-list">
-
-     
-
         <!-- List Items -->
         <div *ngFor="let item of wishlistItems" class="wishlist-item">
-
           <input type="checkbox" [(ngModel)]="item.selected" />
 
           <img
@@ -42,7 +38,9 @@
               {{ item.productName }}
             </h3>
             <p class="product-brand">Brand: {{ item.brand || 'Unknown' }}</p>
-            <p class="product-price">Price: {{ item.discountPrice | currency:'USD':'symbol':'1.0-2' }}</p>
+            <p class="product-price">
+              Price: {{ item.discountPrice | currency:'USD':'symbol':'1.0-2' }}
+            </p>
           </div>
 
           <div class="item-actions">
@@ -50,14 +48,14 @@
             <button class="remove-btn" (click)="removeFromWishlist(item)">Remove</button>
           </div>
         </div>
-
       </div>
-         <!-- Top Controls -->
-        <div class="wishlist-controls">
-          <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" /> Select All
-          <button class="remove-btn" (click)="removeSelected()">Remove Selected</button>
-          <button class="view-btn" (click)="addSelectedToCart()">Add Selected to Cart</button>
-        </div>
+
+      <!-- Top Controls -->
+      <div class="wishlist-controls" *ngIf="wishlistItems.length > 0">
+        <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" /> Select All
+        <button class="remove-btn" (click)="removeSelected()">Remove Selected</button>
+        <button class="view-btn" (click)="addSelectedToCart()">Add Selected to Cart</button>
+      </div>
     </div>
   </div>
 </div>

@@ -10,7 +10,8 @@ import { environment } from '../environments/environment';
   providedIn: 'root',
 })
 export class WishlistService {
-  private apiUrl = environment.apiBaseUrl+'/api/wishlist';
+   private apiUrl = environment.apiBaseUrl + '/api/wishlist';
+ 
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
