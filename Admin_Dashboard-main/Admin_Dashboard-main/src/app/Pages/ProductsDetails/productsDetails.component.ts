@@ -289,6 +289,7 @@ editProduct() {
 
 
 addToCart(product: ProductWithImages & { selectedQty: number }) {
+   if (product.quantity === 0) return;
   product.selectedQty =1;
   if (!product.selectedQty || product.selectedQty < 1) {
     this.showToastMessage('Please select a quantity of at least 1.');
@@ -326,13 +327,16 @@ loadWishlist() {
 }
 
 flag:boolean=false;
-
 toggleWishlist() {
+  // Prevent adding out-of-stock products
+  if (this.products?.quantity === 0) return;
+
   if (!this.products?.id || !this.authService.isLoggedIn()) return;
 
   const pid = Number(this.products.id);
   const inList = this.myWishlistIds.has(pid);
-   this.flag=inList
+  this.flag = inList;
+
   // Optimistically update the heart icon
   if (inList) {
     this.myWishlistIds.delete(pid); // remove from local state
@@ -360,16 +364,23 @@ toggleWishlist() {
       }
 
       this.showToastMessage('Wishlist operation failed.');
-
     }
   });
-     this.flag=this.myWishlistIds.has(pid);
 
+  this.flag = this.myWishlistIds.has(pid);
 }
 
 isInWishlist(): boolean {
   return this.products?.id ? this.myWishlistIds.has(this.products.id) : false;
 }
 
+get productsWithImages(): (ProductWithImages & { selectedQty: number, colorCombinations: ClorCombinations[] })[] {
+  if (!this.products || this.products.quantity === 0) {
+    // Hide product if quantity is zero
+    return [];
+  }
+
+  return [this.products];
+}
 
  }

@@ -40,9 +40,10 @@
       <!-- Top: Most important info -->
       <div class="main-info">
         <h1 class="product-name">{{ products.name }}</h1>
-
+        <h3 class="product-quantity"><strong>Quantity :</strong>{{ products.quantity }}</h3>
+         <div class="stock-status" [ngClass]="{'in-stock': products.quantity > 0, 'out-of-stock': products.quantity === 0}">
+          {{ products.quantity > 0 ? 'In Stock' : 'Out of Stock' }}
         <div class="product-price"><strong>Price:</strong> ${{ products.originalPrice }}</div>
-        <div class="product-qty"><strong>Quantity:</strong> {{ products.quantity }}</div>
 
         <!-- Color Combinations Section -->
         <div class="color-combinations" *ngIf="products?.colorCombinations">
@@ -154,6 +155,7 @@
     <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
   </div>
 
+ 
  
   <div class="ff" *ngIf="isCustomer">
      <app-recommendation></app-recommendation>

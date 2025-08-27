@@ -5,6 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
  import { ProductService1} from '../../Service/product1.service';
 import { AuthService } from '../../Service/auth.service';
+import { CartService } from '../../Service/cart.service';
+import { WishlistService } from '../../Service/wishlist.service';
+import { CartDto } from '../../models/cart.model';
+import { WishlistDto } from '../../models/wishlist.model';
 
 
 import { NavigationEnd } from '@angular/router';
@@ -55,20 +59,29 @@ type Filters = {
 
 
 export class ProductsComponent implements OnInit {
+ cartProductIds: Set<number> = new Set();
 
-    // Toast state
-  toastMessage: string = '';
-  showToast: boolean = false;
+toastMessage: string = '';
+showToast: boolean = false;
+private toastTimeout: any; // prevents duplicate toasts
 
+// inside the class:
+myWishlistIds: Set<number> = new Set();
+wishlistLoaded = false;
+flag: boolean = false;
+selectedQuantity: number = 1; // for cart
 
-   constructor(private router: Router,
-     private productService1: ProductService1,
-     private imageService:ImageService,
-      private featuresService:FeaturesService,
-     private authService: AuthService
-    ) {}
-
-
+constructor(
+  private router: Router,
+  private productService: ProductService,
+  private productService1: ProductService1,
+  private imageService: ImageService,
+  private featuresService: FeaturesService,
+public authService: AuthService,
+  private cartService: CartService,
+  private wishlistService: WishlistService
+) {}
+ 
 
   product: any[] = [];
 
@@ -152,14 +165,26 @@ export class ProductsComponent implements OnInit {
     numberingFormat: filters.numberingType // rename here
   };
 }
-  /** TOAST UTILITY */
-  showToastMessage(message: string) {
-    this.toastMessage = message;
-    this.showToast = true;
-    setTimeout(() => {
-      this.showToast = false;
-    }, 5000);
+
+justAddedToCartSet: Set<number> = new Set();
+justAddedToWishlistSet: Set<number> = new Set();
+
+showToastMessage(message: string) {
+  // Clear previous toast if still active
+  if (this.toastTimeout) {
+    clearTimeout(this.toastTimeout);
   }
+
+  this.toastMessage = message;
+  this.showToast = true;
+
+  // Hide toast after 5 seconds
+  this.toastTimeout = setTimeout(() => {
+    this.showToast = false;
+    this.toastTimeout = null;
+  }, 5000);
+}
+
  mapFiltersToBackend1(filters: Filters) {
   const backendFilters: any = {};
 
@@ -225,64 +250,52 @@ export class ProductsComponent implements OnInit {
   shapes: string[] = [];
   canAddProduct = false;
 
+loadCart() {
+  if (!this.authService.isLoggedIn()) return;
+
+  this.cartService.getMyCart().subscribe({
+    next: (cart: CartDto) => {
+      // Correctly use 'items' instead of 'products'
+      this.cartProductIds = new Set(cart.items.map(item => item.productId));
+    },
+    error: err => console.error('Failed to load cart', err)
+  });
+}
 
 ngOnInit(): void {
-this.filterChange$
-      .pipe(debounceTime(300)) // waits 300ms after last change
+  this.filterChange$
+      .pipe(debounceTime(300))
       .subscribe(filters => {
         this.getFilteredProducts(filters);
       });
 
-this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
-
-
-  this.handsColors = colorsObj.Hands.map(c => c.trim());
-  this.backgroundColors = colorsObj.Background.map(c => c.trim());
-  this.bandColors = colorsObj.Band.map(c => c.trim());
-  this.availableColors = Array.from(
-    new Set(
-      Object.values(colorsObj)   // Get the arrays from hands, background, band
-        .flat()                  // Flatten into one array
-        .map(c => c.trim())      // Remove extra spaces
-    )
-  );
-});
-
-  this.featuresService.getAllBrands().subscribe(brands =>{
-   this.availableBrands=brands;
-  });
-  this.featuresService.getAllBands().subscribe(band=>{
-    this.bandMaterials=band;
-   });
-  this.featuresService.getAllCases().subscribe(cases=>{
-    this.caseMaterials=cases;
-  });
-  this.featuresService.getAllDisplay_types().subscribe(DisplayTypes=>{
-    this.displayTypes=DisplayTypes;
-   });
-  this.featuresService.getAllNumbering_formats().subscribe(numberingTypes=>{
-    this.numberingTypes=numberingTypes;
-   });
-  this.featuresService.getAllShapes().subscribe(shapes=>{
-    this.shapes=shapes;
-    console.log(shapes);
+  this.featuresService.getAllColors().subscribe((colorsObj : ColorsResponse) => {
+    this.handsColors = colorsObj.Hands.map(c => c.trim());
+    this.backgroundColors = colorsObj.Background.map(c => c.trim());
+    this.bandColors = colorsObj.Band.map(c => c.trim());
+    this.loadWishlist();
+    this.availableColors = Array.from(
+      new Set(Object.values(colorsObj).flat().map(c => c.trim()))
+    );
   });
 
-
+  // ... your other featureService calls ...
 
   this.loadProducts();
 
   this.router.events
-    .pipe(filter(event => event instanceof NavigationEnd))
-    .subscribe(() => {
-      this.loadProducts();
-    });
-  const roles = this.authService.getUserRoles(); // Example: ['ADMIN'] or ['CUSTOMER']
-  this.canAddProduct = this.authService.hasAnyRole([
-    'CREATE_PRODUCT',
-    'OWNER'
-  ]);
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.loadProducts();
+      });
+
+  const roles = this.authService.getUserRoles();
+  this.canAddProduct = this.authService.hasAnyRole(['CREATE_PRODUCT', 'OWNER']);
+
+  // ✅ Add this:
+  this.loadCart();
 }
+
 
 
 pageIndex: number = 1;
@@ -429,6 +442,9 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
     product.editMode = !product.editMode;
   }
 
+
+
+  
   saveEdit(product: any) {
     if (!Number.isInteger(product.quantity)) {
       this.showToastMessage("Quantity must be a whole number.");
@@ -558,6 +574,118 @@ FiltrProducts(){
   this.filterChange$.next({ ...this.filters });
 
 }
+
+
+loadWishlist() {
+  if (!this.authService.isLoggedIn()) return;
+
+  this.wishlistService.getMyWishlist().subscribe({
+    next: (res: { products: { id: number }[] }) => {
+      this.myWishlistIds = new Set(res.products.map(p => Number(p.id)) || []);
+      this.wishlistLoaded = true;
+    },
+    error: err => console.error('Failed to load wishlist', err)
+  });
+}
+
+
+
+
+
+// returns true if icon should be highlighted
+isCartIconActive(product: ProductWithImages): boolean {
+  return product.id ? this.cartProductIds.has(product.id) || this.justAddedToCartSet.has(product.id) : false;
+}
+
+
+addToCart(product: ProductWithImages) {
+  if (product.quantity === 0 || !this.authService.isLoggedIn()) return;
+
+  const quantityToAdd = 1; // default
+
+  this.cartService.addToCart([{ productId: product.id, quantity: quantityToAdd }])
+    .subscribe({
+      next: (res: CartDto) => {
+        this.justAddedToCartSet.add(product.id);
+        this.cartProductIds.add(product.id);
+
+        // Show single toast
+        this.showToastMessage(`🛒 Added to cart (Qty: ${quantityToAdd})`);
+
+        setTimeout(() => this.justAddedToCartSet.delete(product.id), 1500);
+      },
+      error: err => {
+        console.error('Failed to add to cart:', err);
+        this.showToastMessage('❌ Failed to add product to cart.');
+      }
+    });
+}
+
+
+
+
+isInWishlist(product: any): boolean {
+  return product.id ? this.myWishlistIds.has(product.id) : false;
+}
+toggleCart(product: Product) {
+  const pid = product.id;
+  const inCart = this.cartProductIds.has(pid);
+
+  if (inCart) {
+    this.cartProductIds.delete(pid);
+    this.cartService.removeFromCart([pid]).subscribe({
+      next: () => {
+        this.showToastMessage('🛒 Product removed from cart');
+      },
+      error: err => { 
+        console.error(err);
+        this.cartProductIds.add(pid);
+        this.showToastMessage('Failed to remove from cart');
+      }
+    });
+  } else {
+    this.cartProductIds.add(pid);
+    this.cartService.addToCart([{ productId: pid, quantity: 1 }]).subscribe({
+      next: () => {
+        this.showToastMessage('🛒 Product added to cart');
+      },
+      error: err => {
+        console.error(err);
+        this.cartProductIds.delete(pid);
+        this.showToastMessage('Failed to add to cart');
+      }
+    });
+  }
+}
+
+toggleWishlist(product: Product) {
+  const pid = product.id;
+  const inList = this.myWishlistIds.has(pid);
+
+  if (inList) this.myWishlistIds.delete(pid);
+  else this.myWishlistIds.add(pid);
+
+  const obs = inList
+    ? this.wishlistService.removeFromWishlist([pid])
+    : this.wishlistService.addToWishlist([pid]);
+
+  obs.subscribe({
+    next: () => {
+      const action = inList ? 'removed from' : 'added to';
+      this.showToastMessage(`❤️ Product ${action} wishlist`);
+    },
+    error: err => {
+      console.error(err);
+      if (inList) this.myWishlistIds.add(pid);
+      else this.myWishlistIds.delete(pid);
+      this.showToastMessage('Wishlist operation failed.');
+    }
+  });
+}
+
+
+
+
 }
 
 
