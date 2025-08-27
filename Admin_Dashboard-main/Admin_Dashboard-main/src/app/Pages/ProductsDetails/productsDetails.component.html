@@ -101,20 +101,6 @@
               <i class="fa-solid fa-cart-plus" [class.active]="flagCart"></i>
             </button>
 
-            <!-- Quantity Selector -->
-            <div class="quantity-selector">
-              <label for="quantity">Qty:</label>
-              <div class="qty-stepper">
-                <button type="button" class="qty-btn" (click)="decreaseQty()">−</button>
-                <input type="number"
-                       id="quantity"
-                       [(ngModel)]="selectedQuantity"
-                       min="1"
-                       [max]="products.quantity" />
-                <button type="button" class="qty-btn" (click)="increaseQty()">+</button>
-              </div>
-            </div>
-
             <!-- Wishlist Button -->
             <button class="wishlist-btn" *ngIf="wishlistLoaded" (click)="toggleWishlist()">
               <span class="heart-icon" >{{ flag ? '❤️' : '♡' }}</span>

@@ -1,44 +1,67 @@
 <div>
   <!-- ----------------- Topbar for Logged-in Customer ----------------- -->
-  <div class="topbar" *ngIf="authService.isLoggedIn() && authService.getUserRoles().includes('CUSTOMER')">
-    <div class="topbar-left" (click)="handleLogoClick()" style="cursor: pointer;">
-      <img src="/assets/logo.png" alt="Logo" />
-      <h1>| La Royale Watches Store</h1>
-    </div>
-    <div class="topbar-links">
-      <a routerLink="/product" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">Products</a>
-      <a routerLink="/customer-profile" routerLinkActive="active-link">Profile</a>
-      <a (click)="goToWishlist()" title="Wishlist" [ngClass]="{'active-link': isWishlistPage}">
-        <i class="fa-solid fa-heart"></i>
-      </a>
-      <a (click)="goToCart()" title="Cart" [ngClass]="{'active-link': isCartPage}">
-        <i class="fa-solid fa-cart-shopping"></i>
-      </a>
-      <a (click)="goToCustomerOrders()" [ngClass]="{'active-link': isOrdersPage}">Orders</a>
-      <a (click)="signOut($event)">Sign Out</a>
-    </div>
-    <!-- User Name Display -->
-    <div class="topbar-user" *ngIf="authService.isLoggedIn()">
-      <span class="user-name">👤 {{ userName }}</span>
-    </div>
+<!-- ----------------- Topbar for Logged-in Customer ----------------- -->
+<div class="topbar" *ngIf="authService.isLoggedIn() && authService.getUserRoles().includes('CUSTOMER')">
+  <!-- Logo -->
+  <div class="topbar-left" (click)="goToProducts()" style="cursor: pointer;">
+    <img src="/assets/logo.png" alt="Logo" />
+    <h1>| La Royale Watches Store</h1>
   </div>
 
-  <!-- ----------------- Topbar for Logged-in Admin ----------------- -->
-  <div class="topbar" *ngIf="authService.isLoggedIn() && authService.getUserRoles().includes('ADMIN')">
-    <div class="topbar-left" (click)="handleLogoClick()" style="cursor: pointer;">
-      <img src="/assets/logo.png" alt="Logo" />
-      <h1>| La Royale Admin Panel</h1>
-    </div>
-    <div class="topbar-links">
-      <a routerLink="/admin" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-      <a routerLink="/admin-profile" routerLinkActive="active-link">Profile</a>
-      <a (click)="signOut($event)">Sign Out</a>
-    </div>
-    <!-- User Name Display -->
-    <div class="topbar-user" *ngIf="authService.isLoggedIn()">
-      <span class="user-name">👤 {{ userName }}</span>
-    </div>
+  <!-- User Dropdown -->
+  <div class="topbar-user" *ngIf="authService.isLoggedIn()" style="position: relative;">
+    <span class="user-name" (click)="toggleUserMenu()" style="cursor: pointer;">
+      👤 {{ userName }} <i class="fa-solid fa-caret-down"></i>
+    </span>
+
+    <!-- Fancy Dropdown Menu -->
+    <ul class="user-menu" *ngIf="showUserMenu">
+      <li (click)="goToCustomerProfile()">
+        <i class="fa-solid fa-user"></i> Profile
+      </li>
+      <li (click)="goToWishlist()">
+        <i class="fa-solid fa-heart"></i> Wishlist
+      </li>
+      <li (click)="goToCart()">
+        <i class="fa-solid fa-cart-shopping"></i> Cart
+      </li>
+      <li (click)="goToCustomerOrders()">
+        <i class="fa-solid fa-box"></i> Orders
+      </li>
+      <li (click)="signOut($event)">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </li>
+    </ul>
   </div>
+</div>
+
+
+<!-- ----------------- Topbar for Logged-in Admin ----------------- -->
+<div class="topbar" *ngIf="authService.isLoggedIn() && authService.getUserRoles().includes('ADMIN')">
+  <!-- Logo -->
+  <div class="topbar-left" (click)="goToAdminHome()" style="cursor: pointer;">
+    <img src="/assets/logo.png" alt="Logo" />
+    <h1>| La Royale Admin Panel</h1>
+  </div>
+
+  <!-- User Dropdown -->
+  <div class="topbar-user" *ngIf="authService.isLoggedIn()" style="position: relative;">
+    <span class="user-name" (click)="toggleAdminMenu()" style="cursor: pointer;">
+      👤 {{ userName }} <i class="fa-solid fa-caret-down"></i>
+    </span>
+
+    <!-- Fancy Dropdown Menu -->
+    <ul class="user-menu" *ngIf="showAdminMenu">
+      <li (click)="goToAdminProfile()">
+        <i class="fa-solid fa-user"></i> Profile
+      </li>
+      <li (click)="signOut($event)">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </li>
+    </ul>
+  </div>
+</div>
+
 
   <!-- ----------------- Topbar for Sign In / Sign Up pages ----------------- -->
   <div class="topbar" *ngIf="isSignInPage || isSignUpPage">
@@ -65,11 +88,4 @@
     <router-outlet></router-outlet>
   </div>
 
-  <!-- ----------------- Footer ----------------- -->
-  <footer class="footer">
-    <p>
-      Need help? Contact our support:
-      <a href="tel:+970599999999">+970599999999</a>
-    </p>
-  </footer>
 </div>

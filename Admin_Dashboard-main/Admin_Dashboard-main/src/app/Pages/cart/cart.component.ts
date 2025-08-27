@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
@@ -9,6 +9,8 @@ import { ImageService } from '../../Service/image.service';
 import { AuthService } from '../../Service/auth.service';
 import { OrderService } from '../../Service/order.service';
 import { CartDto, CartItem } from '../../models/cart.model';
+
+
 
 export interface CartItemWithImages extends CartItem {
   images: string[];
@@ -20,6 +22,7 @@ export interface CartItemWithImages extends CartItem {
   discountPrice: number;
   productPrice: number;
   quantity: number;
+    maxQuantity?: number;
 }
 
 @Component({
@@ -34,6 +37,8 @@ export class CartComponent implements OnInit {
   currentImageIndex: { [productId: number]: number } = {};
   mycartIds: Set<number> = new Set();
   selectAll: boolean = false;
+  hasPaymentInfo: boolean = false;
+  currentUrl: string = '';
 
   // Toast state
   toastMessage: string = '';
@@ -49,21 +54,42 @@ export class CartComponent implements OnInit {
   confirmEnabled: boolean = false;
   confirmTimeout: any;
   loading:boolean=false;
+  showPaymentInfo: boolean = false; 
 
   constructor(
-    private router: Router,
-    private productService1: ProductService1,
-    private imageService: ImageService,
-    private authService: AuthService,
-    private cartService: CartService,
-    private orderService: OrderService
-  ) {}
+      private router: Router,
+      private route: ActivatedRoute,
+      private productService1: ProductService1,
+      private imageService: ImageService,
+      private authService: AuthService,
+      private cartService: CartService,
+      private orderService: OrderService
+    ) {}
 
   ngOnInit() {
-    if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/sign-in']);
-      return;
+      this.currentUrl = this.router.url;
+ this.authService.getMyCard().subscribe({
+    next: (response: any) => {
+      // Use the same logic as profile component
+      this.hasPaymentInfo = !!response && !!response.cardNumber;
+    },
+    error: (err) => {
+      console.error('Error fetching card info:', err);
+      this.hasPaymentInfo = false;
     }
+  });
+    // Show payment info if query param is set
+  this.route.queryParams.subscribe(params => {
+    if (params['showPaymentInfo']) {
+      this.showPaymentInfo = true;
+
+      // Optional: scroll to the payment section
+      setTimeout(() => {
+        const el = document.querySelector('.card-container');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
+  });
     this.loadCart();
   }
 
@@ -99,48 +125,54 @@ export class CartComponent implements OnInit {
 
   }
 
-  private initializecartItems(items: any[]) {
-    this.cartItems = items.map(it => ({
-      productId: Number(it.productId ?? 0),
-      productPrice: it.productPrice ?? 0,
-      productName: '',
-      productImage: it.productImage ?? '',
-      images: [],
-      currentImageIndex: 0,
-      selected: false,
-      brand: '',
-      discountPrice: it.discountPrice ?? 0,
-      quantity: it.quantity ?? 1
-    }));
+private initializecartItems(items: any[]) {
+  this.cartItems = items.map(it => ({
+    productId: Number(it.productId ?? 0),
+    productPrice: it.productPrice ?? 0,
+    productName: '',
+    productImage: it.productImage ?? '',
+    images: [],
+    currentImageIndex: 0,
+    selected: false,
+    brand: '',
+    discountPrice: it.discountPrice ?? 0,
+    quantity: it.quantity ?? 1,
+    maxQuantity: 99 // default, will update from product data
+  }));
 
-    this.mycartIds = new Set(this.cartItems.map(it => it.productId));
+  this.mycartIds = new Set(this.cartItems.map(it => it.productId));
 
-    this.cartItems.forEach(item => {
-      this.productService1.getProductById(item.productId).subscribe(prod => {
-        if (!prod) { item.productName = 'Unknown Product'; return; }
-        item.productName = prod.name ?? prod.productName ?? 'Unknown Product';
-        item.brand = prod.brand ?? 'Unknown';
-        item.discountPrice = prod.discountPrice ?? 0;
-        if (!item.productImage) item.productImage = prod.image ?? 'assets/logo.png';
-      });
+  this.cartItems.forEach(item => {
+    this.productService1.getProductById(item.productId).subscribe(prod => {
+      if (!prod) {
+        item.productName = 'Unknown Product';
+        return;
+      }
+
+      item.productName = prod.name ?? prod.productName ?? 'Unknown Product';
+      item.brand = prod.brand ?? 'Unknown';
+      item.discountPrice = prod.discountPrice ?? 0;
+      item.maxQuantity = prod.quantity ?? 99; // <-- set available stock here
+      if (!item.productImage) item.productImage = prod.image ?? 'assets/logo.png';
     });
+  });
 
-    const imageRequests = this.cartItems.map(item =>
-      this.imageService.getAllImagesByProductID(item.productId)
-    );
+  const imageRequests = this.cartItems.map(item =>
+    this.imageService.getAllImagesByProductID(item.productId)
+  );
 
-    forkJoin(imageRequests).subscribe(imagesArray => {
-      imagesArray.forEach((images, idx) => {
-        const normalized = images
-          .map((img: any) => img?.data || img?.url || img?.path || img?.fileName || img?.imageName || img?.filename || img?.link)
-          .filter(Boolean)
-          .map((s: any) => typeof s === 'string' ? (s.startsWith('data:') ? s : `data:image/jpeg;base64,${s}`) : '');
-        this.cartItems[idx].images = normalized.length ? normalized : ['assets/logo.png'];
-        this.cartItems[idx].currentImageIndex = 0;
-        this.currentImageIndex[this.cartItems[idx].productId] = 0;
-      });
+  forkJoin(imageRequests).subscribe(imagesArray => {
+    imagesArray.forEach((images, idx) => {
+      const normalized = images
+        .map((img: any) => img?.data || img?.url || img?.path || img?.fileName || img?.imageName || img?.filename || img?.link)
+        .filter(Boolean)
+        .map((s: any) => typeof s === 'string' ? (s.startsWith('data:') ? s : `data:image/jpeg;base64,${s}`) : '');
+      this.cartItems[idx].images = normalized.length ? normalized : ['assets/logo.png'];
+      this.cartItems[idx].currentImageIndex = 0;
+      this.currentImageIndex[this.cartItems[idx].productId] = 0;
     });
-  }
+  });
+}
 
   getCartTotal(): number {
     return this.cartItems.reduce((acc, i) => {
@@ -258,6 +290,52 @@ export class CartComponent implements OnInit {
     const now = new Date();
     this.orderTime = now.toLocaleString();
   }
+/** 🔹 Quantity Controls with API update */
+increaseQty(item: CartItemWithImages) {
+  if (!item) return;
+  const max = item.maxQuantity || 99;
+  if (item.quantity < max) {
+    const newQty = item.quantity + 1;
+    this.updateCartItem(item, newQty);
+  }
+}
+
+decreaseQty(item: CartItemWithImages) {
+  if (!item) return;
+  if (item.quantity > 1) {
+    const newQty = item.quantity - 1;
+    this.updateCartItem(item, newQty);
+  }
+}
+
+/** 🔹 Remove and re-add cart item with new quantity */
+private updateCartItem(item: CartItemWithImages, newQuantity: number) {
+  const payloadRemove = [{ productId: item.productId, quantity: item.quantity }];
+  this.cartService.removeFromCart(payloadRemove).subscribe({
+    next: () => {
+      const payloadAdd = [{ productId: item.productId, quantity: newQuantity }];
+      this.cartService.addToCart(payloadAdd).subscribe({
+        next: () => {
+          item.quantity = newQuantity; // Update local quantity
+          this.showToastMessage(`Quantity updated to ${newQuantity}`);
+        },
+        error: err => {
+          console.error('Failed to add updated quantity', err);
+          this.showToastMessage('❌ Failed to update quantity');
+          // Re-add original quantity to revert
+          this.cartService.addToCart(payloadRemove).subscribe();
+        }
+      });
+    },
+    error: err => {
+      console.error('Failed to remove item for update', err);
+      this.showToastMessage('❌ Failed to update quantity');
+    }
+  });
+}
+
+
+
 
   confirmPayment() {
     this.orderConfirmed = true;

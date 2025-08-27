@@ -43,6 +43,7 @@ export interface CustomerOrder {
 export class CustomerOrdersComponent implements OnInit {
   orders: CustomerOrder[] = [];
   expandedOrderId: number | null = null;
+  loading: boolean = true;
   // Toast state
   toastMessage: string = '';
   showToast: boolean = false;
@@ -57,7 +58,8 @@ export class CustomerOrdersComponent implements OnInit {
     this.loadOrders();
   }
 
-  loadOrders(): void {
+loadOrders(): void {
+      this.loading = true;
     this.orderService.getAllOrderForMe().subscribe({
       next: (res: any[]) => {
         const ordersTemp: CustomerOrder[] = res.map((o, index) => ({
@@ -91,6 +93,7 @@ export class CustomerOrdersComponent implements OnInit {
                     if (imgs && imgs.length > 0) {
                       item.images = [`data:image/jpeg;base64,${imgs[0].data}`];
                     }
+                    this.loading = false;
                   },
                   error: () => {
                     item.images = ['assets/logo.png'];
@@ -100,12 +103,19 @@ export class CustomerOrdersComponent implements OnInit {
             );
             allObservables.push(obs);
           });
-        });
+        }
+        
+      );
 
         // Wait for all product info fetches to finish
         if (allObservables.length > 0) {
           forkJoin(allObservables).subscribe({
-            next: () => this.orders = ordersTemp,
+            next: () => {
+              this.orders = ordersTemp;
+              this.orders.sort((a, b) => new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime());
+
+            
+            },
             error: () => this.orders = ordersTemp
           });
         } else {
@@ -114,6 +124,7 @@ export class CustomerOrdersComponent implements OnInit {
       },
       error: err => console.error('Failed to load orders', err)
     });
+
   }
 
   toggleOrder(displayOrderId: number): void {

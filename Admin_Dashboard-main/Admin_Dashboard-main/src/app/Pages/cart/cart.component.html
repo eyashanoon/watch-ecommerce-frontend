@@ -4,10 +4,9 @@
     <source src="assets/customer_background.mp4" type="video/mp4" />
   </video>
 
+  <!-- Toast -->
   <div class="toast-container" *ngIf="showToast">
-    <div class="toast show">
-      {{ toastMessage }}
-    </div>
+    <div class="toast show">{{ toastMessage }}</div>
   </div>
 
   <!-- CART CONTENT -->
@@ -21,11 +20,11 @@
       <button class="browse-btn" routerLink="/product">Browse Products</button>
     </div>
 
-
+    <!-- LOADING STATE -->
     <div *ngIf="loading" class="empty-cart">
       <h2>loading ⌛</h2>
       <p>this will not take long.</p>
-     </div>
+    </div>
 
     <!-- CART ITEMS LIST -->
     <div *ngIf="cartItems.length > 0" class="cart-list">
@@ -43,19 +42,23 @@
 
         <!-- INFO -->
         <div class="cart-item-info">
-          <h3 class="product-name" (click)="navigateToProduct(item)">
-            {{ item.productName }}
-          </h3>
+          <h3 class="product-name" (click)="navigateToProduct(item)">{{ item.productName }}</h3>
           <p class="product-brand">Brand: {{ item.brand || 'Unknown' }}</p>
+
+          <!-- Quantity Display & Selector -->
           <p>Quantity: {{ item.quantity }}</p>
-          <p>
-            Unit Price: ${{ item.discountPrice > 0 ? item.discountPrice : item.productPrice }}
-          </p>
+          <div class="quantity-selector">
+            <label for="quantity-{{item.productId}}">Qty:</label>
+            <div class="qty-stepper">
+              <button type="button" class="qty-btn" (click)="decreaseQty(item)">−</button>
+              <input type="number" id="quantity-{{item.productId}}" [(ngModel)]="item.quantity" min="1" [max]="item.maxQuantity || 99" readonly />
+              <button type="button" class="qty-btn" (click)="increaseQty(item)">+</button>
+            </div>
+          </div>
+
+          <p>Unit Price: ${{ item.discountPrice > 0 ? item.discountPrice : item.productPrice }}</p>
           <p class="item-total">
-            Total: ${{
-              (item.discountPrice > 0 ? item.discountPrice : item.productPrice) *
-              item.quantity | number : '1.2-2'
-            }}
+            Total: ${{ (item.discountPrice > 0 ? item.discountPrice : item.productPrice) * item.quantity | number:'1.2-2' }}
           </p>
         </div>
 
@@ -69,63 +72,81 @@
 
       <!-- CART SUMMARY -->
       <div class="cart-summary">
-        <p>Total Cart: <strong>${{ getCartTotal() | number : '1.2-2' }}</strong></p>
+        <p>Total Cart: <strong>${{ getCartTotal() | number:'1.2-2' }}</strong></p>
       </div>
 
       <!-- BOTTOM CONTROLS -->
       <div class="cart-controls-bottom">
         <label>
-          <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" />
-          Select All
+          <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" /> Select All
         </label>
         <button class="remove-btn" (click)="removeSelected()">Remove Selected</button>
         <button class="place-btn" (click)="placeOrderSelected()">Place Order Selected</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ORDER MODAL -->
-<div class="modal-backdrop" *ngIf="showOrderModal">
-  <div class="order-modal">
-    <h2><i class="fa-solid fa-bag-shopping"></i> Confirm Your Order</h2>
-    <p>Order Time: <strong>{{ orderTime }}</strong></p>
+  <!-- ORDER MODAL -->
+  <div class="modal-backdrop" *ngIf="showOrderModal">
+    <div class="order-modal">
+      <h2><i class="fa-solid fa-bag-shopping"></i> Confirm Your Order</h2>
+      <p>Order Time: <strong>{{ orderTime }}</strong></p>
 
-    <!-- ORDER ITEMS -->
-    <div class="order-items">
-      <div *ngFor="let item of selectedItemsForOrder" class="order-item-card">
-        <img [src]="item.images[0] || 'assets/logo.png'" class="order-item-image" />
-        <div class="order-item-details">
-          <h4>{{ item.productName }}</h4>
-          <p>Quantity: {{ item.quantity }}</p>
-          <p>
-            Unit: ${{ item.discountPrice > 0 ? item.discountPrice : item.productPrice }}
-          </p>
-          <p class="order-item-total">
-            Item Total: ${{
-              (item.discountPrice > 0 ? item.discountPrice : item.productPrice) *
-              item.quantity | number : '1.2-2'
-            }}
-          </p>
+      <!-- Payment Warning -->
+      <div *ngIf="!hasPaymentInfo" class="no-payment-warning">
+        <p>
+          ⚠️ You don't have payment information!
+    <a 
+  [routerLink]="['/customer-profile']" 
+  [queryParams]="{ showPaymentInfo: true, returnTo: currentUrl }" 
+  class="create-payment-link">
+  Click here to add payment info
+</a>
+        </p>
+      </div>
+
+      <!-- ORDER ITEMS -->
+      <div class="order-items">
+        <div *ngFor="let item of selectedItemsForOrder" class="order-item-card">
+          <img [src]="item.images[0] || 'assets/logo.png'" class="order-item-image" />
+          <div class="order-item-details">
+            <h4>{{ item.productName }}</h4>
+            <p>Quantity: {{ item.quantity }}</p>
+            <p>Unit: ${{ item.discountPrice > 0 ? item.discountPrice : item.productPrice }}</p>
+            <p class="order-item-total">
+              Item Total: ${{ (item.discountPrice > 0 ? item.discountPrice : item.productPrice) * item.quantity | number:'1.2-2' }}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- GRAND TOTAL -->
-    <p class="order-summary">
-      Grand Total: <strong>${{ getSelectedItemsTotal() | number : '1.2-2' }}</strong>
-    </p>
+      <!-- GRAND TOTAL -->
+      <p class="order-summary">Grand Total: <strong>${{ getSelectedItemsTotal() | number:'1.2-2' }}</strong></p>
 
-    <!-- MODAL BUTTONS -->
-    <div *ngIf="!orderConfirmed" class="modal-buttons">
-      <button class="place-btn" (click)="confirmPayment()">Confirm Payment</button>
-      <button class="remove-btn" (click)="cancelOrder()">Cancel</button>
-    </div>
+      <!-- WAITING MESSAGE & BUTTONS -->
+      <div class="modal-actions">
+        <div *ngIf="orderConfirmed" class="waiting-message">
+          <p class="countdown-text">✅ Waiting for confirmations! ⏳ Auto place in {{ countdown }}s</p>
+        </div>
 
-    <div *ngIf="orderConfirmed" class="modal-buttons">
-      <p class="countdown-text">✅ Waiting for confirmations! ⏳ Auto place in {{ countdown }}s</p>
-      <button class="remove-btn" (click)="cancelOrder()">Cancel Order</button>
-      <button *ngIf="confirmEnabled" class="place-btn" (click)="finalizeOrder()">Confirm Order Now</button>
+        <div class="modal-buttons">
+          <button class="remove-btn" (click)="cancelOrder()">Cancel Order</button>
+
+          <!-- Confirm Now -->
+          <button *ngIf="orderConfirmed && confirmEnabled" class="place-btn" (click)="finalizeOrder()">Confirm Order Now</button>
+
+          <!-- Confirm Payment -->
+          <button 
+            *ngIf="!orderConfirmed" 
+            class="place-btn" 
+            (click)="confirmPayment()"
+            [disabled]="!hasPaymentInfo"
+            [class.disabled-btn]="!hasPaymentInfo"
+            [title]="!hasPaymentInfo ? 'Add payment info to enable' : ''">
+            Confirm Payment
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

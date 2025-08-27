@@ -11,6 +11,26 @@
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
+.no-payment-warning {
+  background-color: #fff4e5;
+  color: #b35d00;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+.place-btn.disabled-btn {
+  opacity: 0.5;        /* visually looks disabled */
+  cursor: not-allowed; /* cursor shows it's not clickable */
+  pointer-events: none; /* ensures no accidental clicks */
+}
+
+.no-payment-warning a.create-payment-link {
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 
 .toast-container {
   position: fixed;

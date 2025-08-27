@@ -23,6 +23,7 @@ export class SignUpComponent implements AfterViewInit {
   SignUpForm: FormGroup;
   toastMessage: string = '';
   showToast = false;
+  submitted = false;
 
   @ViewChild('backgroundVideo') backgroundVideo!: ElementRef<HTMLVideoElement>;
 
@@ -35,7 +36,7 @@ export class SignUpComponent implements AfterViewInit {
       {
         username: ['', [Validators.required, Validators.minLength(3)]],
         email: ['', [Validators.required, Validators.email]],
-        phone: ['', [Validators.required, Validators.pattern(/^\+?\d{7,14}$/)]],
+        phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
         password: [
           '',
           [
@@ -48,12 +49,27 @@ export class SignUpComponent implements AfterViewInit {
       },
       { validators: this.passwordMatchValidator }
     );
+    this.SignUpForm.reset();
   }
+  ngOnInit(): void {
+  this.SignUpForm.reset({
+    username: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: ''
+  });
+}
+
 
   ngAfterViewInit() {
     const video = this.backgroundVideo.nativeElement;
     video.muted = true;
     video.play().catch((e) => console.warn('Video play error:', e));
+    this.SignUpForm.reset();
+  }
+   get f() {
+    return this.SignUpForm.controls;
   }
 
   showToastMessage(message: string) {
@@ -79,7 +95,7 @@ export class SignUpComponent implements AfterViewInit {
       if (controls['username'].errors?.['required']) {
         this.showToastMessage('Username is required.');
       } else if (controls['username'].errors?.['minlength']) {
-        this.showToastMessage('Username must be at least 3 characters.');
+        this.showToastMessage('Name must be at least 3 characters.');
       }
       return;
     }
@@ -129,7 +145,9 @@ export class SignUpComponent implements AfterViewInit {
   }
 
   onSubmit() {
+    this.submitted = true;
     if (this.SignUpForm.invalid) {
+      this.SignUpForm.markAllAsTouched();
       this.checkAndShowFieldError();
       return;
     }
@@ -142,18 +160,30 @@ export class SignUpComponent implements AfterViewInit {
       phone: this.SignUpForm.value.phone,
     };
 
-    this.authService.registerCustomer(newCustomer).subscribe({
-      next: (response) => {
-        console.log('Registration successful:', response);
-        localStorage.setItem('token', response.token);
-        this.showToastMessage('Account created & logged in!');
-        this.router.navigate(['/home']);
-      },
-      error: (error) => {
-        console.error('Registration failed:', error);
-        this.showToastMessage('Failed to register.');
-      },
-    });
+   this.authService.registerCustomer(newCustomer).subscribe({
+  next: (response) => {
+    console.log('Registration successful:', response);
+
+    // ✅ Save token, roles and id just like login
+    this.authService.saveToken(response.token, response.roles, response.id);
+
+    // ✅ Redirect based on role
+    const roles = response.roles?.map((r: string) => r.toUpperCase());
+    if (roles.includes('ADMIN')) {
+      this.router.navigate(['/admin']);
+    } else if (roles.includes('CUSTOMER')) {
+      this.router.navigate(['/home']);
+    } else {
+      this.router.navigate(['/home']); // fallback
+    }
+    
+  },
+  error: (error) => {
+    console.error('Registration failed:', error);
+    this.showToastMessage('Failed to register.');
+  },
+});
+
   }
 
   goToSignInPage() {

@@ -1,4 +1,24 @@
 /* Push container down below topbar */
+/* red error text */
+.error {
+  color: #e11d48;            /* rose-600 */
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+
+/* red border for invalid inputs when touched/submitted */
+input.invalid,
+input.ng-touched.ng-invalid {
+  border: 1px solid #e11d48 !important;
+  outline: none;
+}
+
+/* optional: nicer focus */
+input:focus {
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15);
+  border-color: #e11d48;
+}
+
 .container {
   height: calc(100vh - 80px); /* full viewport height minus topbar */
   margin-top: 80px; /* optional - safer for scroll */

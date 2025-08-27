@@ -1,3 +1,60 @@
+.fancy-button {
+  background-color: #B6B09F;
+  color: #fff;
+  font-size: 20px;               /* larger text */
+  font-weight: 700;               /* bold text */
+  letter-spacing: 1px;            /* spacing between letters */
+  padding: 16px 36px;             /* bigger button */
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;      /* luxury uppercase style */
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.fancy-button i {
+  font-size: 18px;               /* make arrow proportional */
+  transition: transform 0.3s ease;
+}
+
+.fancy-button:hover i {
+  transform: translateX(5px);    /* arrow moves on hover */
+}
+
+.fancy-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.4s ease;
+  transform: skewX(-20deg);
+}
+
+.fancy-button:hover::after {
+  left: 100%;
+}
+
+.fancy-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
+}
+
+.fancy-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+
 /* Home Wrapper - relative to position absolute children */
 .home-wrapper {
   position: relative;
@@ -213,6 +270,9 @@
   text-shadow:
     0 0 8px rgba(255, 255, 255, 0.9),
     0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.about-section p {
+  font-size: 1.5rem;
 }
 
 /* Remove old CSS animation on paragraphs here */

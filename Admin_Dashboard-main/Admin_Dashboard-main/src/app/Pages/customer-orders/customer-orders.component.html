@@ -8,11 +8,12 @@
   <h1 class="page-title">📦 My Orders</h1>
 
   <!-- Empty orders -->
-  <div *ngIf="orders.length === 0" class="empty-orders">
+  <div *ngIf="orders.length === 0 && !loading" class="empty-orders">
     <h2>You have no orders yet 😔</h2>
     <p>Browse products and place your first order!</p>
     <button class="browse-btn" routerLink="/product">Browse Products</button>
   </div>
+  
 
   <!-- Orders list -->
   <div *ngIf="orders.length > 0" class="orders-list">

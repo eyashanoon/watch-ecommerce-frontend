@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -66,7 +66,19 @@ handleLogoClick() {
           this.router.navigateByUrl('/home', { skipLocationChange: false });
   }
 }
+showUserMenu = false;
 
+toggleUserMenu() {
+  this.showUserMenu = !this.showUserMenu;
+}
+
+// Navigation methods
+goToProducts() {
+  this.router.navigate(['/product']);
+}
+goToCustomerProfile() {
+  this.router.navigate(['/customer-profile']);
+}
 
 
 loadUserInfo() {
@@ -137,11 +149,36 @@ updatePageFlags(url: string) {
   this.isCartPage = url === '/cart';          
   this.isOrdersPage = url === '/orders';
 }
+// Flag to control admin dropdown visibility
+showAdminMenu = false;
+
+toggleAdminMenu() {
+  this.showAdminMenu = !this.showAdminMenu;
+}
+
+// Navigation methods
+goToAdminHome() {
+  this.router.navigate(['/admin']);
+}
+goToAdminProfile() {
+  this.router.navigate(['/admin-profile']);
+}
+
+// Optional: Close dropdown when clicking outside
+@HostListener('document:click', ['$event'])
+onClickOutside(event: Event) {
+  const target = event.target as HTMLElement;
+
+  // Close customer dropdown
+  if (!target.closest('.topbar-user')) {
+    this.showUserMenu = false;
+    this.showAdminMenu = false;
+  }
+}
 
 
   // 🔹 Navigation
   goToHome() { this.router.navigate(['/home']); }
-  goToProducts() { this.router.navigate(['/product']); }
   goToCart() { this.router.navigate(['/cart']); }         
   goToWishlist() { this.router.navigate(['/wishlist']); }
   goToAdminPanel() { this.router.navigate(['/admin']); }

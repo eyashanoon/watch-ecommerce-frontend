@@ -1,7 +1,7 @@
 import { Component, AfterViewInit, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../Service/auth.service';
 
 @Component({
@@ -101,12 +101,18 @@ private isValidCardNumber(num: string, type: string): boolean {
 
   // Insert a space every 4 digits
   this.myCard.cardNumber = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+  
+  const last4 = this.myCard.cardNumber.slice(-4);
+  return '**** **** **** ' + last4;
+
 }
 formatCardNumberForView(cardNumber: string): string {
   if (!cardNumber) return '';
-  // Remove non-digits and format in groups of 4
-  return cardNumber.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
+  const digits = cardNumber.replace(/\D/g, ''); // remove spaces
+  const last4 = digits.slice(-4);
+  return '**** **** **** ' + last4;
 }
+
 formatExpirationDate() {
   if (!this.myCard.expirationDate) return;
 
@@ -189,6 +195,8 @@ formatExpirationForView(date: string): string {
         console.log('Card created successfully:', response);
         this.createdCrd = true;
         this.flag=true;
+        const returnUrl = this.route.snapshot.queryParams['returnTo'] || '/';
+  this.router.navigateByUrl(returnUrl);
       },
       error: (error) => {
         console.error('Error creating card:', error);
@@ -242,7 +250,7 @@ formatExpirationForView(date: string): string {
     });
   }
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute) {}
   toastMessage = '';
   showToast = false;
  showToastMessage(message: string) {
@@ -257,33 +265,51 @@ formatExpirationForView(date: string): string {
     video.play().catch((err) => console.warn('Video play failed:', err));
   }
 
-  ngOnInit() {
-    this.createdCrd = false;
-    const idStr = localStorage.getItem('id');
-    const idNum = idStr ? Number(idStr) : NaN;
+ngOnInit() {
+  this.createdCrd = false;
 
-    if (!idStr || isNaN(idNum)) {
-      this.errorMsg = 'User ID not found. Please log in again.';
-      this.loading = false;
-      return;
-    }
+  // 1️⃣ Get user ID from localStorage
+  const idStr = localStorage.getItem('id');
+  const idNum = idStr ? Number(idStr) : NaN;
 
-    this.loading = true;
-
-    this.authService.getCustomerById(idNum).subscribe({
-      next: (profile) => {
-        this.user = profile;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.errorMsg = 'Failed to load user profile. Please log in again.';
-        this.loading = false;
-      }
-    });
-
-    this.getCardInfo();
+  if (!idStr || isNaN(idNum)) {
+    this.errorMsg = 'User ID not found. Please log in again.';
+    this.loading = false;
+    return;
   }
+
+  this.loading = true;
+
+  // 2️⃣ Load user profile
+  this.authService.getCustomerById(idNum).subscribe({
+    next: (profile) => {
+      this.user = profile;
+      this.loading = false;
+    },
+    error: (err) => {
+      console.error(err);
+      this.errorMsg = 'Failed to load user profile. Please log in again.';
+      this.loading = false;
+    }
+  });
+
+  // 3️⃣ Load card info
+  this.getCardInfo();
+
+  // 4️⃣ Check query params for showPaymentInfo
+  this.route.queryParams.subscribe(params => {
+    if (params['showPaymentInfo']) {
+      this.showPaymentInfo = true;
+
+      // Optional: scroll to the payment section
+      setTimeout(() => {
+        const el = document.querySelector('.card-container');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
+  });
+}
+
 
   // ------------------- PROFILE VALIDATORS -------------------
   private isValidEmail(email: string): boolean {

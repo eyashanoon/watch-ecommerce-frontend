@@ -32,10 +32,8 @@
     <p><strong>Email:</strong> {{ user.email }}</p>
     <p><strong>Phone Number:</strong> {{ user.phone }}</p>
     <!-- Password NOT shown in view mode -->
-    <p><strong>Role:</strong> {{ user.roles }}</p>
 
     <button (click)="enterEditMode()">✏️ Edit</button>
-<button (click)="deleteAccount()" style="margin-left: 10px;">🗑️ Delete Account</button>
   </div>
 
   <!-- Edit Mode -->
@@ -148,8 +146,6 @@
   <p><strong>Card Number:</strong> {{ formatCardNumberForView(myCard.cardNumber) }}</p>
 </div>
 <p><strong>Expiration Date:</strong> {{ formatExpirationForView(myCard.expirationDate) }}</p>
-    <p><strong>CVV:</strong> {{myCard.cvv}}</p>
-    <!--<button (click)="updateCardInfo()">Update Card</button>-->
   </div>
 
   <!-- Create New Card Form -->

@@ -28,36 +28,82 @@
       <div class="toast" *ngIf="showToast">{{ toastMessage }}</div>
 
       <!-- Sign-up Form -->
-      <form [formGroup]="SignUpForm" (ngSubmit)="onSubmit()">
-        <input
-          type="text"
-          placeholder="Username"
-          formControlName="username"
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          formControlName="email"
-        />
-        <input
-          type="text"
-          placeholder="Phone Number"
-          formControlName="phone"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          formControlName="password"
-        />
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          formControlName="confirmPassword"
-        />
+<form [formGroup]="SignUpForm" (ngSubmit)="onSubmit()" autocomplete="off">
+  <!-- Full Name -->
+  <input
+    type="text"
+    placeholder="Full Name"
+    formControlName="username"
+    [ngClass]="{ invalid: f['username'].invalid && (f['username'].touched || submitted) }"
+  />
+  <div class="error" *ngIf="f['username'].invalid && (f['username'].touched || submitted)">
+    <small *ngIf="f['username'].errors?.['required']">Full name is required.</small>
+    <small *ngIf="f['username'].errors?.['minlength']">Name must be at least 3 characters.</small>
+  </div>
 
-        <!-- Submit Button -->
-        <button class="sign-in-button" type="submit">Sign Up</button>
-      </form>
+  <!-- Email -->
+  <input
+    type="email"
+    placeholder="Email"
+    formControlName="email"
+    autocomplete="off"
+    [ngClass]="{ invalid: f['email'].invalid && (f['email'].touched || submitted) }"
+  />
+  <div class="error" *ngIf="f['email'].invalid && (f['email'].touched || submitted)">
+    <small *ngIf="f['email'].errors?.['required']">Email is required.</small>
+    <small *ngIf="f['email'].errors?.['email']">Enter a valid email.</small>
+  </div>
+
+  <!-- Phone -->
+  <input
+    type="text"
+    placeholder="Phone Number"
+    formControlName="phone"
+    [ngClass]="{ invalid: f['phone'].invalid && (f['phone'].touched || submitted) }"
+  />
+  <div class="error" *ngIf="f['phone'].invalid && (f['phone'].touched || submitted)">
+    <small *ngIf="f['phone'].errors?.['required']">Phone number is required.</small>
+    <small *ngIf="f['phone'].errors?.['pattern']">Phone number format is invalid.</small>
+  </div>
+
+  <!-- Password -->
+  <input
+    type="password"
+    placeholder="Password"
+    formControlName="password"
+    autocomplete="off"
+    [ngClass]="{ invalid: f['password'].invalid && (f['password'].touched || submitted) }"
+  />
+  <div class="error" *ngIf="f['password'].invalid && (f['password'].touched || submitted)">
+    <small *ngIf="f['password'].errors?.['required']">Password is required.</small>
+    <small *ngIf="f['password'].errors?.['minlength']">Minimum 6 characters.</small>
+    <small *ngIf="f['password'].errors?.['pattern']">Must contain letters and numbers.</small>
+  </div>
+
+  <!-- Confirm Password -->
+  <input
+    type="password"
+    placeholder="Confirm Password"
+    formControlName="confirmPassword"
+    [ngClass]="{
+      invalid:
+        (f['confirmPassword'].invalid || SignUpForm.hasError('mismatch')) &&
+        (f['confirmPassword'].touched || submitted)
+    }"
+  />
+  <div
+    class="error"
+    *ngIf="(f['confirmPassword'].touched || submitted) && (f['confirmPassword'].invalid || SignUpForm.hasError('mismatch'))"
+  >
+    <small *ngIf="f['confirmPassword'].errors?.['required']">Confirm password is required.</small>
+    <small *ngIf="!f['confirmPassword'].errors && SignUpForm.hasError('mismatch')">
+      Passwords do not match.
+    </small>
+  </div>
+
+  <button class="sign-in-button" type="submit">Sign Up</button>
+</form>
+
     </div>
   </div>
 </div>
