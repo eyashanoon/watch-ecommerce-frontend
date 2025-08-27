@@ -1,9 +1,9 @@
-<div class="product-grid-container  loading" *ngIf="loading">
-    <h2>loading ⌛</h2>
-    <p>this will not take long.</p></div>
+<div class="product-grid-container loading" *ngIf="loading">
+  <h2>loading ⌛</h2>
+  <p>this will not take long.</p>
+</div>
 
 <div class="product-grid-container" *ngIf="!loading">
-
   <!-- Left Arrow -->
   <button class="grid-scroll-arrow left" (click)="scrollLeft()">&#10094;</button>
 
@@ -11,67 +11,64 @@
   <div class="product-grid">
     <div class="product-wrapper"
          *ngFor="let product of productsWithImages.slice(visibleStartIndex, visibleStartIndex + 4); trackBy: trackByProduct">
-<div class="product-card">
-  <div class="product-content">
+      <div class="product-card">
+        <div class="product-content">
 
-    <!-- Image Carousel -->
-    <div class="image-wrapper">
-      <div class="image-strip"
-           [style.transform]="'translateX(-' + (product.currentImageIndex * 100) + '%)'">
-        <img *ngFor="let img of product.images"
-             [src]="img"
-             alt="{{ product.name }}"
-             class="clickable"
-             (click)="goToProductDetails(product)" />
+          <!-- Image Carousel -->
+          <div class="image-wrapper">
+            <div class="image-strip"
+                 [style.transform]="'translateX(-' + (product.currentImageIndex * 100) + '%)'">
+              <img *ngFor="let img of product.images"
+                   [src]="img"
+                   alt="{{ product.name }}"
+                   class="clickable"
+                   (click)="goToProductDetails(product)" />
+            </div>
+            <button class="carousel-arrow left" (click)="scrollImageLeft(product, $event)">&#10094;</button>
+            <button class="carousel-arrow right" (click)="scrollImageRight(product, $event)">&#10095;</button>
+          </div>
+
+          <!-- Product Info -->
+          <h3 class="product-name clickable" (click)="goToProductDetails(product)">
+            {{ product.name }}
+          </h3>
+
+          <p class="normal-grey-text">{{ product.brand }}</p>
+          <p class="product-price">{{ product.originalPrice | currency }}</p>
+          <p class="stock-status"
+             [ngClass]="{ 'low-stock': product.quantity < 5 && product.quantity > 0 }">
+            {{ product.quantity === 0 ? 'Out of Stock' : '' }}
+          </p>
+
+          <!-- Actions (consistent with ProductsComponent) -->
+          <div class="product-actions" *ngIf="authService.isLoggedIn() && wishlistLoaded && product.quantity > 0">
+            <!-- Cart -->
+<!-- Cart Icon -->
+  <button class="icon-btn cart-icon-btn"
+          (click)="toggleCart(product)">
+    <i class="fa"
+       [ngClass]="isCartIconActive(product) ? 'fa-cart-shopping' : 'fa-cart-plus'"></i>
+  </button>
+
+
+            <!-- Wishlist -->
+            <button class="wishlist-btn icon-btn" (click)="toggleWishlist(product)">
+              <span class="heart-icon" [class.active]="isInWishlist(product)">
+                {{ isInWishlist(product) ? '❤️' : '♡' }}
+              </span>
+            </button>
+          </div>
+
+        </div>
       </div>
-      <button class="carousel-arrow left" (click)="scrollImageLeft(product, $event)">&#10094;</button>
-      <button class="carousel-arrow right" (click)="scrollImageRight(product, $event)">&#10095;</button>
-    </div>
-
-    <!-- Product Info -->
-    <h3 class="product-name clickable" (click)="goToProductDetails(product)">
-      {{ product.name }}
-    </h3>
-
-    <!-- Brand -->
-    <p class="normal-grey-text">{{ product.brand }}</p>
-
-    <!-- Price -->
-    <p class="product-price">{{ product.originalPrice | currency }}</p>
-
-    <!-- Stock Status -->
-    <p class="stock-status"
-       [ngClass]="{
-         'low-stock': product.quantity < 5 && product.quantity > 0,
-
-       }">
-       {{ product.quantity === 0 ? 'Out of Stock' :''}}
-    </p>
-
-    <!-- Action Buttons -->
-    <div class="product-actions">
-      <!-- Cart -->
-      <button class="icon-btn cart-icon-btn"
-              [ngClass]="{ 'in-cart': cartProductIds.includes(product.id) }"
-              (click)="toggleCart(product)">
-        🛒
-      </button>
-
-      <!-- Wishlist -->
-      <button class="icon-btn wishlist-btn"
-              [ngClass]="{ 'in-wishlist': wishlistProductIds.includes(product.id) }"
-              (click)="toggleWishlist(product)">
-        ❤️
-      </button>
-    </div>
-
-  </div>
-</div>
-
     </div>
   </div>
 
   <!-- Right Arrow -->
   <button class="grid-scroll-arrow right" (click)="scrollRight()">&#10095;</button>
+</div>
 
+<!-- ✅ Toast -->
+<div class="toast" *ngIf="showToast">
+  {{ toastMessage }}
 </div>
