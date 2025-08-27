@@ -170,7 +170,7 @@ export class CartComponent implements OnInit {
         fullProduct.currentImageIndex = 0;
         fullProduct.selectedQty = 1;
 
-        this.router.navigate(['/product', encodeURIComponent(fullProduct.name)], { state: { product: fullProduct } });
+        this.router.navigate(['/admin-product', encodeURIComponent(fullProduct.name)], { state: { product: fullProduct } });
       },
       error: err => {
         console.error('Failed to fetch product details', err);
