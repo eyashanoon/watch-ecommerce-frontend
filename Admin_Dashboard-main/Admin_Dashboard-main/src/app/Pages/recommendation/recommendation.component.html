@@ -1,4 +1,8 @@
-<div class="product-grid-container">
+<div class="product-grid-container  loading" *ngIf="loading">
+    <h2>loading ⌛</h2>
+    <p>this will not take long.</p></div>
+
+<div class="product-grid-container" *ngIf="!loading">
 
   <!-- Left Arrow -->
   <button class="grid-scroll-arrow left" (click)="scrollLeft()">&#10094;</button>

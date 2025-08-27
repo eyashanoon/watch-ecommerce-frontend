@@ -15,11 +15,17 @@
     <h1 class="page-title">🛒 My Cart</h1>
 
     <!-- EMPTY CART MESSAGE -->
-    <div *ngIf="cartItems.length === 0" class="empty-cart">
+    <div *ngIf="cartItems.length === 0 && !loading" class="empty-cart">
       <h2>Your cart is empty 😔</h2>
       <p>Add items to your cart to keep track of products you love!</p>
       <button class="browse-btn" routerLink="/product">Browse Products</button>
     </div>
+
+
+    <div *ngIf="loading" class="empty-cart">
+      <h2>loading ⌛</h2>
+      <p>this will not take long.</p>
+     </div>
 
     <!-- CART ITEMS LIST -->
     <div *ngIf="cartItems.length > 0" class="cart-list">

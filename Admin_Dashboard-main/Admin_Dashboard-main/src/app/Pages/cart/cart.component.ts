@@ -17,9 +17,9 @@ export interface CartItemWithImages extends CartItem {
   brand?: string;
 
   /** 🔹 Changed: now guaranteed numbers (not optional) */
-  discountPrice: number;   
-  productPrice: number;   
-  quantity: number;       
+  discountPrice: number;
+  productPrice: number;
+  quantity: number;
 }
 
 @Component({
@@ -48,6 +48,7 @@ export class CartComponent implements OnInit {
   orderTime: string = '';
   confirmEnabled: boolean = false;
   confirmTimeout: any;
+  loading:boolean=false;
 
   constructor(
     private router: Router,
@@ -76,6 +77,7 @@ export class CartComponent implements OnInit {
   }
 
   loadCart() {
+    this.loading=true;
     this.cartService.getMyCart().subscribe({
       next: (res) => {
         const items = res.items ?? [];
@@ -84,6 +86,7 @@ export class CartComponent implements OnInit {
           this.cartItems = [];
           this.mycartIds.clear();
         }
+        this.loading=false;
       },
       error: (err) => {
         console.error('Failed to fetch cart:', err);
@@ -92,6 +95,8 @@ export class CartComponent implements OnInit {
         this.mycartIds.clear();
       }
     });
+
+
   }
 
   private initializecartItems(items: any[]) {

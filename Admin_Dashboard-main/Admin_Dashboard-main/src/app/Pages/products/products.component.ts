@@ -74,7 +74,7 @@ selectedQuantity: number = 1; // for cart
 constructor(
   private router: Router,
    private productService1: ProductService1,
- 
+
   private imageService: ImageService,
   private featuresService: FeaturesService,
 public authService: AuthService,
@@ -262,7 +262,24 @@ loadCart() {
   });
 }
 
+  loadFeatures() {
+    this.featuresService.getAllColors().subscribe((colorsObj: ColorsResponse) => {
+      this.handsColors = colorsObj.Hands.map(c => c.trim());
+      this.backgroundColors = colorsObj.Background.map(c => c.trim());
+      this.bandColors = colorsObj.Band.map(c => c.trim());
+      this.availableColors = Array.from(new Set(Object.values(colorsObj).flat().map(c => c.trim())));
+    });
+    this.featuresService.getAllBrands().subscribe(brands => this.availableBrands = brands);
+    this.featuresService.getAllBands().subscribe(band => this.bandMaterials = band);
+    this.featuresService.getAllCases().subscribe(cases => this.caseMaterials = cases);
+    this.featuresService.getAllDisplay_types().subscribe(DisplayTypes => this.displayTypes = DisplayTypes);
+    this.featuresService.getAllNumbering_formats().subscribe(numberingTypes => this.numberingTypes = numberingTypes);
+    this.featuresService.getAllShapes().subscribe(shapes => this.shapes = shapes);
+  }
+
 ngOnInit(): void {
+      this.loadFeatures();
+
   this.filterChange$
       .pipe(debounceTime(300))
       .subscribe(filters => {
@@ -532,7 +549,7 @@ goToProductDetails(product: any): void {
     const encoded = encodeURIComponent(product.id);
     this.router.navigate(['/product/edit', encoded]);
   }
-  
+
 
   toggleSidebar() {
     this.sidebarVisible = !this.sidebarVisible;

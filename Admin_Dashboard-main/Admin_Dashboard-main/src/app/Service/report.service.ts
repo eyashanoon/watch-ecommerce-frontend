@@ -1,9 +1,11 @@
+// report.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export interface ReportDto {
-  field: number; // year, month, or day
+  field: string | number;
   count: number;
 }
 
@@ -11,42 +13,48 @@ export interface ReportDto {
   providedIn: 'root'
 })
 export class ReportService {
-  private productBaseUrl = 'http://localhost:8080/api/report/product';
-  private orderBaseUrl = 'http://localhost:8080/api/report/order';
+  private baseUrl = 'http://10.10.33.90:8080/api/report';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
-  // ---------------- Product Reports ----------------
+  private getAuthHeaders(): { headers: HttpHeaders } {
+    const token = this.authService.getToken();
+    return {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`
+      })
+    };
+  }
+
+  // Product reports
   getYearlyProductReport(year?: string): Observable<ReportDto[]> {
-    let params = new HttpParams();
-    if (year) params = params.set('year', year);
-    return this.http.get<ReportDto[]>(`${this.productBaseUrl}/years`, { params });
+    const url = `${this.baseUrl}/product/years${year ? '?year=' + year : ''}`;
+    return this.http.get<ReportDto[]>(url, this.getAuthHeaders());
   }
 
   getMonthlyProductReport(year: string): Observable<ReportDto[]> {
-    let params = new HttpParams().set('year', year);
-    return this.http.get<ReportDto[]>(`${this.productBaseUrl}/year`, { params });
+    const url = `${this.baseUrl}/product/year?year=${year}`;
+    return this.http.get<ReportDto[]>(url, this.getAuthHeaders());
   }
 
   getDailyProductReport(year: string, month: string): Observable<ReportDto[]> {
-    let params = new HttpParams().set('year', year).set('month', month);
-    return this.http.get<ReportDto[]>(`${this.productBaseUrl}/month`, { params });
+    const url = `${this.baseUrl}/product/month?year=${year}&month=${month}`;
+    return this.http.get<ReportDto[]>(url, this.getAuthHeaders());
   }
 
-  // ---------------- Order Reports ----------------
-  getYearlyOrdersReport(year?: string): Observable<ReportDto[]> {
-    let params = new HttpParams();
-    if (year) params = params.set('year', year);
-    return this.http.get<ReportDto[]>(`${this.orderBaseUrl}/years`, { params });
+  // Order reports
+  getYearlyOrderReport(year?: string): Observable<ReportDto[]> {
+    const url = `${this.baseUrl}/order/years${year ? '?year=' + year : ''}`;
+    return this.http.get<ReportDto[]>(url, this.getAuthHeaders());
   }
 
-  getMonthlyOrdersReport(year: string): Observable<ReportDto[]> {
-    let params = new HttpParams().set('year', year);
-    return this.http.get<ReportDto[]>(`${this.orderBaseUrl}/year`, { params });
+  getMonthlyOrderReport(year: string): Observable<ReportDto[]> {
+    const url = `${this.baseUrl}/order/year?year=${year}`;
+    return this.http.get<ReportDto[]>(url, this.getAuthHeaders());
   }
 
-  getDailyOrdersReport(year: string, month: string): Observable<ReportDto[]> {
-    let params = new HttpParams().set('year', year).set('month', month);
-    return this.http.get<ReportDto[]>(`${this.orderBaseUrl}/month`, { params });
+  getDailyOrderReport(year: string, month: string): Observable<ReportDto[]> {
+    const url = `${this.baseUrl}/order/month?year=${year}&month=${month}`;
+    return this.http.get<ReportDto[]>(url, this.getAuthHeaders());
   }
 }

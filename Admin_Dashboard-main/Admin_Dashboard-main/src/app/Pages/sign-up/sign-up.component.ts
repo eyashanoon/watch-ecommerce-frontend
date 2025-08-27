@@ -11,11 +11,14 @@ import {
 } from '@angular/forms';
 import { CommonModule, NgIf } from '@angular/common';
 import { AuthService } from '../../Service/auth.service';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
 
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, NgIf],
+  imports: [ReactiveFormsModule, CommonModule, NgIf, MatFormFieldModule, MatInputModule, MatIconModule],
   templateUrl: './sign-up.component.html',
   styleUrls: ['./sign-up.component.css'],
 })
@@ -159,5 +162,5 @@ export class SignUpComponent implements AfterViewInit {
   goToSignInPage() {
     this.router.navigate(['/sign-in']);
   }
-  
+
 }

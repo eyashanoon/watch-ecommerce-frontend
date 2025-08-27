@@ -14,6 +14,7 @@ import { CartService } from '../../Service/cart.service';
 import { CartDto } from '../../models/cart.model';
 import { WishlistDto } from '../../models/wishlist.model';
 import { RecommendationComponent } from '../../Pages/recommendation/recommendation.component';
+import { ActivatedRoute } from '@angular/router';
 
 type Filters = {
   maxPrice: number;
@@ -84,6 +85,7 @@ export class ProductsDetailsComponent implements AfterViewInit {
   flagCart: boolean = false;
 
   constructor(
+      private route: ActivatedRoute, // <-- add this
     private router: Router,
     private productService: ProductService1,
     public authService: AuthService,
@@ -105,6 +107,34 @@ export class ProductsDetailsComponent implements AfterViewInit {
     this.loadCart();
     this.isCustomer = this.authService.getUserRoles().includes("CUSTOMER");
   }
+ngOnInit(): void {
+  this.route.params.subscribe(params => {
+    const productName = params['name']; // read the URL param
+
+    // Try to get the product from the navigation state first
+    const navProduct = history.state.product;
+    if (navProduct && navProduct.name === productName) {
+      this.loadCurrentProduct(navProduct);
+    } else {
+      // Fallback: fetch product by name from your API
+      this.productService.getProductByName(productName).subscribe(products => {
+        if (products.length > 0) this.loadCurrentProduct(products[0]);
+      });
+    }
+  });
+}
+loadCurrentProduct(product: ProductWithImages & { selectedQty: number ;colorCombinations: ClorCombinations[] }) {
+  // Set the current product
+  this.products = product;
+
+  // Update product ID
+  this.productID = product.id;
+
+  // Reload images, wishlist, and cart
+  this.loadProductImages(this.productID);
+  this.loadWishlist();
+  this.loadCart();
+}
 
   // ------------------ Product Loading ------------------
   loadProductImages(productId: number): void {
@@ -234,12 +264,12 @@ export class ProductsDetailsComponent implements AfterViewInit {
     if (!confirm(`Are you sure you want to delete ${this.products.name}?`)) return;
     this.productService.deleteProduct(this.products.id).subscribe({
       next: () => {
-        alert('Product deleted successfully.');
+        this.showToastMessage('Product deleted successfully.');
         this.router.navigate(['/product']);
       },
       error: err => {
         console.error('Failed to delete product', err);
-        alert('Failed to delete product. See console for details.');
+        this.showToastMessage('Failed to delete product. See console for details.');
       }
     });
   }
@@ -255,7 +285,7 @@ export class ProductsDetailsComponent implements AfterViewInit {
 
   // ------------------ Cart ------------------
   loadCart() {
- 
+
     if (!this.authService.isLoggedIn()) return;
     this.cartService.getMyCart().subscribe({
       next: (res: any) => {
@@ -353,7 +383,7 @@ toggleCart(product: ProductWithImages & { selectedQty: number }) {
     });
 
     this.flag = this.myWishlistIds.has(pid);
-    
+
   }
 
   isInWishlist(): boolean {

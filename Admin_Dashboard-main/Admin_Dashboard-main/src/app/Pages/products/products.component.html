@@ -232,16 +232,16 @@
  <div class="product-actions">
 
   <!-- Admin / Owner Actions -->
-  <ng-container *ngIf="hasRole('UPDATE_PRODUCT') || hasRole('DELETE_PRODUCT') || hasRole('OWNER')">
-<button *ngIf="hasRole('UPDATE_PRODUCT') || hasRole('OWNER')" 
-        (click)="editProduct(product)" 
+<ng-container *ngIf="(hasRole('UPDATE_PRODUCT') || hasRole('DELETE_PRODUCT') || hasRole('OWNER')) && product.quantity > 0">
+<button *ngIf="hasRole('UPDATE_PRODUCT') || hasRole('OWNER')"
+        (click)="editProduct(product)"
         title="Edit">
   <i class="fa-solid fa-pen"></i>
 </button>
 
 <!-- Delete button for admins -->
 <button *ngIf="hasRole('DELETE_PRODUCT') || hasRole('OWNER')"
-        (click)="deleteProduct(product)" 
+        (click)="deleteProduct(product)"
         title="Delete">
   <i class="fa-solid fa-trash"></i>
 </button>
@@ -252,9 +252,9 @@
     <button (click)="toggleCart(product)" class="cart-icon-btn icon-btn">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
            [class.filled]="isCartIconActive(product)">
-        <path d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 
-                 0 1.1.9 2 2 2h12v-2h-12l1.1-2h7.45c.75 0 1.41-.41 
-                 1.75-1.03l3.58-6.49-.03-.02c.09-.16.15-.35.15-.55 
+        <path d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96
+                 0 1.1.9 2 2 2h12v-2h-12l1.1-2h7.45c.75 0 1.41-.41
+                 1.75-1.03l3.58-6.49-.03-.02c.09-.16.15-.35.15-.55
                  0-.55-.45-1-1-1h-14z"/>
       </svg>
     </button>
@@ -266,7 +266,7 @@
     </button>
   </ng-container>
 
- 
+
 </div>
 
 

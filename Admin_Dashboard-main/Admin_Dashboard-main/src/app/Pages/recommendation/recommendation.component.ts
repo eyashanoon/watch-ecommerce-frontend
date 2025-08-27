@@ -12,6 +12,7 @@ import { CartService } from '../../Service/cart.service';
 import { WishlistService } from '../../Service/wishlist.service';
 import { AuthService } from '../../Service/auth.service';
 import { CartDto } from '../../models/cart.model';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class RecommendationComponent implements OnInit {
   visibleStartIndex = 0; // index for scrolling 5 products
     cartProductIds: number[] = [];
   wishlistProductIds: number[] = [];
+  loading:boolean=false;
 
   constructor(
     private router: Router,
@@ -39,8 +41,9 @@ export class RecommendationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadRecommendedProducts();
-      if (this.authService.isLoggedIn()) {
+ this.loadRecommendedProducts();
+// Step 2: Later, load images
+     if (this.authService.isLoggedIn()) {
       this.cartService.getMyCart().subscribe(cart => {
         this.cartProductIds = cart.items.map((i: any) => i.product.id);
       });
@@ -74,34 +77,71 @@ export class RecommendationComponent implements OnInit {
 
   }
 
-  loadRecommendedProducts() {
-    this.productMap.clear();
+loadRecommendedProducts() {
+  this.productMap.clear();
+  this.loading=true;
 
-    this.recommendationService.getRecommendations().subscribe((recs: Recommendation[]) => {
-      if (!recs || recs.length === 0) return;
+  this.recommendationService.getRecommendations().subscribe((recs: Recommendation[]) => {
+    if (!recs || recs.length === 0) return;
 
-      // Limit to 5 products
-      const recommendedFive = recs ;
+    // Limit to 5 products
+    const recommendedFive = recs.slice(0, 10);
 
-      const productRequests = recommendedFive.map(rec => this.productService1.getProductById(rec.id));
-      forkJoin(productRequests).subscribe((products: Product[]) => {
-        products.forEach(product => {
-          this.productMap.set(product.id, { product, images: [], currentImageIndex: 0 });
-        });
+    // Fetch all products in parallel
+    recommendedFive.forEach(rec => {
+      this.productService1.getProductById(rec.id).subscribe((product: Product) => {
+        // Add product to the map immediately
+        this.productMap.set(product.id, { product, images: [], currentImageIndex: 0 });
 
-        const imageRequests = products.map(product => this.imageService.getAllImagesByProductID(product.id));
-        forkJoin(imageRequests).subscribe(imagesArray => {
-          imagesArray.forEach((images, index) => {
-            const product = products[index];
-            const current = this.productMap.get(product.id);
-            if (current) {
-              this.productMap.set(product.id, { ...current, images });
-            }
-          });
+        // Fetch images for this product independently
+        this.imageService.getAllImagesByProductID(product.id).subscribe((images: Image[]) => {
+          const current = this.productMap.get(product.id);
+          if (current) {
+            this.productMap.set(product.id, { ...current, images });
+          }
         });
       });
+      this.loading=false;
     });
-  }
+  });
+}
+
+// -------------------- Load products only --------------------
+loadProductsOnly(): void {
+  this.productMap.clear();
+
+  this.recommendationService.getRecommendations().subscribe((recs: Recommendation[]) => {
+    if (!recs || recs.length === 0) return;
+
+    const recommendedFive = recs.slice(0, 5); // limit to 5
+    const productRequests = recommendedFive.map(rec => this.productService1.getProductById(rec.id));
+
+    forkJoin(productRequests).subscribe((products: Product[]) => {
+      products.forEach(product => {
+        this.productMap.set(product.id, { product, images: [], currentImageIndex: 0 });
+      });
+      console.log('Products loaded without images:', this.productMap);
+    });
+  });
+}
+
+// -------------------- Load images separately --------------------
+loadImagesSeparately(): void {
+  this.productMap.forEach((value, key) => {
+    this.imageService.getAllImagesByProductID(key).subscribe((images: Image[]) => {
+
+      const current = this.productMap.get(key);
+      if (current) {
+        this.productMap.set(key, { ...current, images });
+        console.log(`Images loaded for product ${key}`);
+      }
+    });
+  });
+}
+
+// -------------------- Usage example --------------------
+// Step 1: Load products
+
 
   get productsWithImages() {
     return Array.from(this.productMap.values()).map(item => ({
@@ -131,10 +171,10 @@ export class RecommendationComponent implements OnInit {
     this.productMap.get(product.id)!.currentImageIndex = pos >= product.images.length - 1 ? 0 : pos + 1;
   }
 
-  goToProductDetails(product: ProductWithImages): void {
-    const encodedName = encodeURIComponent(product.name);
-    this.router.navigate(['/admin-product', encodedName], { state: { product } });
-  }
+goToProductDetails(product: ProductWithImages): void {
+  const encodedName = encodeURIComponent(product.name);
+  this.router.navigate(['/admin-product', encodedName], { state: { product } });
+}
 
   trackByProduct(index: number, product: ProductWithImages): number {
     return product.id;

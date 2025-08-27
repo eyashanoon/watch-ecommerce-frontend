@@ -11,7 +11,7 @@
   </div>
 
   <!-- Empty orders -->
-  <div *ngIf="orders.length === 0" class="empty-orders">
+  <div *ngIf="orders.length === 0 && !loading" class="empty-orders">
     <h2>No orders found 😔</h2>
     <p>Looks like there are no customer orders yet.</p>
   </div>

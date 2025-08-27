@@ -1,11 +1,13 @@
-import { Routes } from '@angular/router';
-import { AdminDashboardComponent } from './Pages/AdminDashBoard/admin-dashboard.component';
+ import { AdminDashboardComponent } from './Pages/AdminDashBoard/admin-dashboard.component';
 import { ProductsComponent } from './Pages/products/products.component';
 import { AdminOrdersComponent } from './Pages/orders/orders.component';
 import { HomeComponent } from './Pages/home/home.component';
 import { AddProductComponent } from './Pages/add-product/add-product.component';
 import { AdminGuard } from './Pages/guards/admin-guard';
 import { CustomerGuard } from './Pages/customer-guards/customer-guard';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
 
 export const routes: Routes = [
   { path: 'admin', component: AdminDashboardComponent , canActivate: [AdminGuard]},
@@ -86,3 +88,11 @@ export const routes: Routes = [
 }
 
 ];
+
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes, { onSameUrlNavigation: 'reload' }) // <--- key line
+  ],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
