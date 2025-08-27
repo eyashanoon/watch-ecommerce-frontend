@@ -73,7 +73,6 @@ selectedQuantity: number = 1; // for cart
 
 constructor(
   private router: Router,
-  private productService: ProductService,
   private productService1: ProductService1,
   private imageService: ImageService,
   private featuresService: FeaturesService,
@@ -479,9 +478,7 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
     product.editMode = false;
   }
 
-  deleteProduct(index: number) {
-    this.product.splice(index, 1);
-  }
+
 
   scrollToAddWatch() {
     this.showAddForm = true;
@@ -492,14 +489,27 @@ scrollRight(product: ProductWithImages, event?: MouseEvent) {
       }
     }, 0);
   }
+deleteProduct(product: ProductWithImages) {
+  if (!product?.id) return;
 
-  confirmDeleteProduct(index: number, event: Event) {
-    event.stopPropagation(); // Prevent the parent click handler
+  if (!confirm(`Are you sure you want to delete ${product.name}?`)) return;
 
-    if (confirm('Are you sure you want to delete this product?')) {
-      this.deleteProduct(index);
+  this.productService1.deleteProduct(product.id).subscribe({
+    next: () => {
+      // Remove the product from local map to update UI immediately
+      this.productMap.delete(product.id);
+      this.showToastMessage(`🗑️ ${product.name} deleted successfully`);
+
+      // Optionally, reload products or adjust page
+      // this.loadProducts();
+    },
+    error: err => {
+      console.error('Failed to delete product', err);
+      this.showToastMessage('❌ Failed to delete product');
     }
-  }
+  });
+}
+
 
   goToHomePage() {
     this.router.navigate(['/home']);
@@ -512,7 +522,16 @@ goToProductDetails(product: any): void {
   this.router.navigate(['/admin-product', encodedName], { state: { product } });
 
 }
-
+  hasRole(role: string): boolean {
+    const roles = this.authService.getUserRoles();
+    const normalize = (r: string) => r.toUpperCase().replace('-', '_');
+    return roles.some(r => normalize(r) === normalize(role));
+  }
+  editProduct(product: ProductWithImages) {
+    const encoded = encodeURIComponent(product.id);
+    this.router.navigate(['/product/edit', encoded]);
+  }
+  
 
   toggleSidebar() {
     this.sidebarVisible = !this.sidebarVisible;

@@ -67,6 +67,13 @@
   pointer-events: auto; /* Allow hover effects */
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
+.toast.show {
+  opacity: 1;
+}
+.fa-cart-plus.active {
+  color: green; /* or any color to indicate it's in the cart */
+}
+
 
 /* 🔥 Toast Variants */
 .toast-success {
@@ -208,6 +215,45 @@
   flex-direction: column;
   align-items: center;
   transform: scale(0.8); /* shrink slightly */
+}
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+}
+
+.qty-stepper {
+  display: flex;
+  align-items: center;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f9f9f9;
+}
+
+.qty-btn {
+  background: #B6B09F;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.qty-btn:hover {
+  background: #8c8675;
+}
+
+.qty-stepper input {
+  width: 60px;
+  text-align: center;
+  border: none;
+  font-size: 1rem;
+  padding: 6px;
+  outline: none;
+  background: transparent;
 }
 
 /* Band */

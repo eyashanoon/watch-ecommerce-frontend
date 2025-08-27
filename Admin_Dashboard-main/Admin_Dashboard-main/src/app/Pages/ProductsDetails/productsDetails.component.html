@@ -3,9 +3,7 @@
 
   <!-- TOAST CONTAINER -->
   <div class="toast-container" *ngIf="showToast">
-    <div class="toast show">
-      {{ toastMessage }}
-    </div>
+    <div class="toast show">{{ toastMessage }}</div>
   </div>
 
   <div class="product-wrapper">
@@ -13,6 +11,8 @@
     <!-- Left: Image Section -->
     <div class="image-wrapper">
       <div class="image-section">
+
+        <!-- Vertical Thumbnails -->
         <div class="vertical-thumbnails scrollable-element" *ngIf="!is3DViewActive">
           <img *ngFor="let img of loadedImages; let i = index"
                [src]="img"
@@ -20,37 +20,45 @@
                (click)="selectImage(i)" />
         </div>
 
+        <!-- Main Image -->
         <div class="main-image-container" *ngIf="!is3DViewActive">
-          <img [src]="loadedImages[currentIndex]|| 'assets/logo.png'" class="main-image" />
+          <img [src]="loadedImages[currentIndex] || 'assets/logo.png'" class="main-image" />
         </div>
 
-        <!-- Carousel arrows -->
+        <!-- Carousel Arrows -->
         <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
 
-        <!-- 3D View Button -->
+        <!-- 3D View Toggle -->
         <button class="toggle-3d-btn" (click)="toggle3DView()">
           {{ is3DViewActive ? 'Close 3D View' : 'Open 3D View' }}
         </button>
+
       </div>
     </div>
 
     <!-- Right: Info Section -->
     <div class="info-wrapper">
 
-      <!-- Top: Most important info -->
+      <!-- Top: Main Info -->
       <div class="main-info">
         <h1 class="product-name">{{ products.name }}</h1>
-        <h3 class="product-quantity"><strong>Quantity :</strong>{{ products.quantity }}</h3>
-         <div class="stock-status" [ngClass]="{'in-stock': products.quantity > 0, 'out-of-stock': products.quantity === 0}">
+        <h3 class="product-quantity"><strong>Quantity :</strong> {{ products.quantity }}</h3>
+
+        <!-- Stock Status -->
+        <div class="stock-status" [ngClass]="{'in-stock': products.quantity > 0, 'out-of-stock': products.quantity === 0}">
           {{ products.quantity > 0 ? 'In Stock' : 'Out of Stock' }}
+        </div>
+
+        <!-- Product Price -->
         <div class="product-price"><strong>Price:</strong> ${{ products.originalPrice }}</div>
 
         <!-- Color Combinations Section -->
-        <div class="color-combinations" *ngIf="products?.colorCombinations">
+        <div class="color-combinations" *ngIf="products?.colorCombinations?.length">
           <h3>Color Combinations</h3>
           <div class="combo-grid">
             <div *ngFor="let combo of products.colorCombinations; let i = index" class="watch-combo">
               <div class="watch-template" (click)="changeWatchColor(combo)">
+                
                 <!-- Band Top -->
                 <div class="watch-band" [style.backgroundColor]="combo.band"></div>
 
@@ -76,39 +84,58 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
-          <!-- Edit Icon -->
+
+          <!-- Edit / Delete Icons -->
           <button *ngIf="hasRole('UPDATE_PRODUCT') || hasRole('OWNER')" (click)="editProduct()" title="Edit">
             <i class="fa-solid fa-pen"></i>
           </button>
-
-          <!-- Delete Icon -->
           <button *ngIf="hasRole('DELETE_PRODUCT') || hasRole('OWNER')" (click)="deleteProduct()" title="Delete">
             <i class="fa-solid fa-trash"></i>
           </button>
 
-          <!-- Add to Cart Icon -->
-          <button *ngIf="hasRole('CUSTOMER')" (click)="addToCart(products)" title="Add to Cart">
-            <i class="fa-solid fa-cart-plus"></i>
-          </button>
+          <!-- Customer Actions -->
+          <ng-container *ngIf="hasRole('CUSTOMER') && products.quantity > 0; else outOfStockBlock">
 
-          <!-- Quantity Selector -->
-          <div class="quantity-selector" *ngIf="hasRole('CUSTOMER')">
-            <label for="quantity">Qty:</label>
-            <input type="number" id="quantity" [(ngModel)]="selectedQuantity" min="1" [max]="products.quantity" />
-          </div>
+            <!-- Add/Remove Cart Button -->
+            <button (click)="toggleCart(products)" title="Add/Remove from Cart">
+              <i class="fa-solid fa-cart-plus" [class.active]="flagCart"></i>
+            </button>
 
-<button class="wishlist-btn" *ngIf="wishlistLoaded" (click)="toggleWishlist()">
-  <span class="heart-icon" [class.active]="isInWishlist()">
-    {{ flag ? '❤️' : '♡' }}
-  </span>
-</button>
+            <!-- Quantity Selector -->
+            <div class="quantity-selector">
+              <label for="quantity">Qty:</label>
+              <div class="qty-stepper">
+                <button type="button" class="qty-btn" (click)="decreaseQty()">−</button>
+                <input type="number"
+                       id="quantity"
+                       [(ngModel)]="selectedQuantity"
+                       min="1"
+                       [max]="products.quantity" />
+                <button type="button" class="qty-btn" (click)="increaseQty()">+</button>
+              </div>
+            </div>
+
+            <!-- Wishlist Button -->
+            <button class="wishlist-btn" *ngIf="wishlistLoaded" (click)="toggleWishlist()">
+              <span class="heart-icon" >{{ flag ? '❤️' : '♡' }}</span>
+            </button>
+
+          </ng-container>
+
+          <!-- Out of Stock Template -->
+          <ng-template #outOfStockBlock>
+            <p class="out-of-stock-message">⚠️ This product is currently out of stock</p>
+          </ng-template>
+
         </div>
 
+        <!-- Short Description -->
         <p class="product-short-desc">{{ products.description }}</p>
       </div>
 
-      <!-- Bottom: Specs/features -->
+      <!-- Bottom: Specs/Features -->
       <div class="product-specs">
+
         <div class="spec-category">
           <h3>General</h3>
           <div><strong>Brand:</strong> {{ products.brand }}</div>
@@ -140,6 +167,7 @@
           <div><strong>Ticking Sound:</strong> {{ products.hasTickingSound ? 'Yes' : 'No' }}</div>
           <div><strong>Changeable Band:</strong> {{ products.changeableBand ? 'Yes' : 'No' }}</div>
         </div>
+
       </div>
 
     </div>
@@ -155,10 +183,9 @@
     <button class="carousel-arrow right" (click)="nextImage()">&#10095;</button>
   </div>
 
- 
- 
-  <div class="ff" *ngIf="isCustomer">
-     <app-recommendation></app-recommendation>
-  </div>
+</div>
 
+<!-- Recommendations Section -->
+<div class="ff" *ngIf="isCustomer">
+  <app-recommendation></app-recommendation>
 </div>

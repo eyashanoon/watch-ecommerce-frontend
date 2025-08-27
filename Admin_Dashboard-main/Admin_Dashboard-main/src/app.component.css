@@ -23,22 +23,23 @@
 }
 
 .topbar {
-  top: 20px;
-  left: 20px;
-  right: 20px;
+  top: 0;           
+  left: 0;
+  right: 0;
   height: 80px;
   background-color: #B6B09F;
-  border-radius: 14px;
+  border-radius: 0 0 14px 14px; /* rounded only bottom corners */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px; /* horizontal spacing */
+  padding: 0 16px;
   box-shadow: 0 10px 25px rgba(255,255,255,0.2),
               0 4px 8px rgba(255,255,255,0.1);
   color: #232526;
   z-index: 1000;
-  flex-wrap: wrap; /* allow items to wrap on small screens */
+  flex-wrap: wrap;
 }
+
 
 /* Highlight active link */
 .topbar-links a.active-link {
@@ -95,6 +96,10 @@
   padding: 10px 20px;
   text-align: center;
   font-size: 0.9rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 }
 
 .footer p, 
